@@ -62,7 +62,7 @@ export async function exportStudioPicture(name, picture) {
   const fit = fitSantaPictureName(context, name, picture);
   const frame = santaPictureFrames[picture];
   context.save();
-  context.scale(canvas.width / 1536, canvas.height / 1024);
+  context.scale(canvas.width / 1536, canvas.height / (frame.artworkHeight || 1024));
   context.font = recipientCanvasFont(fit.size);
   context.fillStyle = '#19392d';
   for (const line of fit.lines) {

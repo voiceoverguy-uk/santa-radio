@@ -1,3 +1,4 @@
+import { santaPictureFrames, STUDIO_GIFT_PICTURE } from '../lib/santaPictureLayout.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { studioGiftExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
 import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
@@ -104,7 +105,7 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-santa-picture" role="img"
     aria-label={`Santa’s Nice List picture example for ${name}`}>
-    <img src={picture} alt="" width="1536" height="1024" draggable={false}
+    <img src={picture} alt="" width="1536" height={santaPictureFrames[picture]?.artworkHeight || 1024} draggable={false}
       onLoad={() => setLoadedPicture(picture)} />
     {previousPicture && <span key={previousPicture}
       className={`studio-santa-picture__outgoing${loadedPicture === picture ? ' studio-santa-picture__outgoing--dissolving' : ''}`}
@@ -242,7 +243,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
           : kind === 'letter' ? <Letter letter={displayLetter} elapsed={displayElapsed} />
             : <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
               previousPicture={previousPicture} onDissolved={onDissolved} />}
-        <SampleWatermark />
+        {!staticPreview && <SampleWatermark />}
       </div>
       <span className="studio-gifts__thumbnail-label">
         {promotion ? (kind === 'picture' ? 'Santa picture included' : kind === 'letter' ? 'Letter included' : 'Certificate included')
@@ -302,7 +303,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
                 ? <p role="status">{letterError || 'Preparing the letter…'}</p>
                 : <Letter letter={displayLetter} elapsed={duration} />)
               : <SantaPicture name={name} picture={picture} elapsed={duration} />}
-          <SampleWatermark />
+          {!staticPreview && <SampleWatermark />}
         </div>
       </div>
     </dialog>
@@ -404,13 +405,13 @@ export function StudioGiftPreview({ example, variant = null, onPreviewOpen }) {
     {...example} name={name} variant={variant} onPreviewOpen={onPreviewOpen} />;
 }
 
-export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,
+export function StudioKeepsakePreview({ name, picture = STUDIO_GIFT_PICTURE, details = {}, variation, downloadReady = false,
   downloadNotice, giftRevision, downloadUnavailableNotice, children, onDownloadRequested, onGiftPreparing, requestedGifts }) {
   const [localVariation] = useState(createStudioLetterVariation);
   const letter = createStudioLetter(name, () => 0.5, details, variation || localVariation);
   return <GiftExample
     name={name}
-    picture={santaPictures[0]}
+    picture={picture}
     previousPicture={null}
     onDissolved={() => {}}
     activeAudio={false}

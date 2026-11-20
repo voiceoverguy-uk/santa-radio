@@ -1,3 +1,4 @@
+import { STUDIO_GIFT_PICTURE } from '../lib/santaPictureLayout.js';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StudioAccessContext } from '../lib/studioAccessContext.js';
@@ -63,7 +64,7 @@ const reviewFields = [
     label: 'Trying hard at',
     reviewLabel: 'Trying hard at',
     heading: 'What have they been trying hard at?',
-    wording: "… Also trying especially hard at…",
+    wording: "… also trying hard at…",
   },
   {
     key: 'achievement',
@@ -90,6 +91,7 @@ const reviewFields = [
 ];
 
 const stages = reviewFields.filter(({ key }) => key !== 'age');
+const progressLabels = [...stages.map(stage => stage.label), 'Review', 'Confirm'];
 
 const catalogueCategories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const requiredCatalogueCategories = catalogueCategories;
@@ -241,7 +243,6 @@ export default function SantaMessageWorkshop() {
   // Only the explicit fresh-message flow resets successful completion.
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
-  const [reviewMessageTarget, setReviewMessageTarget] = useState(null);
   const [deliveryTarget, setDeliveryTarget] = useState(null);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
@@ -307,13 +308,14 @@ export default function SantaMessageWorkshop() {
       .filter(record => stage.key !== 'activity' || (record.activityGroup || 'trying') === activityCategory)
     : [];
   const hasCatalogueOptions = catalogueState.status === 'ready' && catalogueOptions.length > 0;
-  const selectedAge = isNameAndAge && catalogueOptions.find(record => record.id === choices.age);
+  const selectedAge = catalogueState.catalogue?.categories?.age?.find(record => record.id === choices.age);
   const hasCurrentStageChoice = isNameAndAge
     ? !!chosenName && hasCatalogueOptions && !!selectedAge
     : stage?.key === 'talent'
       ? choices.talent?.skip === true || (choices.talent?.category === talentCategory
         && catalogueOptions.some(record => record.id === choices.talent.id))
       : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
+  const currentStep = isReview && deliveryStep !== 'review' ? progressLabels.length : stageIndex + 1;
   const canContinue = !isReview && hasCurrentStageChoice && (stage?.key !== 'place' || destinationValid);
   const selectionKey = studioSelectionIdentity({ ...choices, name: selectedName?.id });
   const giftDetailsFor = giftChoices => {
@@ -343,7 +345,7 @@ export default function SantaMessageWorkshop() {
   };
   const giftDetails = giftDetailsFor(choices);
   const shownGift = retainedGifts.length === 2 ? retainedGifts[selectedGiftIndex] : completedGift;
-  const giftMatches = !!shownGift && (retainedGifts.length === 2 || (shownGift.selectionKey === selectionKey
+  const giftMatches = !!shownGift && (deliveryStep === 'result' || retainedGifts.length === 2 || (shownGift.selectionKey === selectionKey
     && shownGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling)));
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
   const retainedGiftExportPending = Object.values(preparingRetainedGifts).some(Boolean);
@@ -516,6 +518,65 @@ export default function SantaMessageWorkshop() {
     setStageIndex(index);
   };
 
+  const keepsakes = <>
+    {deliveryStep === 'result' && retainedGifts.length === 2 && <div className="smw-gift-selector" role="group" aria-label="Choose completed message gifts">
+      {retainedGifts.map((gift, index) => <button type="button" key={gift.revision}
+        aria-pressed={selectedGiftIndex === index}
+        aria-label={`${index === 0 ? '1st' : '2nd'} message gifts for ${gift.writtenName}`}
+        disabled={Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending}
+        onClick={() => setSelectedGiftIndex(index)}>{index === 0 ? '1st' : '2nd'}</button>)}
+      <p role="status">Gifts for {shownGift.writtenName}</p>
+    </div>}
+    {deliveryStep !== 'scene' && (shownGift || (destinationValid && regionalEditorial.ready) ? <WorkshopNameSpelling
+      editorOnly={deliveryStep === 'review'}
+      collapsible={deliveryStep === 'result'}
+      key={retainedGifts.length === 2 ? shownGift.revision : chosenName?.name}
+      recordedName={giftMatches ? shownGift.record.name : chosenName?.name || ''}
+      recordingId={giftMatches ? shownGift.record.id : selectedName?.id ?? ''}
+      spelling={giftMatches ? shownGift.writtenName : nameSpelling}
+      letterVariation={giftMatches ? shownGift.variation : letterVariation}
+      giftDetails={giftMatches ? shownGift.details : giftDetails}
+      completedGift={shownGift}
+      requestedGifts={requestedGifts[shownGift?.revision] || {}}
+      onDownloadRequested={kind => {
+        if (!shownGift) return;
+        setRequestedGifts(current => ({ ...current, [shownGift.revision]: {
+          ...current[shownGift.revision], [kind]: true,
+        } }));
+      }}
+      onGiftPreparing={(kind, pending) => setPreparingGifts(current => current[kind] === pending
+        ? current : { ...current, [kind]: pending })}
+      nameReadOnly={nameReadOnly}
+      downloadReady={giftMatches}
+      downloadNotice={giftNotice}
+      onChange={spelling => {
+        if (!nameReadOnly) setNameSpelling(spelling);
+      }}
+    /> : destinationValid ? <div className="smw-stage-note" role="status">
+      {regionalEditorial.failed ? <>Santa’s local letter story could not be loaded.{' '}
+        <button type="button" className="smw-change" onClick={regionalEditorial.retry}>Try again</button>
+      </> : 'Santa is finding the local story for your letter…'}
+    </div> : <p className="smw-stage-note" role="status">Choose a destination to continue.</p>)}
+    {deliveryStep === 'result' && retainedGifts[0] && ((!completedGift && retainedGifts.length === 1) || retainedGiftExportPending)
+      && <details className="smw-retained-gifts">
+        <summary>First message gifts for {retainedGifts[0].writtenName}</summary>
+        <StudioKeepsakePreview
+          name={retainedGifts[0].writtenName} details={retainedGifts[0].details}
+          variation={retainedGifts[0].variation} giftRevision={retainedGifts[0].revision}
+          downloadReady
+          requestedGifts={requestedGifts[retainedGifts[0].revision] || {}}
+          onDownloadRequested={kind => {
+            const revision = retainedGifts[0].revision;
+            setRequestedGifts(current => ({ ...current, [revision]: {
+              ...current[revision], [kind]: true,
+            } }));
+          }}
+          onGiftPreparing={(kind, pending) => setPreparingRetainedGifts(current =>
+            current[kind] === pending ? current : { ...current, [kind]: pending })}
+        />
+      </details>}
+  </>;
+
   return (
     <main className="smw-page" ref={pageRef}
       onKeyDownCapture={() => { keyboardFocus.current = true; }}
@@ -563,40 +624,28 @@ export default function SantaMessageWorkshop() {
               </h2>
             </div>
             <span className="smw-step-count" hidden={canContinue} aria-live="polite">
-              {isReview ? `Step ${deliveryStep === 'review' ? stages.length + 1 : stages.length + 2} of ${stages.length + 2}` : `Step ${stageIndex + 1} of ${stages.length}`}
+              {`Step ${currentStep} of ${progressLabels.length}`}
             </span>
             {canContinue && <button className="smw-header-continue" type="button" onClick={continueToNext}
               aria-label={editing ? 'Return to review from top' : stageIndex === stages.length - 1 ? 'Continue to review' : 'Continue to next step'}>
               {editing ? 'Return to review' : 'Continue'} <span aria-hidden="true">→</span>
             </button>}
           </div>
-          {deliveryStep === 'review' && <>
-          <div className="smw-progress" role="progressbar" aria-valuemin="1" aria-valuemax={stages.length}
-            aria-valuenow={isReview ? stages.length : stageIndex + 1}
-            aria-label={isReview ? 'Workshop progress: all choices complete; review your message' : `Workshop progress: step ${stageIndex + 1} of ${stages.length}`}>
-            {stages.map((item, index) => (
-              <span
-                key={item.key}
-                className={`smw-progress-segment${index <= stageIndex ? ' is-complete' : ''}`}
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-          <ol className="smw-step-labels" aria-hidden="true">
-            {stages.map((item, index) => (
-              <li key={item.key} className={index === stageIndex ? 'is-current' : ''}>{item.label}</li>
-            ))}
-          </ol>
+          {deliveryStep !== 'result' && <>
+            <div className="smw-progress" role="progressbar" aria-valuemin="1" aria-valuemax={progressLabels.length}
+              aria-valuenow={currentStep} aria-label="Workshop progress"
+              aria-valuetext={`Step ${currentStep} of ${progressLabels.length} · ${progressLabels[currentStep - 1]}`}>
+              {progressLabels.map((label, index) => (
+                <span key={label} className={`smw-progress-segment${index < currentStep ? ' is-complete' : ''}`}
+                  aria-hidden="true" />
+              ))}
+            </div>
+            <ol className="smw-step-labels" aria-hidden="true">
+              {progressLabels.map((label, index) => (
+                <li key={label} className={index === currentStep - 1 ? 'is-current' : ''}>{label}</li>
+              ))}
+            </ol>
           </>}
-          {generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
-            {generation.checking ? 'Checking your remaining creations…' : generation.error
-              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
-              : <>{generation.state.remaining} of 2 creations remaining.
-                {generation.state.pending && ' A message is being prepared.'}
-                {generation.state.remaining === 0 && ' Both creations have been used.'}
-                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
-                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
-          </p>}
           {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
             <strong>ADMIN — Two-message test complete</strong>
             <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
@@ -648,6 +697,7 @@ export default function SantaMessageWorkshop() {
                 <p className="smw-audio-disclaimer">{choices.name} — locked</p>
               ) : (
                 <div className="smw-name-preview-layout">
+                  <h3 className="smw-journey-heading">Your journey begins</h3>
                   <WorkshopNamePicker
                     initialName={nameResolution.touched ? '' : initialRecipient}
                     selected={chosenName}
@@ -794,7 +844,6 @@ export default function SantaMessageWorkshop() {
           ) : (
             <div className="smw-review" key="review">
               {deliveryStep === 'review' && <>
-              <p className="smw-review-description">Confirm your selections. Modify any if needed.</p>
               <dl className="smw-summary">
                 {reviewFields.map(item => (
                   <div className="smw-summary-row" key={item.key}>
@@ -839,66 +888,10 @@ export default function SantaMessageWorkshop() {
               </div>}
               </>}
               <div ref={setDeliveryTarget} className="smw-delivery-slot" />
-              {deliveryStep === 'result' && retainedGifts.length === 2 && <div className="smw-gift-selector" role="group" aria-label="Choose completed message gifts">
-                {retainedGifts.map((gift, index) => <button type="button" key={gift.revision}
-                  aria-pressed={selectedGiftIndex === index}
-                  aria-label={`${index === 0 ? '1st' : '2nd'} message gifts for ${gift.writtenName}`}
-                  disabled={Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending}
-                  onClick={() => setSelectedGiftIndex(index)}>{index === 0 ? '1st' : '2nd'}</button>)}
-                <p role="status">Gifts for {shownGift.writtenName}</p>
-              </div>}
-              {deliveryStep !== 'scene' && (shownGift || (destinationValid && regionalEditorial.ready) ? <WorkshopNameSpelling
-                editorOnly={deliveryStep === 'review'}
-                key={retainedGifts.length === 2 ? shownGift.revision : chosenName?.name}
-                recordedName={giftMatches ? shownGift.record.name : chosenName?.name || ''}
-                recordingId={giftMatches ? shownGift.record.id : selectedName?.id ?? ''}
-                spelling={giftMatches ? shownGift.writtenName : nameSpelling}
-                letterVariation={giftMatches ? shownGift.variation : letterVariation}
-                giftDetails={giftMatches ? shownGift.details : giftDetails}
-                completedGift={shownGift}
-                requestedGifts={requestedGifts[shownGift?.revision] || {}}
-                onDownloadRequested={kind => {
-                  if (!shownGift) return;
-                  setRequestedGifts(current => ({ ...current, [shownGift.revision]: {
-                    ...current[shownGift.revision], [kind]: true,
-                  } }));
-                }}
-                onGiftPreparing={(kind, pending) => setPreparingGifts(current => current[kind] === pending
-                  ? current : { ...current, [kind]: pending })}
-                nameReadOnly={nameReadOnly}
-                messageActionRef={setReviewMessageTarget}
-                downloadReady={giftMatches}
-                downloadNotice={giftNotice}
-                onChange={spelling => {
-                  if (nameReadOnly) return;
-                  setNameSpelling(spelling);
-                }}
-              /> : destinationValid ? <div className="smw-stage-note" role="status">
-                {regionalEditorial.failed ? <>Santa’s local letter story could not be loaded.{' '}
-                  <button type="button" className="smw-change" onClick={regionalEditorial.retry}>Try again</button>
-                </> : 'Santa is finding the local story for your letter…'}
-              </div> : <p className="smw-stage-note" role="status">Choose a destination to continue.</p>)}
-              {deliveryStep === 'result' && retainedGifts[0] && ((!completedGift && retainedGifts.length === 1) || retainedGiftExportPending)
-                && <details className="smw-retained-gifts">
-                  <summary>First message gifts for {retainedGifts[0].writtenName}</summary>
-                  <StudioKeepsakePreview
-                    name={retainedGifts[0].writtenName} details={retainedGifts[0].details}
-                    variation={retainedGifts[0].variation} giftRevision={retainedGifts[0].revision}
-                    downloadReady
-                    requestedGifts={requestedGifts[retainedGifts[0].revision] || {}}
-                    onDownloadRequested={kind => {
-                      const revision = retainedGifts[0].revision;
-                      setRequestedGifts(current => ({ ...current, [revision]: {
-                        ...current[revision], [kind]: true,
-                      } }));
-                    }}
-                    onGiftPreparing={(kind, pending) => setPreparingRetainedGifts(current =>
-                      current[kind] === pending ? current : { ...current, [kind]: pending })}
-                  />
-                </details>}
             </div>
           )}
-              <div className="smw-actions smw-actions--review" hidden={!isReview}>
+              <div className={`smw-actions smw-actions--review${deliveryStep === 'review' ? ' smw-review-footer' : ''}`} hidden={!isReview}>
+                {isReview && deliveryStep === 'review' && keepsakes}
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
                   giftExportPending={giftExportPending}
@@ -915,14 +908,13 @@ export default function SantaMessageWorkshop() {
                   }}
                   giftsRequested={retainedGifts.every(gift =>
                     ['certificate', 'letter', 'picture'].every(kind => requestedGifts[gift.revision]?.[kind]))}
+                  keepsakes={deliveryStep === 'result' ? keepsakes : null}
                   giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
                   deliveryStep={deliveryStep} onDeliveryStep={setDeliveryStep}
-                  showReadyAction={nameReadOnly}
-                  reviewMessageTarget={reviewMessageTarget}
                   deliveryTarget={deliveryTarget}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
                   onCorrection={() => setCorrection(true)} visible={isReview}
-                  record={selectedName} choices={choices} spelling={nameSpelling}
+                  record={selectedName} choices={choices} spelling={nameSpelling} ageLabel={selectedAge?.label}
                   onPhaseChange={setAudioPhase}
                   onReady={message => {
                     setNameReadOnly(true);
@@ -943,7 +935,7 @@ export default function SantaMessageWorkshop() {
                     };
                     // Own the successful recipient's exact wording/artwork, not
                     // whichever gift preview or unfinished draft is active later.
-                    gift.picture = '/images/santa-nice-list.jpg';
+                    gift.picture = STUDIO_GIFT_PICTURE;
                     gift.letter = createStudioLetter(gift.writtenName, () => 0.5, gift.details, gift.variation);
                     const snapshot = structuredClone(gift);
                     setCompletedGift(snapshot);
@@ -969,6 +961,15 @@ export default function SantaMessageWorkshop() {
               {workshopSoundNotice}
             </p>
           )}
+          {deliveryStep === 'result' && generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
+            {generation.checking ? 'Checking your remaining creations…' : generation.error
+              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
+              : <>{generation.state.remaining} of 2 creations remaining.
+                {generation.state.pending && ' A message is being prepared.'}
+                {generation.state.remaining === 0 && ' Both creations have been used.'}
+                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
+                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
+          </p>}
         </section>
       </div>
     </main>

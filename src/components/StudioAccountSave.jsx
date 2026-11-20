@@ -22,6 +22,6 @@ export default function StudioAccountSave({result}) {
    setState('saved');
   }catch{setState('error')}
  }
- if(!result.archiveId)return <p><Link className="studio-account-link" to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to save future messages in your account</Link>. Download this recording and its gifts before leaving.</p>;
+ if(!result.archiveId)return <p><Link className="studio-account-link" to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to save future messages in your account</Link>.</p>;
  return <div><p>Find your message in <Link className="studio-account-link" to="/my-santa-messages">My Santa Messages</Link>.</p>{state!=='saved'&&<button type="button" disabled={state==='saving'} onClick={save}>{state==='saving'?'Saving your video and gifts…':'Save video, certificate, letter and picture to my account'}</button>}<p role="status">{state==='saved'?'Your video and all three personalised gifts are saved.':state==='error'?'Some files could not be saved. Keep this tab open and retry, or download them now.':'Keep this tab open while your video and gifts are saved.'}</p></div>;
 }

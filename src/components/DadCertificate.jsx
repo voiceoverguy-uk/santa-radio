@@ -21,6 +21,10 @@ export default function DadCertificate({name = 'Dad', downloadable = false}) {
       ctx.drawImage(image, 0, 0);
       if (style === 'name') {
         await document.fonts.load('700 200px "DadHandwriting"');
+        ctx.font = `700 ${canvas.height * .06}px "DadHandwriting"`;
+        ctx.fillStyle = '#18563d';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Dad', canvas.width * .766, canvas.height * .17);
         let size = canvas.height * .26;
         ctx.font = `700 ${size}px "DadHandwriting"`;
         while (ctx.measureText(recipient).width > canvas.width * .44 && size > 20) {

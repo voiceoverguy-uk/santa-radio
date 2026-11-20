@@ -13,7 +13,7 @@ import { STUDIO_RUNNER_COSTUMES, selectStudioRunnerCostume } from '../src/lib/st
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
-const bundleGuidance = 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.';
+const bundleGuidance = 'Download before leaving and include your video, certificate, personalised letter and Santa picture.';
 const preparationMessages = [
   'Santa is recording. Give him a moment — the elves keep distracting him.',
   'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
@@ -901,7 +901,7 @@ for (const width of [390, 1365]) {
     const allowance = structuredClone(fixture.state);
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 8');
     await expect(page.getByRole('heading', { name: 'What name should Santa say?', exact: true })).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
     for (let step = 1; step <= 6; step++) {
@@ -915,7 +915,7 @@ for (const width of [390, 1365]) {
     await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Fresh written name');
     await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
     await expect(download).toHaveAttribute('href', previousUrl);
-    await expect(page.getByRole('heading', { name: 'First Santa message for Dixie', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your message from Santa to Dixie', exact: true })).toBeVisible();
     for (const button of await page.locator('.smw-written-name .studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.state).toEqual(allowance);
     expect(fixture.posts).toHaveLength(1);
@@ -1180,7 +1180,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'Playback and Download Audio use the same complete newly rendered recording');
   await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
-  await expect(result.getByRole('heading', { name: 'First Santa message for Dixie' })).toBeVisible();
+  await expect(result.getByRole('heading', { name: 'Your message from Santa to Dixie' })).toBeVisible();
   await expect(player).toHaveAttribute('src', url);
   await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   const punctuationDownload = page.waitForEvent('download');
@@ -1261,7 +1261,7 @@ test('finished Studio message download is valid and matches the playable recordi
   const download = result.getByRole('link', { name: /Download Audio/ });
   await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
-  await expect(result.getByRole('heading', { name: 'First Santa message for D’Arcy' })).toBeVisible();
+  await expect(result.getByRole('heading', { name: 'Your message from Santa to D’Arcy' })).toBeVisible();
   await expect(player).toHaveAttribute('src', recordingUrl);
   await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(download).toHaveAttribute('download', 'Santa-message-for-D’Arcy.mp3');

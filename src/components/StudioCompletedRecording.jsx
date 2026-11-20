@@ -9,7 +9,7 @@ import { createStudioVideo, createStudioVideoPoster, studioVideoFilename, STUDIO
 import './SantaFreeVideo.css';
 
 // The captured recording and gift details own the name and age, never the next draft.
-export default function StudioCompletedRecording({ result, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested, onVideoReady }) {
+export default function StudioCompletedRecording({ result, keepsakes, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested, onVideoReady }) {
   const radio = useRadio();
   const section = useRef(null), resume = useRef(null), playingVideo = useRef(null);
   const callbacks = useRef({ onVideoReady, onBundlePreparing });
@@ -58,11 +58,11 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     section.current = node;
     if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
   }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
-    <h4>{ordinal === 1 ? 'First' : 'Second'} Santa message for {result.writtenName}</h4>
+    <h4>Your message from Santa to {result.writtenName}</h4>
     {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</div>}
     {error && <div className="smw-finished-preparation" role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
-      <SantaVideoPlayer poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
+      <SantaVideoPlayer festiveControls="kids" poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
         playingVideo.current = event.currentTarget;
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
         resume.current = radio?.pauseForMessage?.() || null;
@@ -81,6 +81,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
         </div>
       </div>
       <div className="smw-finished-account"><StudioAccountSave result={result} /></div>
+      {keepsakes && <div className="smw-finished-keepsakes">{keepsakes}</div>}
     </>}
   </section>;
 }

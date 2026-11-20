@@ -12,7 +12,7 @@ import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
 export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
-  completedGift, nameReadOnly = false, downloadReady = false, downloadNotice, messageActionRef,
+  completedGift, nameReadOnly = false, downloadReady = false, downloadNotice, collapsible = false,
   onDownloadRequested, onGiftPreparing, requestedGifts, editorOnly = false }) {
   const fieldId = useId();
   const inputRef = useRef(null);
@@ -160,15 +160,13 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           </form>
         )}
       </div>
-      <div className="smw-review-create-action" ref={messageActionRef} />
     </div>
   );
 
-  return (
-    <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
-      {editorOnly ? editor : <div className="smw-studio-preview" aria-label="Studio keepsake previews">
+  const keepsakePreviews = !editorOnly && <div className="smw-studio-preview" aria-label="Studio keepsake previews">
         <StudioKeepsakePreview
           name={previewName}
+          picture={completedGift?.picture}
           details={giftDetails || {}}
           variation={letterVariation}
           downloadReady={downloadReady && !editing}
@@ -180,9 +178,17 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           requestedGifts={requestedGifts}
           onDownloadRequested={onDownloadRequested} onGiftPreparing={onGiftPreparing}
         >
-          {editor}
+          {!collapsible && editor}
         </StudioKeepsakePreview>
-      </div>}
+    </div>;
+
+  return (
+    <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
+      {editorOnly && editor}
+      {collapsible ? <details className="smw-gift-reveal">
+        <summary>View your Santa gifts</summary>
+        {keepsakePreviews}
+      </details> : keepsakePreviews}
 
       {canSuggestSpelling && (
         <WorkshopSpellingSuggestion

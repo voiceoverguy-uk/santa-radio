@@ -68,7 +68,7 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
     </div>
     <p id={id} role={feedback ? undefined : 'status'}>
       {result.gift
-        ? 'Download All includes this MP4, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your video isn’t saved once you leave.'
+        ? 'Download before leaving and include your video, certificate, personalised letter and Santa picture.'
         : 'Get them quickly, as your video isn’t saved once you leave.'}
     </p>
     {feedback && <p id={`${id}-feedback`} role={status === 'error' ? 'alert' : 'status'}>{feedback}</p>}

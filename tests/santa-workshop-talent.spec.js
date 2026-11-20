@@ -44,7 +44,7 @@ async function openTalent(page, catalogue = workshopCatalogueFixture) {
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
   await next(page).click();
   await expect(page.getByRole('heading', { name: 'What are they especially good at?', exact: true })).toBeFocused();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 8');
 }
 async function finish(page) {
   const expectedSelections = ['Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest'];

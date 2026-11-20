@@ -343,7 +343,7 @@
   left: var(--letter-inset, 6%);
   z-index: 1;
   min-width: 0;
-  color: #263e32;
+  color: #000;
   font-family: Georgia, "Times New Roman", serif;
   /* Scale with the A4 sheet, not its potentially narrow scroll viewport.
      Keep the approved body size and the shared preview/PDF leading in sync. */

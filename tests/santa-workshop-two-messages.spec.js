@@ -14,7 +14,7 @@ const records = [
 const players = page => page.locator('.smw-message-finished audio');
 const gifts = page => page.locator('.smw-written-name .studio-gift-download button');
 const letter = page => page.locator('.smw-written-name .studio-gifts__preview-stack .studio-gifts__sr');
-const bundleGuidance = 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.';
+const bundleGuidance = 'Download before leaving and include your video, certificate, personalised letter and Santa picture.';
 
 async function checkDownloadGuidance(result, feedback = false) {
   const guidance = result.locator('.smw-bundle-download p').first();
@@ -154,7 +154,7 @@ for (const width of [320, 1365]) {
     await confirmMessage(page, 'Retry message');
     await expect(players(page)).toHaveCount(2);
     await expect(page.locator('.smw-message-finished h4')).toHaveText([
-      'Second Santa message for Arabella May', 'First Santa message for Dixie Rose',
+      'Your message from Santa to Arabella May', 'Your message from Santa to Dixie Rose',
     ]);
     const urls = await players(page).evaluateAll(nodes => nodes.map(node => node.src));
     expect(urls[1]).toBe(firstUrl);
@@ -290,12 +290,12 @@ test('unlimited visitor must confirm discarding both results; exit never restore
   }, url)).toBe(false);
   await compose(page); await confirmMessage(page);
   await expect(players(page)).toHaveCount(1);
-  await expect(page.locator('.smw-message-finished h4')).toHaveText('First Santa message for Dixie Rose');
+  await expect(page.locator('.smw-message-finished h4')).toHaveText('Your message from Santa to Dixie Rose');
   await page.getByRole('button', { name: 'Start Again', exact: true }).click();
   await compose(page, true); await confirmMessage(page);
   await expect(players(page)).toHaveCount(2);
   await expect(page.locator('.smw-message-finished h4')).toHaveText([
-    'Second Santa message for Arabella May', 'First Santa message for Dixie Rose',
+    'Your message from Santa to Arabella May', 'Your message from Santa to Dixie Rose',
   ]);
   expect(fixture.posts).toHaveLength(4);
   const freshUrls = await players(page).evaluateAll(nodes => nodes.map(node => node.src));

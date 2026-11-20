@@ -21,8 +21,8 @@ function trapDialogFocus(event) {
 }
 
 export default function WorkshopMessageAudio({
-  record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  reviewMessageTarget = null, deliveryTarget = null, onStartAgain, showReadyAction = true,
+  record, choices, spelling, ageLabel, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
+  deliveryTarget = null, onStartAgain, keepsakes,
   giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested, deliveryStep, onDeliveryStep,
 }) {
   const accessKind = useContext(StudioAccessContext);
@@ -273,7 +273,8 @@ export default function WorkshopMessageAudio({
     setResults(next);
     onDeliveryStep('result');
   };
-  const startAction = () => <button className="smw-button smw-button-back" type="button"
+  const finalMessageAvailable = deliveryStep === 'result' && limited && status.remaining === 1;
+  const startAction = () => <button className={`smw-button ${finalMessageAvailable ? 'smw-button-next' : 'smw-button-back'}`} type="button"
     aria-disabled={exhausted || undefined}
     aria-haspopup={exhausted || url ? 'dialog' : undefined}
     disabled={busy || giftExportPending || !!status?.pending
@@ -291,7 +292,8 @@ export default function WorkshopMessageAudio({
          if (!results.length) clearRecording();
       }
     }}>
-    <span aria-hidden="true">←</span> Start Again
+    {finalMessageAvailable ? <>Click to make your final message <span aria-hidden="true">→</span></>
+      : <><span aria-hidden="true">←</span> Start Again</>}
   </button>;
   const voucherNotice = voucher?.unlimited && <p className="smw-voucher-entitlement">
     Voucher access: you can create messages while your access remains valid, subject to request limits.
@@ -311,8 +313,8 @@ export default function WorkshopMessageAudio({
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
     {deliveryStep === 'scene' && <>
-      {phase === 'ready' && <p role="status">… almost ready…</p>}
-      <StudioScenePicker selected={scene} onSelect={setScene} />
+      <StudioScenePicker selected={scene} onSelect={setScene}
+        recipientCaption={writtenName && ageLabel ? `${writtenName} - aged ${ageLabel.replace(/\s+old$/i, '')}` : writtenName} />
       <div className="smw-actions">
         {!busy && phase !== 'ready' && messageAction()}
         <button type="button" className="smw-button smw-button-next"
@@ -321,6 +323,7 @@ export default function WorkshopMessageAudio({
     </>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
+      keepsakes={index === results.length - 1 ? keepsakes : null}
       ordinal={index + 1} visible={visible}
       onVideoReady={videoBlob => {
         const next = resultsRef.current.map(item => item.url === result.url ? { ...item, videoBlob } : item);
@@ -336,8 +339,6 @@ export default function WorkshopMessageAudio({
     </div>
   );
   return <>
-    {deliveryStep === 'result' && reviewMessageTarget && url && showReadyAction &&
-      createPortal(<button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>, reviewMessageTarget)}
     {deliveryStep === 'review' && startAction()}
     {deliveryStep === 'review' && messageAction()}
     {deliveryStep === 'review' && voucherNotice}

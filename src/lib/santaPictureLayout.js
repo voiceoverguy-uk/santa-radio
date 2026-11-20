@@ -1,7 +1,9 @@
 import { recipientCanvasFont, recipientDisplayName } from './giftFonts.js';
 
 // One artwork coordinate system for the review and full-resolution download.
+export const STUDIO_GIFT_PICTURE = '/images/santa-gang-nice-list.webp';
 export const santaPictureFrames = {
+  [STUDIO_GIFT_PICTURE]: { x: 273, y: 585, width: 990, height: 137, artworkHeight: 864 },
   '/images/santa-nice-list.jpg': { x: 822, y: 502, width: 507, height: 307 },
   '/images/santa-nice-list-2.jpg': { x: 829, y: 440, width: 538, height: 359 },
   '/images/santa-nice-list-3.jpg': { x: 822, y: 471, width: 491, height: 328 },

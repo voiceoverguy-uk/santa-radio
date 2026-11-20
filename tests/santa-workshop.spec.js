@@ -193,7 +193,7 @@ async function openAgeStage(page) {
   await open(page);
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 8');
 }
 
 test('Studio confirms its summary and opens six picture choices while one recording prepares', async ({ page }) => {
@@ -337,7 +337,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     await expect(badge).toHaveText('Step 7 of 8');
     await expect(badge).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Review Time', exact: true })).toHaveCount(1);
-    await expect(page.locator('.smw-review-description')).toHaveText('Confirm your selections. Modify any if needed.');
+    await expect(page.getByText('Confirm your selections. Modify any if needed.', { exact: true })).toHaveCount(0);
     await expect(page.locator('.smw-builder')).not.toContainText('A little Christmas magic, all together');
     await expect(page.locator('.smw-builder')).not.toContainText('Your Christmas creation');
     const reviewHeader = await page.locator('.smw-builder-head').boundingBox();
@@ -410,9 +410,9 @@ for (const width of [320, 390, 430]) {
     // Returning from another page must use the same starting position.
     await browseToAge(page, '9 years old');
     await page.locator('.smw-button-next:visible').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 8');
     await page.locator('.smw-button-back:visible').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 8');
     await expectAgePosition();
   });
 }
@@ -627,7 +627,7 @@ for (const width of [390, 1440]) {
       await expect(suffix).toHaveCount(0);
       await page.getByRole('listbox').press('Home');
       if (step === 3) {
-        await expect(quote).toContainText('… Also trying especially hard at… Teamwork');
+        await expect(quote).toContainText('… also trying hard at… Teamwork');
         await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
         await page.getByRole('listbox').press('ArrowDown');
         await expect(suffix).toHaveText('Playing a musical instrument');
@@ -880,7 +880,7 @@ for (const viewport of [
     await page.locator('.smw-stage .smw-button-next').click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
     const card = page.getByRole('complementary', { name: 'Santa will say:', exact: true });
-    await expect(card).toContainText("… Also trying especially hard at…");
+    await expect(card).toContainText("… also trying hard at…");
     const wordLayout = await card.locator('.smw-activity-wording-quote').evaluate(node => {
       const style = getComputedStyle(node);
       const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
@@ -1208,7 +1208,7 @@ for (const width of [390, 1440]) {
     const wheel = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
     await expect(wheel.getByRole('option', { name: 'Teamwork', exact: true })).toHaveAttribute('aria-selected', 'true');
     const quote = page.locator('.smw-activity-wording-quote');
-    const speech = "… Also trying especially hard at…";
+    const speech = "… also trying hard at…";
     await expect(quote).toHaveText(`${speech} Teamwork`);
     await wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
     await expect(quote).toHaveText(`${speech} Playing a musical instrument`);
@@ -1233,7 +1233,7 @@ for (const width of [320, 390, 1440]) {
     await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
     const quote = page.locator('.smw-activity-wording-quote');
     const selected = quote.locator('.smw-wording-selection');
-    const introduction = "… Also trying especially hard at…";
+    const introduction = "… also trying hard at…";
     for (const [category, activity] of [['Trying hard at', 'Teamwork'], ['More Sports', 'Swimming']]) {
       await page.getByRole('button', { name: category, exact: true }).click();
       await expect(quote).toHaveText(introduction);

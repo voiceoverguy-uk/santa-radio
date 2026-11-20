@@ -66,6 +66,8 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-preview-note p { margin: 4px 0 0; color: #e3e5d8; font-size: .83rem; line-height: 1.55; }
 
 .smw-builder {
+  display: flex;
+  flex-direction: column;
   min-height: calc(100svh - var(--smw-header-clearance, 108px) - 24px);
   padding: 25px clamp(19px, 4vw, 42px) 29px;
   border: clamp(7px, 1vw, 12px) solid transparent;
@@ -79,6 +81,13 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
     inset 0 0 0 4px #f2bb51,
     0 0 0 1px #8b450d,
     0 14px 42px #06150f4a;
+}
+.smw-builder > .smw-allowance { flex: none; }
+.smw-builder > .smw-remaining { margin: auto 0 0; padding-top: 16px; }
+.smw-journey-heading {
+  margin: 0 0 16px;
+  color: var(--smw-gold-light);
+  font: 700 clamp(1.65rem, 3.6vw, 2.75rem)/1.2 'Dancing Script', Georgia, serif;
 }
 .smw-builder-head {
   display: grid;
@@ -393,12 +402,6 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-retained-gifts summary { min-height: 44px; align-content: center; color: var(--smw-gold-light); cursor: pointer; }
 .smw-retained-gifts summary:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; }
 .smw-review-heading { margin-bottom: 20px; }
-.smw-review-description {
-  margin: 0 0 16px;
-  color: #c4d0c3;
-  font-size: .88rem;
-  line-height: 1.55;
-}
 .smw-summary { border-top: 1px solid #d4af3738; }
 .smw-summary-row {
   display: flex;
@@ -659,41 +662,32 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   cursor: pointer;
 }
 .smw-scene-options button[aria-pressed=true] {
-  border-color: #ff4050;
-  box-shadow: 0 0 0 2px #e52337;
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px var(--red);
 }
 .smw-scene-picture {
   display: block;
   position: relative;
-  container-type: inline-size;
+  aspect-ratio: 16 / 9;
+  background-size: 100% 100%;
+  overflow: hidden;
+  border-radius: 5px;
 }
-.smw-scene-options img {
+.smw-scene-art {
   display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 64 / 27;
-  object-fit: cover;
-  border-radius: 5px 5px 0 0;
-}
-.smw-scene-brand {
   position: absolute;
-  inset: 0 auto auto 0;
-  display: grid;
-  padding: 1.25cqi 6cqi 1.25cqi 2cqi;
-  background: linear-gradient(90deg, #071b12f2, #071b1200);
-  color: #f4d68d;
-  font: clamp(8px, 2.3cqi, 15px)/1.15 Georgia, serif;
-  text-align: left;
 }
-.smw-scene-brand strong { font-size: 1.38em; }
 .smw-scene-caption {
+  position: absolute;
+  inset: 73% 12% 3%;
   display: grid;
   place-items: center;
-  min-height: 38px;
-  padding: 5px 4px;
-  border-top: 1px solid #d6ae61;
-  border-radius: 0 0 5px 5px;
-  background: linear-gradient(#19392b, #0b241a);
+  color: #fff2c7;
+  font: 600 clamp(.66rem, 1.5vw, 1.12rem)/1.12 'Cinzel', Georgia, serif;
+  text-align: center;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 3px #071710;
 }
 @media (max-width: 620px) {
   .smw-scene-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -703,8 +697,8 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   .smw-scene-options button[aria-pressed=true] { animation: smw-scene-glow 2s ease-in-out infinite; }
 }
 @keyframes smw-scene-glow {
-  0%, 100% { box-shadow: 0 0 0 2px #e52337, 0 0 8px #e5233766; }
-  50% { box-shadow: 0 0 0 4px #ff6572, 0 0 20px 2px #ff405099; }
+  0%, 100% { box-shadow: 0 0 0 2px var(--red), 0 0 8px color-mix(in srgb, var(--red) 55%, transparent); }
+  50% { box-shadow: 0 0 0 4px var(--red), 0 0 20px 2px color-mix(in srgb, var(--red) 80%, transparent); }
 }
 
 .smw-scene-dialog {
@@ -728,16 +722,13 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 }
 .smw-scene-dialog__header h3 { margin: 0; }
 .smw-scene-dialog__picture { position: relative; }
-.smw-scene-dialog__picture img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid #b99b4f;
-  border-radius: 6px;
+.smw-scene-dialog__picture .smw-scene-caption {
+  inset-block: 72% 2%;
+  font-size: clamp(.85rem, 3vw, 1.85rem);
 }
 .smw-scene-dialog__arrow {
   position: absolute;
-  top: 50%;
+  top: 37%;
   left: 8px;
   transform: translateY(-50%);
   display: grid;
@@ -757,7 +748,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-finished-logo { display: none; }
 @media (min-width: 761px) {
   .smw-finished-downloads {
-    align-self: end;
+    align-self: center;
     display: grid;
     justify-items: end;
     gap: clamp(12px, 2vw, 24px);
@@ -766,7 +757,50 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   .smw-finished-logo {
     display: block;
     justify-self: center;
-    width: min(100%, 230px);
+    width: min(100%, 355px);
     height: auto;
   }
+}
+
+.smw-finished-keepsakes {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border-top: 1px solid #d4af3748;
+  padding-top: 16px;
+}
+.smw-finished-keepsakes .smw-review-create-row { grid-template-columns: minmax(0, 1fr); }
+.smw-finished-keepsakes .studio-gifts {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.smw-gift-reveal { margin-top: 12px; }
+.smw-gift-reveal summary {
+  width: fit-content;
+  padding: 10px 14px;
+  border: 1px solid #d4af376b;
+  border-radius: 9px;
+  color: var(--smw-gold-light);
+  cursor: pointer;
+}
+.smw-gift-reveal[open] > .smw-studio-preview { margin-top: 16px; }
+@media (prefers-reduced-motion: no-preference) {
+  .smw-gift-reveal[open] > .smw-studio-preview { animation: smw-gifts-reveal .3s ease-out both; }
+}
+@keyframes smw-gifts-reveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.smw-review-footer { align-items: end; }
+.smw-review-footer > .smw-written-name {
+  flex: 0 1 19rem;
+  min-width: 0;
+  margin: 0 auto 0 0;
+}
+.smw-review-footer .smw-review-create-row { grid-template-columns: minmax(0, 1fr); margin: 0; }
+.smw-review-footer > .smw-button { align-self: end; width: auto; }
+.smw-review-footer > .smw-button-next { margin-left: 0; }
+@media (max-width: 760px) {
+  .smw-review-footer > .smw-written-name { flex-basis: 100%; }
 }

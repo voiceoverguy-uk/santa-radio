@@ -8,8 +8,8 @@ export default function SantaPictureName({ name, picture, children }) {
   const fit = useGiftNameFit(name, picture, fitSantaPictureName);
   return <span aria-hidden="true" className="studio-santa-picture__name"
     data-fitted={Boolean(fit)} style={{
-      left: `${frame.x / 1536 * 100}%`, top: `${frame.y / 1024 * 100}%`,
-      width: `${frame.width / 1536 * 100}%`, height: `${frame.height / 1024 * 100}%`,
+      left: `${frame.x / 1536 * 100}%`, top: `${frame.y / (frame.artworkHeight || 1024) * 100}%`,
+      width: `${frame.width / 1536 * 100}%`, height: `${frame.height / (frame.artworkHeight || 1024) * 100}%`,
       fontSize: `${(fit?.size || preferredSize) / 1536 * 100}cqw`,
       visibility: fit ? undefined : 'hidden',
     }}>

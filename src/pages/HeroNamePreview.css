@@ -977,3 +977,26 @@
   }
   .hero-name-preview .hero-name-checker h2 { font-size: clamp(1.6rem, 2.2vw, 2rem); }
 }
+
+/* The homepage milestones overlap the hero by 80px (32px on phones). */
+.home-page .hero-name-preview__hero {
+  min-height: 0;
+  padding-bottom: 108px;
+}
+
+@media (min-width: 768px) and (max-width: 1090px) {
+  .home-page .hero-layout:not(:has(.now-playing-artwork)) {
+    grid-template-areas:
+      "intro checker"
+      "description checker"
+      "listening checker";
+  }
+
+  .home-page .hero-name-preview__artwork-slot:not(:has(.now-playing-artwork)) {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-page .hero-name-preview__hero { padding-bottom: 56px; }
+}
