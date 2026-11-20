@@ -535,9 +535,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       {!dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />}
       {dedicatedLayout && <a className="free-bespoke-banner" href="/#bespoke-santa-messages">
-        <img src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1680" height="945" loading="lazy" />
+        <img src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1680" height="945" loading="lazy" />
         <span className="free-bespoke-banner__copy"><span className="free-bespoke-banner__eyebrow">Our bespoke Santa messages</span><strong>More Christmas magic for your little ones… and Dad!</strong><span>Two personalised Kids’ messages with digital gifts, or a NEW message for Dad the whole family can smile at.</span><span className="free-bespoke-banner__cta">Explore the bespoke experience →</span></span>
-        <img src="/images/dad-message-logo-v4.png" alt="NEW Dad’s Message from Santa" width="1680" height="945" loading="lazy" />
+        <img src="/images/dad-message-logo-v4.webp" alt="NEW Dad’s Message from Santa" width="1680" height="945" loading="lazy" />
       </a>}
       {dedicatedLayout ? <SelectedReviewTestimonials /> : <SantaMessageReviews />}
     </div>
