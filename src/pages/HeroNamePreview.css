@@ -94,6 +94,8 @@
   border-radius: 12px;
   background:
     linear-gradient(140deg, #2443333d, transparent 42%),
+    linear-gradient(160deg, #0b241aa6, #0b211bcb),
+    url('/images/bespoke-christmas-wallpaper.webp') center top / 320px auto repeat,
     var(--hero-preview-green);
   box-shadow:
     0 20px 56px #04100d66,
