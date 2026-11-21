@@ -19,7 +19,7 @@
 .smw-scene-options button:focus-visible { outline: 3px solid #fff2c7; outline-offset: 3px; }
 
 @media (min-width: 761px) {
-  .smw-start-artwork .smw-scene-picture { width: 82%; }
+  .smw-start-layout .smw-start-artwork .smw-scene-picture { width: 78%; }
 }
 
 /* Full-height side targets retain the visible circular arrow controls. */
@@ -54,3 +54,8 @@
 .smw-scene-dialog__picture .smw-scene-dialog__arrow:last-child svg { left: auto; right: 8px; }
 .smw-scene-dialog__picture .smw-scene-dialog__arrow:hover svg { background: #9d1020; }
 .smw-scene-dialog__picture .smw-scene-dialog__arrow:focus-visible { outline: 3px solid #fff2c7; outline-offset: -3px; }
+
+/* Keep the action and arrow distinct at both entry points. */
+.smw-page .smw-header-continue { display: inline-flex; align-items: center; justify-content: center; gap: .65em; white-space: nowrap; }
+.smw-page .smw-button > span[aria-hidden="true"] { margin-inline-start: .25em; }
+.smw-start-continue { display: flex; justify-content: flex-end; margin-top: 16px; }

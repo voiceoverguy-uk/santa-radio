@@ -93,7 +93,7 @@ const reviewFields = [
 ];
 
 const stages = reviewFields.filter(({ key }) => key !== 'age');
-const progressLabels = [...stages.map(stage => stage.label), 'Review', 'Confirm'];
+const progressLabels = [...stages.map(stage => stage.label), 'Review', 'Picture'];
 
 const catalogueCategories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const requiredCatalogueCategories = catalogueCategories;
@@ -830,6 +830,12 @@ export default function SantaMessageWorkshop() {
                     onTick={playTick}
                     onSoundInteraction={prepare}
                   />
+                  <div className="smw-start-continue">
+                    <button className="smw-header-continue" type="button" onClick={continueToNext}
+                      disabled={!audioEditingAllowed || !canContinue}>
+                      {editing ? 'Return to review' : 'Continue'} <span aria-hidden="true">→</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <WorkshopSearchableChoices

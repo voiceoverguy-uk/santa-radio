@@ -261,7 +261,7 @@ export default function WorkshopMessageAudio({
   const messageAction = () => (limited && url) ? null : (
     <button className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={create} disabled={disabled}>
-      {deliveryStep === 'scene' ? 'Retry recording' : 'Confirm'} <span aria-hidden="true">→</span>
+      {deliveryStep === 'scene' ? 'Retry recording' : 'Choose picture'} <span aria-hidden="true">→</span>
     </button>
   );
   const finishScene = () => {
@@ -316,10 +316,10 @@ export default function WorkshopMessageAudio({
       {!busy && phase !== 'ready' && <div className="smw-actions">{messageAction()}</div>}
       {reviewActionTarget ? createPortal(
         <button type="button" className="smw-button smw-button-next"
-          disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message →</button>,
+          disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message <span aria-hidden="true">→</span></button>,
         reviewActionTarget
       ) : <button type="button" className="smw-button smw-button-next"
-        disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message →</button>}
+        disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message <span aria-hidden="true">→</span></button>}
     </>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
