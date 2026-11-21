@@ -73,3 +73,7 @@
 .studio-mini-dash__lane::after{content:"";position:absolute;z-index:3;left:0;right:0;bottom:0;height:5px;pointer-events:none;background:radial-gradient(ellipse at 50% 100%,#fff 70%,transparent 74%) 0 0/42px 7px repeat-x}
 .studio-mini-dash__item--snowman{display:flex;align-items:flex-end}
 .studio-mini-dash__item--snowman img{display:block;width:44px;height:auto;transform:translateY(1px)}
+
+.studio-mini-dash__heading{flex-direction:column;align-items:flex-start;gap:4px}
+.studio-mini-dash__heading>span{color:#e6ce86;font-weight:700}
+.studio-mini-dash--finished .studio-mini-dash__collected{font-size:clamp(20px,2.5vw,24px);font-weight:600;line-height:1.4;margin:16px 0}

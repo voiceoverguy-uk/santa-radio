@@ -152,11 +152,11 @@ function SantaDashGame({ onClose, finished }) {
   if (finished) return <section className="studio-mini-dash studio-mini-dash--finished" role="status">
     <img className="studio-mini-dash__reward" src="/images/tracker/mince-pie.png" width="64" height="64" alt=""/>
     <strong>Congratulations!</strong>
-    <p>You collected {score / 10} mince {score === 10 ? 'pie' : 'pies'}!</p>
+    <p className="studio-mini-dash__collected">You collected {score / 10} mince {score === 10 ? 'pie' : 'pies'}!</p>
     <div className="studio-mini-dash__final-score"><span>Your mince pie score</span><b>{score}</b></div>
-    <p>Keep the Christmas magic going — try the full Santa Dash game!</p>
-    <a className="studio-mini-dash__download" href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397" target="_blank" rel="noopener noreferrer">Download the full game <span aria-hidden="true">↗</span><small>For iPhone and iPad · opens in a new tab</small></a>
-    <small>Your Santa video is coming up…</small>
+    
+    <a className="studio-mini-dash__download" href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397" target="_blank" rel="noopener noreferrer">Download the full game <span aria-hidden="true">↗</span></a>
+    
   </section>;
   return <section className="studio-mini-dash" aria-label="Mini Santa Dash while your video is prepared">
     <div className="studio-mini-dash__heading"><strong>Santa Dash Mini</strong><span>Score: {score}</span></div>
