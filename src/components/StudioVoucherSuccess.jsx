@@ -14,7 +14,7 @@ export default function StudioVoucherSuccess({ onContinue }) {
       .catch(() => {});
     return () => controller.abort();
   }, []);
-  return <main className="studio-success">
+  return <main className="studio-success studio-success--voucher">
     <section className="studio-success__card" aria-labelledby="voucher-success-title">
       <img className="studio-success__portrait" src="/images/north-pole-hero.webp" alt="The snowy North Pole village beneath the Northern Lights" />
       <div className="studio-success__content">

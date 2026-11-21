@@ -5,7 +5,7 @@ import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
 import WorkshopNamePreview from './WorkshopNamePreview.jsx';
 import './WorkshopNamePicker.css';
 
-export default function WorkshopNamePicker({ selected, initialName = '', onSelect, resolution, invalid, previewCache, showAvailableCount = false, capitaliseFirstLetter = false }) {
+export default function WorkshopNamePicker({ selected, initialName = '', onSelect, resolution, invalid, previewCache, showAvailableCount = false, capitaliseFirstLetter = false, spellingActionRef = null }) {
   const generatedId = useId();
   const inputId = `smw-name-search-${generatedId}`;
   const listboxId = `${inputId}-results`;

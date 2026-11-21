@@ -18,3 +18,5 @@
 .studio-success__later { display: inline-block; color: var(--gold-light); text-decoration: underline; text-underline-offset: 4px; font-size: .9rem; }
 .studio-success a:focus-visible { outline: 3px solid var(--gold-light); outline-offset: 5px; }
 @media(max-width: 700px) { .studio-success { padding: 100px 14px 40px; } .studio-success__card { grid-template-columns: 1fr; } .studio-success__portrait { height: 220px; object-position: center 35%; } .studio-success__start { width: 100%; } }
+
+.studio-success--voucher .studio-success__card { margin-top: 24px; }
