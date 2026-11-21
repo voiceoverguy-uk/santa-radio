@@ -116,24 +116,24 @@
     },
     {
       "source": {
-        "url": "https://stagcommunications.com/santaradio/names/personalised-message/4th.wav",
-        "sha256": "cab4b0e3ff308e0945b3a1098e83790fbe2048cd4357d5102236f885789d401c",
+        "sha256": "182f022cf761d26dd840758725211034408929f8ee80d8dbe416968dc0e11a40",
         "codec": "pcm_s16le",
-        "sampleRate": 44100,
+        "sampleRate": 48000,
         "channels": 2,
         "bitsPerSample": 16,
-        "frames": 355463,
-        "decodedSeconds": 8.060385487528345,
-        "pcmS32leSha256": "9bc0d0f587406d6e6ab38480e7490a8e70f8db8a0bc8b94e5fac0cda6ceb5085"
+        "frames": 399084,
+        "decodedSeconds": 8.31425,
+        "pcmS32leSha256": "c5578f072d0f7ac8ce9aae9cfa9cf0c06518739519bbc98c83cba41a31301a6d",
+        "file": "4th.wav (user supplied)"
       },
       "comparison": {
-        "status": "changed",
-        "previousPackagedSha256": "32a787b45a66255bab14626301086de37cf1a0fa05d3b185a7256f2ef64f8532",
-        "previousPcmS32leSha256": "d18bc78d7f066aa97d48ab9c601a6dc441fa06d79d0fbfa690223a2062e4b381"
+        "status": "replaced from user-supplied WAV",
+        "comparedAt": "2026-11-21T02:24:54.118Z",
+        "previousPackagedSha256": "af3e980f252a50bb852da2f00660801b4dd863a96a5585b8c9ed3acde1512b92"
       },
       "packaged": {
         "path": "studio/4th.flac",
-        "sha256": "af3e980f252a50bb852da2f00660801b4dd863a96a5585b8c9ed3acde1512b92"
+        "sha256": "a7923ac74e0efa7f7e888e1927af85da6ea1c2afb67237e505894097899ae3ea"
       }
     },
     {

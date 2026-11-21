@@ -196,13 +196,9 @@ export function createStudioMessageHandler({
           await blobLibrary.download(record.file, paths[category], inventory.release, controller.signal);
         } else await download(url, paths[category], controller.signal);
       }
-      let fourth;
-      if (inventory.source === 'blob') {
-        fourth = join(directory, '4th.flac');
-        await blobLibrary.download('4th.wav', fourth, inventory.release, controller.signal);
-      }
+      // Fixed speech uses the packaged, owner-approved recording for every catalogue source.
       stage = 'render';
-      const { audio, clipStarts, clipEnds } = await render({ name, choices: paths, directory, signal: controller.signal, ...(fourth ? { fourth } : {}) });
+      const { audio, clipStarts, clipEnds } = await render({ name, choices: paths, directory, signal: controller.signal });
       controller.signal.throwIfAborted();
       if (!audio?.length || audio.length > 4_400_000) throw new Error('Invalid rendered MP3.');
       // Success boundary: full MP3 prepared and response about to be sent.

@@ -1,4 +1,4 @@
-// Paid exports use a 720p canvas and transparent text strips, never crossfade full images.
+// Paid exports use a 720p canvas, caption strips and a single prepared Nice List reveal.
 export const STUDIO_VIDEO_WIDTH = 1280;
 export const STUDIO_VIDEO_HEIGHT = 720;
 export const STUDIO_VIDEO_FPS = 12;
@@ -55,10 +55,10 @@ export function studioVideoTimeline(result) {
     { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: 3, blink: true },
     ...(nameStart < ageStart ? [{ id: 'name', text: introduction, start: nameStart, end: ageStart }] : []),
     { id: 'age', text: `${introduction}\nAged ${studioAge(result)}`, start: ageStart, end: badgeStart },
-    { id: 'name-badge', text: name, start: badgeStart },
+    { id: 'name-badge', text: name, start: badgeStart, end: approvedStart + CAPTION_FADE },
     ...personalisedCaptions,
     { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 + CAPTION_FADE },
-    { id: 'christmas', text: 'Merry Christmas!', start: approvedStart + 9 },
+    { id: 'christmas', text: name ? `Merry Christmas, ${name}!` : 'Merry Christmas!', start: approvedStart + 9 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
@@ -224,10 +224,35 @@ export function studioTimelineArguments(layers, duration) {
   if (duration > 0) args.push('-t', String(duration));
   return [...args, 'output.mp4'];
 }
+export async function prepareNiceListReveal(result, start) {
+  const [{ exportStudioPicture }, { STUDIO_GIFT_PICTURE }] = await Promise.all([
+    import('./studioGiftExports.js'), import('./santaPictureLayout.js'),
+  ]);
+  const blob = await exportStudioPicture(result.gift?.writtenName || result.writtenName, STUDIO_GIFT_PICTURE);
+  const url = URL.createObjectURL(blob);
+  const picture = new Image();
+  try {
+    picture.src = url;
+    await picture.decode();
+    const scene = STUDIO_SCENE_INSET;
+    const canvas = makeCanvas(STUDIO_VIDEO_WIDTH, scene.height);
+    const context = canvas.getContext('2d');
+    // Cover the old scene and contain the entire gift image without cropping.
+    context.fillStyle = '#10382a';
+    context.fillRect(scene.x, 0, scene.width, scene.height);
+    const scale = Math.min(scene.width / picture.naturalWidth, scene.height / picture.naturalHeight);
+    const width = picture.naturalWidth * scale, height = picture.naturalHeight * scale;
+    context.drawImage(picture, scene.x + (scene.width - width) / 2, (scene.height - height) / 2, width, height);
+    return { id: 'nice-list-picture', start, canvas, y: scene.y };
+  } finally { URL.revokeObjectURL(url); }
+}
+
 export async function prepareStudioVideoFrames(image, result, duration) {
   const { base, layers } = await drawStudioVideoFrames(image, result);
   // Short recordings do not need layers whose cue is beyond the audio.
   const included = layers.filter(layer => !duration || layer.start < duration);
+  const reveal = included.find(layer => layer.id === 'approved');
+  if (reveal) included.push(await prepareNiceListReveal(result, reveal.start));
   const files = [{ name: 'image.png', blob: await png(base) }];
   for (const layer of included) files.push({ name: `${layer.id}.png`, blob: await png(layer.canvas) });
   return { files, args: studioTimelineArguments(included, duration) };

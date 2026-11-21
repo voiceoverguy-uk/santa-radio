@@ -66,3 +66,13 @@ The assets require an updated release before live generation changes. No live
 deployment or customer purchase was made. Previously generated MP3s cannot
 change and must be recreated. Automated decoding/render checks are not listening
 approval; see `docs/studio-source-refresh.md` for verification and release status.
+
+## Owner-supplied fourth connector — 21 November 2026
+
+`4th.flac` now comes from the supplied `Paid Message Elements/4th.wav`,
+converted losslessly without trimming, gain or resampling. This replacement
+is 48,000 Hz stereo, 16-bit, 399,084 frames (8.31425 seconds); the older
+44,100 Hz description above applies to the previous source. Its decoded
+samples match the supplied WAV exactly. `sources.json` records the hashes.
+Both Blob-backed and legacy choice catalogues use this packaged connector,
+so an older Blob library release cannot replace the approved recording.
