@@ -12,7 +12,9 @@ export function expiryFor(now = new Date()) {
 export const assetPath = (id, kind) => `santa-messages/${id}/${kind}.${kind === 'video' ? 'mp4' : kind === 'audio' ? 'mp3' : kind === 'picture' ? 'png' : 'pdf'}`;
 export async function committed(row) {
  const result = await payments().query('SELECT 1 FROM santa_studio_creation_allowances WHERE access_key=$1 AND $2::uuid=ANY(operations)', [digest(`studio-purchase:${row.purchase_id}`), row.operation_id]);
- return result.rowCount === 1;
+ if (result.rowCount === 1) return true;
+ const dad = await payments().query('SELECT 1 FROM santa_dad_creation_allowances WHERE access_key=$1 AND $2::uuid=ANY(operations)', [digest(`dad-purchase:${row.purchase_id}`), row.operation_id]);
+ return dad.rowCount === 1;
 }
 // Store before charging the existing allowance. Visibility is checked against the
 // committed operation, including after an interrupted response or retry.

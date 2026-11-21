@@ -61,7 +61,15 @@ function frames(image,result){
  const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption));
  return {base,layers:[...recipientLayers,...layers]};
 }
-export async function dadPoster(result){const image=new Image();image.src=result.artwork;await image.decode();return frames(image,result).base.toDataURL('image/png');}
+export async function dadPoster(result){
+ const image=new Image();image.src=result.artwork;await image.decode();
+ const base=frames(image,result).base;
+ const name=String(result.writtenName||'Dad');
+ const text=`Santa message for Dad (${name})${result.age ? `\nAged ${result.age}` : ''}`;
+ const caption=drawVideoCaption({id:'poster-recipient',text,start:0});
+ base.getContext('2d').drawImage(caption.canvas,0,caption.y);
+ return base.toDataURL('image/png');
+}
 function createDadVideoVariant(result,options,shareCover=false){return createSantaVideo({...options,onStatus:message=>options?.onStatus?.(message.startsWith('Adding Santa’s voice')?'Hang on! So much to do! Nearly there...':message),audio:result.audioBlob,name:result.writtenName,artwork:result.artwork,prepareFrames:async(image,duration)=>{
  const {base,layers}=frames(image,result),included=layers.filter(l=>l.start<duration&&(!l.end||l.end>l.start));
  const png=c=>new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error('Could not draw captions')),'image/png'));

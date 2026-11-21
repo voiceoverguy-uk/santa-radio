@@ -4,11 +4,15 @@ import http from 'node:http';
 let fileDeletes=0,fileReads=0,grants=0,owner='user-A',expired=false;
 const id='00000000-0000-4000-8000-000000000001';
 const db={query:async(sql,args)=>{
+ if(sql.includes('SELECT 1 FROM santa_dad_live_purchases'))return {rowCount:0};
  if(sql.includes('UPDATE santa_saved_messages'))return {rows:args[1]===owner?[{id}]:[]};
  if(sql.includes('SELECT m.*'))return {rows:args[1]===owner&&!expired?[{id,purchase_id:'paid-A',operation_id:id,assets:{video:'private'}}]:[]};
  if(sql.includes('SELECT purchase_id'))return {rows:args[1]===owner&&args[0]==='paid-A'?[{purchase_id:'paid-A'}]:[]};
  throw new Error('Unexpected database query');
 }};
+mock.module('../server/dad-live-config.js',{namedExports:{liveStudioConfig:()=>({secret:'test'})}});
+mock.module('../server/dad-live-store.js',{namedExports:{emailDigest:()=> 'digest'}});
+mock.module('../server/dad-live-access.js',{namedExports:{livePaidPurchaseId:async()=>false,livePaidSummary:async()=>({remaining:1}),issueLiveAccess:async()=>()=>{}}});
 mock.module('@clerk/express',{namedExports:{clerkMiddleware:()=> (req,res,next)=>next(),getAuth:()=>({userId:'user-A'})}});
 mock.module('@clerk/backend',{namedExports:{createClerkClient:()=>({users:{getUser:async()=>({primaryEmailAddressId:'email',emailAddresses:[{id:'email',emailAddress:'owner@example.com',verification:{status:'verified'}}]})}})}});
 mock.module('../server/contenders-database.js',{namedExports:{databasePool:()=>db}});
@@ -16,7 +20,7 @@ mock.module('../server/name-request-store.js',{namedExports:{databasePool:()=>db
 mock.module('../server/studio-live-config.js',{namedExports:{liveStudioConfig:()=>({origin:'https://www.santaradio.co.uk'})}});
 mock.module('../server/studio-live-store.js',{namedExports:{emailDigest:()=> 'digest',transaction:async(db,fn)=>fn(db)}});
 mock.module('../server/studio-live-access.js',{namedExports:{livePaidPurchaseId:async()=> 'paid-A',livePaidSummary:async()=>({remaining:1}),issueLiveAccess:async()=>{grants++;return()=>{}}}});
-mock.module('../server/message-account-store.js',{namedExports:{accountEnabled:()=>true,kinds:{video:'video/mp4'},assetPath:()=> 'private/video.mp4',committed:async()=>true,acceptAsset:async()=>{}}});
+mock.module('../server/message-account-store.js',{namedExports:{expiryFor:()=>new Date('2027-02-01'),accountEnabled:()=>true,kinds:{video:'video/mp4'},assetPath:()=> 'private/video.mp4',committed:async()=>true,acceptAsset:async()=>{}}});
 mock.module('@vercel/blob',{namedExports:{get:async()=>{fileReads++;return{statusCode:200,stream:new ReadableStream({start(c){c.enqueue(new Uint8Array([1,2,3]));c.close()}})}},del:async()=>{fileDeletes++},issueSignedToken:async()=>{}}});
 const {default:app}=await import('../server/message-account.js');
 test('file retrieval and resume enforce purchase owner and expiry',async()=>{

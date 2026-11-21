@@ -1,18 +1,20 @@
+import DadAccountSave from '../components/DadAccountSave.jsx';
 import {DAD_LAUNCH_AT} from '../lib/dadLaunch.js';
 import {dadDisplayCategories,dadScrollerLabel} from '../lib/dadChoiceWording.js';
 import DadCertificate from '../components/DadCertificate.jsx';
 import {DAD_PREPARATION_MESSAGES} from '../lib/dadPreparationMessages.js';
 import {useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {Link} from 'react-router-dom';
-import {Info,Share,Pencil,ZoomIn} from 'lucide-react';
+import {Info,Pencil,ZoomIn} from 'lucide-react';
 import {Helmet} from 'react-helmet-async';
 import WorkshopNamePicker from '../components/WorkshopNamePicker.jsx';
 import WorkshopAgeCarousel from '../components/WorkshopAgeCarousel.jsx';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import StudioMiniDash from '../components/StudioMiniDash.jsx';
 import SantaVideoPlayer from '../components/SantaVideoPlayer.jsx';
+import {SantaGreetingShare} from '../components/SantaMessageShare.jsx';
 import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
-import {DAD_ARTWORK,createDadVideo,createDadShareVideo,dadPoster,dadVideoFilename} from '../lib/dadVideo.js';
+import {DAD_ARTWORK,createDadVideo,dadPoster,dadVideoFilename} from '../lib/dadVideo.js';
 import './SantaMessageWorkshop.css';
 import './DadMessageStudio.css';
 const capitalise=value=>value.trim().replace(/(^|[\s'-])\p{L}/gu,c=>c.toLocaleUpperCase('en-GB'));
@@ -38,6 +40,7 @@ function FittedArtCaption({children, className = "dad-art-caption"}) {
 }
 export default function DadMessageStudio(){
  const [gameDone,setGameDone]=useState(false);
+ const [certificate,setCertificate]=useState(null);
  const [preparationMessage,setPreparationMessage]=useState(DAD_PREPARATION_MESSAGES[0]);
  const [ownerCode,setOwnerCode]=useState('');const [sales,setSales]=useState(false);
  const [access,setAccess]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[step,setStep]=useState(0),[choices,setChoices]=useState({}),[art,setArt]=useState(0),[result,setResult]=useState(null),[progress,setProgress]=useState(null),[status,setStatus]=useState(''),[showProgress,setShowProgress]=useState(false),[email,setEmail]=useState(''),[notice,setNotice]=useState('');
@@ -65,9 +68,9 @@ export default function DadMessageStudio(){
   window.scrollTo({top:Math.max(0,window.scrollY+panel.getBoundingClientRect().top-top),behavior:'instant'});
  },[step]);
  const [audioState,setAudioState]=useState('idle'),[editingReview,setEditingReview]=useState(false),[sceneChosen,setSceneChosen]=useState(false);
- const [shareResult,setShareResult]=useState(null),[sharing,setSharing]=useState(false),[shareProgress,setShareProgress]=useState(null);const shareJob=useRef(null),shareURL=useRef(null),shareFlight=useRef(false);
+
  const load=async()=>{try{await request('/api/dad-studio-access');}catch{}try{const data=await request('/api/dad-studio-message');setAccess({...data,categories:data.categories?dadDisplayCategories(data.categories):data.categories});}catch(e){setAccess({authorized:false});}};
- useEffect(()=>{const boot=async()=>{const token=new URLSearchParams(location.hash.slice(1)).get('studio-return');if(token){history.replaceState(null,'',location.pathname);try{await request('/api/dad-studio-return',{token});}catch(e){setError(e.message);}}await load();};boot();return()=>{job.current?.abort();shareJob.current?.abort();if(shareURL.current)URL.revokeObjectURL(shareURL.current);clearTimeout(hideTimer.current);if(videoURL.current)URL.revokeObjectURL(videoURL.current);};},[]);
+ useEffect(()=>{const boot=async()=>{const token=new URLSearchParams(location.hash.slice(1)).get('studio-return');if(token){history.replaceState(null,'',location.pathname);try{await request('/api/dad-studio-return',{token});}catch(e){setError(e.message);}}await load();};boot();return()=>{job.current?.abort();clearTimeout(hideTimer.current);if(videoURL.current)URL.revokeObjectURL(videoURL.current);};},[]);
  useEffect(()=>{
   let cancelled=false,timer;const controller=new AbortController();
   const refresh=async()=>{try{
@@ -92,7 +95,7 @@ export default function DadMessageStudio(){
    if(!r.ok){const data=await r.json();throw Error(data.error||'Please try again.');}
    const metadata=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(r.headers.get('X-Studio-Selection')),c=>c.charCodeAt(0))));
    const audioBlob=await r.blob();controller.signal.throwIfAborted();
-   saved.current={...metadata,...selection.details,writtenName:capitalise(metadata.record.name),audioBlob};
+   saved.current={operation:selection.operation,...metadata,...selection.details,writtenName:capitalise(metadata.record.name),audioBlob};
    setAccess(a=>({...a,remaining:a.admin?1:0}));setAudioState('ready');
   }catch(e){setError(controller.signal.aborted?(controller.signal.reason?.message||'Recording preparation was interrupted. Please retry.'):e.message);setAudioState('error');}
   finally{clearTimeout(audioTimeout);audioFlight.current=false;if(job.current===controller)job.current=null;}
@@ -128,16 +131,6 @@ export default function DadMessageStudio(){
  const change=(key,value)=>setChoices(c=>({...c,[key]:value}));
  const edit=target=>{setEditingReview(true);setStep(target);setError('');};
  const reviewRows=[{label:'His recorded name',value:capitalise(name.record?.name||''),step:0},...['age','habit','viewing','treat'].map((key,index)=>({label:['Their age','Household habits','TV choices','Santa’s treat'][index],value:access?.categories?.[key]?.find(x=>x.id===choices[key])?.label||'',step:index}))];
- const prepareShare=async()=>{
-  if(!result||shareFlight.current||shareResult)return;
-  shareFlight.current=true;setSharing(true);setShareProgress(null);setNotice('');setError('');const controller=new AbortController();shareJob.current=controller;
-  try{
-   const blob=await createDadShareVideo(result,{signal:controller.signal,onProgress:setShareProgress});controller.signal.throwIfAborted();
-   shareURL.current=URL.createObjectURL(blob);setShareResult({blob,url:shareURL.current});setNotice('Your share video is ready. Tap Share, or download the share copy.');
-  }catch(e){if(!controller.signal.aborted)setError('The share copy could not be prepared. Your original video is ready; please try again.');}
-  finally{shareFlight.current=false;setSharing(false);shareJob.current=null;}
- };
- const share=async()=>{if(!shareResult)return;try{const file=new File([shareResult.blob],dadVideoFilename(result),{type:'video/mp4'});if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:`Message for Dad ${result.writtenName}`});else setNotice('Download the share copy below, then attach it in your favourite messaging app.');}catch(e){if(e.name!=='AbortError')setNotice('Please download the share copy below to share it.');}};
 
  return <main className="dad-studio smw-page"><Helmet><title>Dad Message Maker Studio | Santa Radio</title><meta name="robots" content="noindex,follow"/></Helmet>
  {!access?.authorized&&<><nav className="dad-tabs" aria-label="Message type"><Link to="/bespoke-personalised-message-from-santa">For Kids</Link><span aria-current="page">For Dads</span></nav>
@@ -154,7 +147,7 @@ export default function DadMessageStudio(){
  {<StudioMiniDash progress={progress} onFinish={()=>setGameDone(true)}/>}
  </section>{busy&&<button className="dad-cancel-preparation" onClick={()=>job.current?.abort()}>Cancel preparation</button>}</>}
 
- {result?<>{gameDone&&<><h3>A message for {result.writtenName}</h3><SantaVideoPlayer festiveControls src={result.url} poster={result.poster} glow label={`Santa’s message for ${result.writtenName}`}/><div className="dad-actions dad-result-actions"><a className="dad-primary" href={result.url} download={dadVideoFilename(result)}>Download your message ↓</a><button className="dad-share-button" aria-label={shareResult?"Share your message":"Prepare your message for sharing"} disabled={sharing} onClick={shareResult?share:prepareShare}><Share size={20} aria-hidden="true"/>{sharing?"Preparing share video…":shareResult?"Share":"Prepare to share"}</button></div>{sharing&&<p role="status">Preparing your share video… {shareProgress===null?"":`${Math.round(shareProgress*100)}%`}</p>}{shareResult&&<a href={shareResult.url} download={dadVideoFilename(result).replace(/\.mp4$/,"-share.mp4")}>Download share copy ↓</a>}<DadCertificate name={result.writtenName} downloadable/><p>Download before leaving this page. Your video and certificate are not saved online.</p></>}</>:
+ {result?<>{gameDone&&<><h3>A message for {result.writtenName}</h3><SantaVideoPlayer festiveControls src={result.url} poster={result.poster} glow label={`Santa’s message for ${result.writtenName}`}/><div className="dad-actions dad-result-actions"><a className="dad-primary" href={result.url} download={dadVideoFilename(result)}>Download your message ↓</a><SantaGreetingShare message={{name:result.writtenName,blob:result.blob}} filename={dadVideoFilename(result)}/></div><DadCertificate name={result.writtenName} downloadable onReady={setCertificate}/><DadAccountSave result={result} certificate={certificate}/></>}</>:
  !busy&&access.remaining===0&&!confirmed.current?<><p>Your message creation has been used. Keep your downloaded MP4 to watch and share.</p>{sales&&<button className="dad-primary" onClick={checkout}>Create another Dad message — £5</button>}</>:
  !busy&&<><div className="dad-step-heading"><div><h3>{stages[step]}</h3></div>{step===5&&<button className="dad-primary dad-create-message" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>Create Message <span aria-hidden="true">→</span></button>}{step<4&&continueButton}{step===4&&<div className="dad-review-actions"><button type="button" onClick={()=>{name.choose(null);setChoices({});setEditingReview(false);setError('');setStep(0);}}><span aria-hidden="true">←</span> Start Again</button><button className="dad-primary" onClick={confirm}>Choose picture <span aria-hidden="true">→</span></button></div>}</div>
  <div className="dad-step-progress">

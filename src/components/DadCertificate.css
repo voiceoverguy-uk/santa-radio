@@ -3,3 +3,15 @@
 
 .dad-certificate fieldset { align-items: center; }
 .dad-certificate fieldset .dad-primary { margin-inline-start: auto; }
+
+.dad-certificate-preview { position:relative; aspect-ratio:1491/1055; width:100%; }
+.dad-certificate-preview img { position:absolute; inset:0; margin:0; }
+.dad-certificate-preview img[hidden] { display:none; }
+.dad-certificate-preview>[role=status] { padding:20px; }
+
+.dad-certificate-download { display:flex; justify-content:flex-end; min-height:64px; padding-top:16px; }
+
+.dad-certificate-heading {display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.dad-certificate-heading h3 {margin:0}
+.dad-certificate-heading fieldset {margin:0;padding:10px 16px;flex:0 0 auto}
+.dad-certificate-heading label {min-height:28px}

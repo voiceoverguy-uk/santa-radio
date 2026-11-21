@@ -16,10 +16,11 @@ export default function StudioMiniDash({ progress = 0, onFinish }) {
   }, [finished, playing]);
   if (finished && !playing) return null;
   return playing ? <SantaDashGame finished={finished} onClose={() => setPlaying(false)} /> : <div className="studio-mini-dash">
-    <button className="studio-mini-dash__teaser" type="button" aria-label="Play Santa Dash" onClick={() => setPlaying(true)}>
-      <strong>Santa Dash</strong>
-      <span className="studio-mini-dash__teaser-copy">Mince pies &amp; Christmas magic.</span>
-      <span className="studio-mini-dash__teaser-play">Play Santa Dash <span aria-hidden="true">→</span></span>
+    <button className="studio-mini-dash__teaser" type="button" aria-label="Play Now — Santa Dash" onClick={() => setPlaying(true)}>
+      <strong>Santa Dash Teaser</strong>
+      <span className="studio-mini-dash__teaser-copy">Mince pies and Christmas magic</span>
+      <span className="studio-mini-dash__teaser-wait">While you wait</span>
+      <span className="studio-mini-dash__teaser-play">Play Now <span aria-hidden="true">→</span></span>
     </button>
     <small>A little game while you wait. Your video keeps building.</small>
   </div>;
@@ -116,7 +117,7 @@ function SantaDashGame({ onClose, finished }) {
               object[key] = true; setScore(n => n + 10); playSound('pie'); setNotice('Mince pie collected!');
             }
           });
-        } else if (!object.checked && object.x < 100 && object.x > 25 && height < 60 && !tripped) {
+        } else if (!object.checked && object.x < 90 && object.x > (object.kind === 'gary' ? -10 : 25) && height < (object.kind === 'gary' ? 100 : 60) && !tripped) {
           object.checked = true; engine.current.tripUntil = now + 650; engine.current.height = 0; engine.current.velocity = 0;
           setNotice('Oops! Jump a little earlier — keep going!');
         }
@@ -154,7 +155,7 @@ function SantaDashGame({ onClose, finished }) {
         <img src={`/images/studio-runners/classic${paused ? '-still.png' : '.webp'}`} width="60" height="64" alt="" draggable="false" />
       </button>
       {kinds.map((kind, i) => <span key={i} ref={node => { items.current[i] = node; }} className={`studio-mini-dash__item studio-mini-dash__item--${kind}`} aria-hidden="true" >
-        {kind === 'pie' ? <><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/></> : <img src={`${ASSETS}${kind}.png`} alt="" width="44" height="60"/>}
+        {kind === 'pie' ? <><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/></> : <img src={`${ASSETS}${kind}.png`} alt="" width={kind === 'gary' ? 88 : 44} height={kind === 'gary' ? 120 : 60}/>}
       </span>)}
     </div>
     <div className="studio-mini-dash__controls">

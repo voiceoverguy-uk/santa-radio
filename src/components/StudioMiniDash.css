@@ -46,3 +46,8 @@
  .studio-mini-dash__teaser-copy { max-width:48%; font-size:13px; }
  .studio-mini-dash__teaser-play { padding:10px 12px; gap:8px; font-size:13px; }
 }
+
+.studio-mini-dash__item--gary { width:88px; height:120px; }
+.studio-mini-dash__teaser>strong { max-width:50%; font-size:30px; }
+.studio-mini-dash__teaser-wait { font-size:13px; color:#fff2c7; }
+@media(max-width:480px) { .studio-mini-dash .studio-mini-dash__teaser { min-height:235px; } .studio-mini-dash__teaser>strong { font-size:24px; } }

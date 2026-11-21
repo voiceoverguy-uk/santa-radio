@@ -1,3 +1,7 @@
+import {randomUUID} from 'node:crypto';
+import {livePaidPurchaseId as dadPurchaseId, livePaidSummary as dadSummary, issueLiveAccess as issueDadAccess} from './dad-live-access.js';
+import {emailDigest as dadEmailDigest} from './dad-live-store.js';
+import {liveStudioConfig as dadConfig} from './dad-live-config.js';
 import express from 'express';
 import { clerkMiddleware, getAuth } from '@clerk/express';
 import { createClerkClient } from '@clerk/backend';
@@ -13,7 +17,7 @@ import { databasePool as payments } from './name-request-store.js';
 import { liveStudioConfig } from './studio-live-config.js';
 import { emailDigest, transaction } from './studio-live-store.js';
 import { livePaidPurchaseId, livePaidSummary, issueLiveAccess } from './studio-live-access.js';
-import { accountEnabled, kinds, assetPath, committed, acceptAsset } from './message-account-store.js';
+import { accountEnabled, expiryFor, kinds, assetPath, committed, acceptAsset } from './message-account-store.js';
 import { privateResponse } from './santa-name-security.js';
 import { deleteSavedMessage, deleteMessageAccount } from './message-account-delete.js';
 const app = express();
@@ -23,8 +27,8 @@ app.use((req,res,next)=> { privateResponse(res); next(); });
 const validId = value => /^[0-9a-f-]{36}$/.test(value || '');
 async function giftRow(req, id) {
  if (!validId(id)) throw new Error('Invalid message');
- const purchase = await livePaidPurchaseId(req);
- const {rows:[row]} = await databasePool().query('SELECT * FROM santa_saved_messages WHERE id=$1 AND purchase_id=$2 AND expires_at>now()',[id,purchase || '']);
+ const purchases = [await livePaidPurchaseId(req), await dadPurchaseId(req)].filter(Boolean);
+ const {rows:[row]} = await databasePool().query('SELECT * FROM santa_saved_messages WHERE id=$1 AND purchase_id=ANY($2::text[]) AND expires_at>now()',[id,purchases]);
  if (!row || !await committed(row)) throw new Error('Message unavailable');
  return row;
 }
@@ -82,6 +86,24 @@ app.use(async(req,res)=> {
   const email=user.emailAddresses.find(item=>item.id===user.primaryEmailAddressId);
   if(email?.verification?.status!=='verified') return res.status(403).json({error:'Please verify your email address.'});
   const db=databasePool();
+  if(req.method==='POST' && req.query.action==='dad-save') {
+   const purchase=await dadPurchaseId(req), {operation,name}=req.body;
+   if(!purchase || !validId(operation) || typeof name!=='string' || !name.trim() || name.length>80) return res.status(400).json({error:'Keep the finished Dad message open and try again.'});
+   const owned=await payments().query('SELECT 1 FROM santa_dad_live_purchases WHERE checkout_session_id=$1 AND email_sha256=$2',[purchase,dadEmailDigest(email.emailAddress,dadConfig())]);
+   if(!owned.rowCount) return res.status(403).json({error:'Sign in with the email address used to purchase Dad’s message.'});
+   if(!await committed({purchase_id:purchase,operation_id:operation})) return res.status(403).json({error:'This message has not finished creating.'});
+   const row=await transaction(db,async client=>{
+    await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',[userId]);
+    await createClerkClient({secretKey:process.env.CLERK_SECRET_KEY}).users.getUser(userId);
+    await client.query('INSERT INTO santa_message_accounts(purchase_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[purchase,userId]);
+    const linked=await client.query('SELECT 1 FROM santa_message_accounts WHERE purchase_id=$1 AND user_id=$2',[purchase,userId]);
+    if(!linked.rowCount) throw new Error('Account mismatch');
+    const {rows:[saved]}=await client.query(`INSERT INTO santa_saved_messages(id,purchase_id,operation_id,child_name,expires_at) VALUES($1,$2,$3,$4,$5) ON CONFLICT(operation_id) DO UPDATE SET operation_id=EXCLUDED.operation_id RETURNING *`,[randomUUID(),purchase,operation,name.trim(),expiryFor()]);
+    if(saved.purchase_id!==purchase || new Date(saved.expires_at)<=new Date()) throw new Error('Message unavailable');
+    return saved;
+   });
+   return res.json({id:row.id,expiresAt:row.expires_at});
+  }
   if(req.method==='POST' && req.query.action==='delete-account') {
    if(req.body?.confirmed!==true)return res.status(400).json({error:'Confirm account deletion first.'});
    await deleteMessageAccount(db,userId,id=>createClerkClient({secretKey:process.env.CLERK_SECRET_KEY}).users.deleteUser(id));
@@ -94,6 +116,8 @@ app.use(async(req,res)=> {
   }
   if(req.method==='POST' && req.query.action==='link') {
    const {rows}=await payments().query('SELECT checkout_session_id FROM santa_studio_live_purchases WHERE email_sha256=$1',[emailDigest(email.emailAddress,liveStudioConfig())]);
+   const dadRows=await payments().query('SELECT checkout_session_id FROM santa_dad_live_purchases WHERE email_sha256=$1',[dadEmailDigest(email.emailAddress,dadConfig())]);
+   rows.push(...dadRows.rows);
    await transaction(db, async client => {
     await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',[userId]);
     // Recheck after acquiring the lock: deletion may have revoked this identity.
@@ -105,9 +129,10 @@ app.use(async(req,res)=> {
   if(req.method==='POST' && req.query.action==='resume') {
    const {rows:[row]}=await db.query('SELECT purchase_id FROM santa_message_accounts WHERE purchase_id=$1 AND user_id=$2',[req.body.purchaseId,userId]);
    if(!row) return res.status(404).end();
-   const summary=await livePaidSummary(payments(),row.purchase_id);
+   const dad=(await payments().query('SELECT 1 FROM santa_dad_live_purchases WHERE checkout_session_id=$1',[row.purchase_id])).rowCount>0;
+   const summary=await (dad?dadSummary:livePaidSummary)(payments(),row.purchase_id);
    if(!summary.remaining) return res.status(409).json({error:'Both messages have already been created.'});
-   const grant=await transaction(payments(),client=>issueLiveAccess(res,row.purchase_id,client)); grant(); return res.json({ready:true});
+   const grant=await transaction(payments(),client=>(dad?issueDadAccess:issueLiveAccess)(res,row.purchase_id,client)); grant(); return res.json({ready:true,path:dad?'/dad-message-maker':'/bespoke-personalised-message-from-santa'});
   }
   if(req.method!=='GET') return res.status(405).end();
   if(req.query.action==='file') {
@@ -121,10 +146,11 @@ app.use(async(req,res)=> {
    await pipeline(Readable.fromWeb(file.stream),res); return;
   }
   const {rows:purchases}=await db.query('SELECT purchase_id FROM santa_message_accounts WHERE user_id=$1',[userId]);
-  const credits=await Promise.all(purchases.map(async row=>({purchaseId:row.purchase_id,...await livePaidSummary(payments(),row.purchase_id)})));
+  const dadIds=new Set((await payments().query('SELECT checkout_session_id FROM santa_dad_live_purchases WHERE checkout_session_id=ANY($1::text[])',[purchases.map(row=>row.purchase_id)])).rows.map(row=>row.checkout_session_id));
+  const credits=await Promise.all(purchases.map(async row=>({purchaseId:row.purchase_id,product:dadIds.has(row.purchase_id)?'dad':'kids',...await (dadIds.has(row.purchase_id)?dadSummary:livePaidSummary)(payments(),row.purchase_id)})));
   const {rows}=await db.query(`SELECT m.* FROM santa_saved_messages m JOIN santa_message_accounts a ON a.purchase_id=m.purchase_id WHERE a.user_id=$1 AND m.expires_at>now() ORDER BY m.created_at DESC`,[userId]);
   const messages=[];
-  for(const row of rows) if(await committed(row)) messages.push({id:row.id,name:row.child_name,expiresAt:row.expires_at,assets:Object.keys(row.assets)});
+  for(const row of rows) if(await committed(row)) messages.push({id:row.id,product:dadIds.has(row.purchase_id)?'dad':'kids',name:row.child_name,expiresAt:row.expires_at,assets:Object.keys(row.assets)});
   res.json({messages,credits});
  } catch {if(!res.headersSent)res.status(503).json({error:'Your collection is temporarily unavailable. Please try again.'});else res.destroy();}
 });

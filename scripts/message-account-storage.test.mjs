@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 let blobInfo={contentType:'application/pdf',size:10};
 let queries=[],puts=[],linked=true,existingPurchase='paid-A';
 const db={query:async(sql,args)=>{queries.push({sql,args});if(sql.startsWith('SELECT 1 FROM santa_message_accounts'))return {rowCount:linked?1:0};if(sql.startsWith('INSERT'))return {rows:[{id:'00000000-0000-4000-8000-000000000001',purchase_id:existingPurchase,expires_at:'2027-02-01'}]};return {rowCount:1}}};
+db.connect=async()=>({...db,release(){}});
 mock.module('../server/contenders-database.js',{namedExports:{databasePool:()=>db}});
 mock.module('../server/name-request-store.js',{namedExports:{databasePool:()=>db}});
 mock.module('../server/studio-live-access.js',{namedExports:{livePaidPurchaseId:async()=> 'paid-A'}});
