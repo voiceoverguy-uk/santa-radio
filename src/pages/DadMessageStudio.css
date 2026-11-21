@@ -154,3 +154,17 @@
 .dad-create-message { display:inline-flex!important; align-items:center; gap:16px; white-space:nowrap; }
 .dad-scene-zoom { position:absolute; right:1%; bottom:24%; display:grid; place-items:center; width:44px; height:44px; border:1px solid #efd38a; border-radius:50%; background:#0e2e23; color:#fff2ce; }
 @media(max-width:480px) { .dad-step-heading:has(.dad-create-message) { flex-wrap:wrap; } .dad-create-message { margin-left:auto; } }
+/* Match the kids preview's full-height 19% side click targets. */
+.dad-scene-dialog .dad-scene-preview .dad-scene-arrow {
+ top:0; bottom:0; left:0; width:19%; min-width:48px; height:100%;
+ padding:0; transform:none; border:0; border-radius:0; background:transparent;
+ touch-action:manipulation;
+}
+.dad-scene-dialog .dad-scene-preview .dad-scene-arrow-right { left:auto; right:0; }
+.dad-scene-preview .dad-scene-arrow img {
+ position:absolute; top:40%; left:10%; width:clamp(44px,6cqi,64px); height:clamp(44px,6cqi,64px);
+ transform:translateY(-50%); margin:0; aspect-ratio:1;
+}
+.dad-scene-preview .dad-scene-arrow-left img { transform:translateY(-50%) scaleX(-1); }
+.dad-scene-preview .dad-scene-arrow-right img { left:auto; right:10%; }
+.dad-scene-dialog .dad-scene-preview .dad-scene-arrow:focus-visible { outline:3px solid #fff2c7; outline-offset:-3px; }
