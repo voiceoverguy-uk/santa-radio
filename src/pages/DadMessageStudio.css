@@ -191,3 +191,9 @@
 .dad-result-actions .message-share { position:relative; flex-shrink:0; }
 .dad-result-actions .message-share-icon { display:grid; place-items:center; min-width:48px; min-height:48px; }
 .dad-result-actions .message-share-status { position:absolute; right:0; top:100%; width:min(320px,75vw); padding:12px; background:#0e2e23; border:1px solid #b99b4f; border-radius:8px; z-index:3; }
+
+/* Give new purchases priority over returning-customer access. */
+.dad-studio .dad-purchase-cta{display:block;width:100%;min-height:64px;margin-top:20px;padding:18px 24px;font-size:20px;line-height:1.3;border:2px solid #d6b66a;border-radius:10px;box-shadow:0 4px 14px #0003}
+.dad-return-purchase{margin-top:48px;padding-top:24px;border-top:1px solid #b99b4f60}
+.dad-return-purchase p{margin:0 0 16px}
+@media(max-width:480px){.dad-studio .dad-purchase-cta{font-size:18px;padding:16px}.dad-return-purchase{margin-top:36px}}
