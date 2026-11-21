@@ -21,3 +21,36 @@
 @media (min-width: 761px) {
   .smw-start-artwork .smw-scene-picture { width: 82%; }
 }
+
+/* Full-height side targets retain the visible circular arrow controls. */
+.smw-scene-dialog__picture .smw-scene-dialog__arrow {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 19%;
+  min-width: 48px;
+  height: 100%;
+  padding: 0;
+  transform: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  touch-action: manipulation;
+}
+.smw-scene-dialog__picture .smw-scene-dialog__arrow:last-child { left: auto; right: 0; }
+.smw-scene-dialog__picture .smw-scene-dialog__arrow svg {
+  position: absolute;
+  top: 37%;
+  left: 8px;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 1px solid #d6ae61;
+  border-radius: 50%;
+  background: #112f22ed;
+}
+.smw-scene-dialog__picture .smw-scene-dialog__arrow:last-child svg { left: auto; right: 8px; }
+.smw-scene-dialog__picture .smw-scene-dialog__arrow:hover svg { background: #9d1020; }
+.smw-scene-dialog__picture .smw-scene-dialog__arrow:focus-visible { outline: 3px solid #fff2c7; outline-offset: -3px; }

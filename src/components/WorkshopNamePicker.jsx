@@ -199,7 +199,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
         <>
           {query.trim().length >= 2 && matchingRecords.length === 0 && !search.warning && (
             <div className="smw-name-empty" role="status">
-              <p><strong>Name not found.</strong> Try a name that sounds the same, then change the written spelling in the final step. Santa will still say the recording you choose.</p>
+              <p><strong>Name not found.</strong> Try a name that sounds the same, then use the pencil beside Play to change the written spelling. Santa will still say the recording you choose.</p>
             </div>
           )}
           {matchingRecords.length > 0
@@ -214,6 +214,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
         <div className="smw-name-status">
           <span aria-live="polite">Selected name: <strong>{santaNameDisplay(selected.name)}{selected.variant ? ` — ${selected.variant}` : ''}</strong></span>
           {previewCache && resolution.record && <WorkshopNamePreview record={resolution.record} cache={previewCache} />}
+          <span ref={spellingActionRef} className="smw-name-spelling-trigger" style={{ position: 'relative', display: 'inline-flex' }} />
         </div>
       )}
     </div>

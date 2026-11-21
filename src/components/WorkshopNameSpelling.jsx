@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { useEffect, useId, useRef, useState } from 'react';
 import {
   getWorkshopDownloadName,
@@ -13,7 +14,7 @@ import './WorkshopNameSpelling.css';
 
 export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
   completedGift, nameReadOnly = false, downloadReady = false, downloadNotice, collapsible = false,
-  onDownloadRequested, onGiftPreparing, requestedGifts, editorOnly = false }) {
+  onDownloadRequested, onGiftPreparing, requestedGifts, editorOnly = false, triggerTarget = null }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
@@ -55,7 +56,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
 
   const beginEditing = () => {
     if (nameReadOnly) return;
-    setDraft(spelling || recordedName);
+    setDraft(spelling || writtenName);
     setError('');
     setIsEditing(true);
   };
@@ -90,24 +91,8 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
     returnFocus();
   };
 
-  const editor = (
-    <div className="smw-review-create-row">
-      <div className="smw-review-name-area"
-        onFocusCapture={event => {
-          editingFocusRef.current = !!event.target.closest('form, .smw-written-name-edit');
-        }}
-        onBlurCapture={event => {
-          // Removing the active editor does not fire blur. Normal moves
-          // outside it must not steal focus when the MP3 later succeeds.
-          editingFocusRef.current = !!editorRef.current?.contains(event.relatedTarget)
-            || event.relatedTarget === changeButtonRef.current;
-        }}>
-        <dl className="smw-written-name-previews">
-          <div className="smw-written-name-preview">
-            <dt>Gift name</dt>
-            <dd>
-              <span ref={valueRef} className="smw-written-name-value" tabIndex={-1}>{previewName}</span>
-              {!nameReadOnly && <button
+  const editTrigger = <>
+{!nameReadOnly && <button
                 ref={changeButtonRef}
                 className="smw-change smw-written-name-edit"
                 type="button"
@@ -124,9 +109,28 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
               {!nameReadOnly && <span className="smw-gift-name-tip" id={`${fieldId}-gift-name-tip`} role="tooltip">
                 Edit how the name will look on the certificate, letter and picture
               </span>}
+  </>;
+  const editor = (
+    <div className="smw-review-create-row">
+      <div className="smw-review-name-area"
+        onFocusCapture={event => {
+          editingFocusRef.current = !!event.target.closest('form, .smw-written-name-edit');
+        }}
+        onBlurCapture={event => {
+          // Removing the active editor does not fire blur. Normal moves
+          // outside it must not steal focus when the MP3 later succeeds.
+          editingFocusRef.current = !!editorRef.current?.contains(event.relatedTarget)
+            || event.relatedTarget === changeButtonRef.current;
+        }}>
+        {!triggerTarget && <dl className="smw-written-name-previews">
+          <div className="smw-written-name-preview">
+            <dt>Gift name</dt>
+            <dd>
+              <span ref={valueRef} className="smw-written-name-value" tabIndex={-1}>{previewName}</span>
+              {!triggerTarget && editTrigger}
             </dd>
           </div>
-        </dl>
+        </dl>}
 
         {editing && (
           <form ref={editorRef} id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
@@ -187,7 +191,9 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
 
   return (
     <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
+      {triggerTarget && createPortal(editTrigger, triggerTarget)}
       {editorOnly && editor}
+      {triggerTarget && !editing && spelling && <p>Gift name: <strong>{previewName}</strong></p>}
       {collapsible ? <details className="smw-gift-reveal">
         <summary>View your Santa gifts</summary>
         {keepsakePreviews}

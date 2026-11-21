@@ -1,0 +1,13 @@
+.studio-mini-dash { margin-top: 16px; }
+.studio-mini-dash__heading, .studio-mini-dash__controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.studio-mini-dash__heading { justify-content: space-between; }
+.studio-mini-dash__lane { position: relative; height: 190px; overflow: hidden; border-bottom: 3px solid #e9d49a; margin: 8px 0 12px; }
+.studio-mini-dash__santa { position: absolute; bottom: 0; left: 40px; width: 68px; height: 68px; padding: 2px; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
+.studio-mini-dash__santa img { display: block; }
+.studio-mini-dash__item { position: absolute; left: 0; bottom: 0; width: 40px; height: 48px; font-size: 40px; line-height: 48px; pointer-events: none; }
+.studio-mini-dash__item--pie { bottom: 70px; }
+.studio-mini-dash__item img { object-fit: contain; }
+.studio-mini-dash__chimney { display: block; width: 32px; height: 42px; margin-top: 6px; border-top: 8px solid #fff1d6; background: repeating-linear-gradient(0deg, #a93f32 0 10px, #e4b08c 10px 12px); box-shadow: 0 0 0 2px #6a2e27; }
+.studio-mini-dash__controls button { min-height: 48px; touch-action: manipulation; }
+.studio-mini-dash button:focus-visible { outline: 3px solid #ffe5a1; outline-offset: 3px; }
+.studio-mini-dash small { display: block; margin-top: 10px; }

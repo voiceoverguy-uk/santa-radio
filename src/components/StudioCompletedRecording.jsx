@@ -1,4 +1,4 @@
-import StudioPreparationRunner from './StudioPreparationRunner.jsx';
+import StudioMiniDash from './StudioMiniDash.jsx';
 import StudioAccountSave from './StudioAccountSave.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
@@ -59,7 +59,7 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
     if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
   }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
     <h4>Your message from Santa to {result.writtenName}</h4>
-    {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</div>}
+    {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioMiniDash />}</div>}
     {error && <div className="smw-finished-preparation" role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
       <SantaVideoPlayer festiveControls="kids" poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {

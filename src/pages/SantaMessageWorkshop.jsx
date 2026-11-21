@@ -262,6 +262,7 @@ export default function SantaMessageWorkshop() {
   const [audioPhase, setAudioPhase] = useState('idle');
   const [deliveryTarget, setDeliveryTarget] = useState(null);
   const [reviewActionTarget, setReviewActionTarget] = useState(null);
+  const [spellingActionTarget, setSpellingActionTarget] = useState(null);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
@@ -320,6 +321,32 @@ export default function SantaMessageWorkshop() {
   const stage = stages[stageIndex];
   const isReview = stageIndex === stages.length;
   const isNameAndAge = stage?.key === 'name';
+  useBrowserLayoutEffect(() => {
+    if (!isNameAndAge || isReview) return;
+    const layout = stageHeading.current?.closest('.smw-builder')?.querySelector('.smw-start-layout')
+      || document.querySelector('.smw-start-layout');
+    const artwork = layout?.querySelector('.smw-start-artwork');
+    const picture = artwork?.querySelector('.smw-scene-picture');
+    const fields = layout?.querySelector('.smw-stage-fields');
+    const logo = artwork?.querySelector('.smw-start-logo');
+    if (!picture || !fields || !logo) return;
+    const sizePicture = () => {
+      if (!window.matchMedia('(min-width: 761px)').matches) {
+        picture.style.removeProperty('width');
+        return;
+      }
+      const availableHeight = fields.getBoundingClientRect().bottom - picture.getBoundingClientRect().top;
+      const width = Math.min(artwork.clientWidth, Math.max(0, availableHeight) * 16 / 9);
+      if (width > 0) picture.style.width = `${width}px`;
+    };
+    const observer = new ResizeObserver(sizePicture);
+    observer.observe(fields);
+    observer.observe(logo);
+    window.addEventListener('resize', sizePicture);
+    sizePicture();
+    return () => { observer.disconnect(); window.removeEventListener('resize', sizePicture); };
+  }, [isNameAndAge, isReview, chosenName?.id]);
+
   const catalogueCategory = isNameAndAge ? 'age' : stage?.key === 'talent' ? talentCategory : stage?.key;
   const activityRecords = groupWorkshopActivities(catalogueState.catalogue?.categories?.activity || []);
   const catalogueOptions = stage
@@ -642,7 +669,7 @@ export default function SantaMessageWorkshop() {
             </div>
             {!isReview && <button className="smw-header-continue" type="button" onClick={continueToNext} disabled={!audioEditingAllowed || !canContinue}
               aria-label={editing ? 'Return to review from top' : stageIndex === stages.length - 1 ? 'Continue to review' : 'Continue to next step'}>
-              {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review my choices' : 'Continue'} <span aria-hidden="true">→</span>
+              {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review' : 'Continue'} <span aria-hidden="true">→</span>
             </button>}
             {isReview && (deliveryStep === 'review' || deliveryStep === 'scene') && <div className="smw-header-review-action" ref={setReviewActionTarget} />}
           </div>
@@ -717,6 +744,7 @@ export default function SantaMessageWorkshop() {
                     selected={chosenName}
                     resolution={nameResolution}
                     previewCache={namePreviewCache}
+                    spellingActionRef={setSpellingActionTarget}
                     invalid={!!error}
                     onSelect={record => {
                       if (record?.id !== chosenName?.id) setNameSpelling('');
@@ -724,6 +752,11 @@ export default function SantaMessageWorkshop() {
                       choose('name', record ? `${record.name}${record.variant ? ` — ${record.variant}` : ''}` : '');
                     }}
                   />
+                  {chosenName && <WorkshopNameSpelling key={chosenName.id || chosenName.name}
+                    editorOnly triggerTarget={spellingActionTarget}
+                    recordedName={chosenName.name} recordingId={selectedName?.id || chosenName.id || ''}
+                    spelling={nameSpelling} nameReadOnly={nameReadOnly}
+                    onChange={value => { if (!nameReadOnly) setNameSpelling(value); }} />}
                 </div>
               ))}
               {isNameAndAge && !chosenName ? null : locked && stage.key === 'place' ? (

@@ -1,5 +1,5 @@
 import StudioScenePicker from './StudioScenePicker.jsx';
-import StudioPreparationRunner from './StudioPreparationRunner.jsx';
+import StudioMiniDash from './StudioMiniDash.jsx';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
@@ -262,7 +262,7 @@ export default function WorkshopMessageAudio({
   const messageAction = () => (limited && url) ? null : (
     <button className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={create} disabled={disabled}>
-      {deliveryStep === 'scene' ? 'Retry recording' : 'Confirm and choose a picture'} <span aria-hidden="true">→</span>
+      {deliveryStep === 'scene' ? 'Retry recording' : 'Confirm'} <span aria-hidden="true">→</span>
     </button>
   );
   const finishScene = () => {
@@ -308,7 +308,7 @@ export default function WorkshopMessageAudio({
         </div>
         <div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" /><span>Preparing…</span></div>
       </div>
-      <StudioPreparationRunner costume="classic" />
+      <StudioMiniDash />
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
