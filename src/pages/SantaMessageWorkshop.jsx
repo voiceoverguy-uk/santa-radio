@@ -1,3 +1,4 @@
+import StudioOpeningPicture from '../components/StudioOpeningPicture.jsx';
 import { groupWorkshopActivities, uniqueWorkshopActivities } from '../lib/workshopActivityGroups.js';
 import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { STUDIO_GIFT_PICTURE } from '../lib/santaPictureLayout.js';
@@ -26,7 +27,6 @@ import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCat
 import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
 import { STUDIO_VIDEO_SCENES } from '../lib/studioVideo.js';
-import { StudioScenePicture } from '../components/StudioScenePicker.jsx';
 import { studioSelectionIdentity } from '../lib/studioSelectionIdentity.js';
 import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
 import { StudioKeepsakePreview } from '../components/SantaStudioGifts.jsx';
@@ -79,7 +79,7 @@ const reviewFields = [
     key: 'treat',
     label: 'Treat',
     reviewLabel: 'A festive treat for Santa',
-    heading: 'What might they leave Santa?',
+    heading: 'Santa’s Treat',
     wording: '… I know you like to leave me…',
   },
   {
@@ -230,7 +230,7 @@ export default function SantaMessageWorkshop() {
   }, []);
   const [stageIndex, setStageIndex] = useState(0);
   const [storedChoices, setChoices] = useState(emptyChoices);
-  const [talentCategory, setTalentCategory] = useState('sports');
+  const [talentCategory, setTalentCategory] = useState('funny');
   const [activityCategory, setActivityCategory] = useState('trying');
   const [destinationCategory, setDestinationCategory] = useState('countries');
   const nameResolution = useWorkshopNameResolution();
@@ -684,8 +684,7 @@ export default function SantaMessageWorkshop() {
               </p>}
                 {isNameAndAge && <div className="smw-start-artwork">
                   <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
-                  <StudioScenePicture scene={STUDIO_VIDEO_SCENES[openingSceneIndex]}
-                    alt={STUDIO_VIDEO_SCENES[openingSceneIndex].label}
+                  <StudioOpeningPicture initialIndex={openingSceneIndex}
                     caption={chosenName ? <span>A message for {chosenName.name}{selectedAge && <><br /><span style={{ whiteSpace: 'nowrap' }}>({selectedAge.label})</span></>}</span> : undefined} />
                 </div>}
               <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && stage.key === 'place')}>

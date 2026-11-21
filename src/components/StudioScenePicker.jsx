@@ -12,9 +12,9 @@ const sceneInset = {
   height: `${100 * STUDIO_SCENE_INSET.height / STUDIO_VIDEO_HEIGHT}%`,
 };
 
-export function StudioScenePicture({ scene, caption, alt = '' }) {
+export function StudioScenePicture({ scene, caption, alt = '', animate = false }) {
   return <span className="smw-scene-picture" style={{ backgroundImage: `url(${STUDIO_VIDEO_ARTWORK})` }}>
-    <img className="smw-scene-art" src={scene.src} alt={alt} width="1280" height="540" style={sceneInset} />
+    <img key={animate ? scene.src : undefined} className={`smw-scene-art${animate ? ' smw-scene-art--fade' : ''}`} src={scene.src} alt={alt} width="1280" height="540" style={sceneInset} />
     {caption && <span className="smw-scene-caption">{caption}</span>}
   </span>;
 }

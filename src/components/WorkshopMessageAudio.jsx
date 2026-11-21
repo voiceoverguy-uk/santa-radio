@@ -344,7 +344,7 @@ export default function WorkshopMessageAudio({
   );
   return <>
     {deliveryStep === 'review' && (() => {
-      const actions = <div className="smw-review-header-buttons" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+      const actions = <div className="smw-review-header-buttons smw-review-action-pair">
         {startAction()}
         {messageAction()}
       </div>;
