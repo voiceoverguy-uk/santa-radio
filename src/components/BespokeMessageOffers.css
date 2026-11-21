@@ -18,3 +18,11 @@
 .bespoke-offer.kids:after{display:none}.bespoke-offer__body{padding-bottom:24px}.bespoke-offer__checkout .bespoke-launch{height:auto;min-height:0;padding:12px 0 0;margin:0}.bespoke-return-link{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}.bespoke-return-dialog{box-sizing:border-box;width:min(520px,94vw);max-height:90dvh;overflow:auto;margin:auto;padding:24px;border:1px solid #d1ad59;border-radius:16px;background:#12392b;color:#fff6df}.bespoke-return-dialog::backdrop{background:#001a13cc;backdrop-filter:blur(4px)}.bespoke-return-close{display:block;margin-left:auto}.bespoke-return-dialog h2{font-size:24px;margin:12px 0}.bespoke-return-dialog p{font-size:14px;line-height:1.6}.bespoke-return-dialog form{display:flex;flex-direction:column;gap:12px}.bespoke-return-dialog input{width:100%;padding:12px;background:#fff6df;color:#12392b;border:1px solid #d1ad59;border-radius:6px;font-size:16px}.bespoke-return-dialog button{padding:10px 14px;border:1px solid #d1ad59;border-radius:6px;background:#12392b;color:#fff6df;cursor:pointer}.bespoke-return-dialog button[type=submit]{background:#ae1624;color:white}
 .bespoke-premium-glow{color:#ffe497;text-shadow:0 0 7px #f5d77baa,0 0 18px #e6ba6380}
 .dad-early-access .bespoke-launch{height:auto;min-height:0;padding:8px 0 20px;text-align:left}.dad-early-access .bespoke-launch p{text-align:left}.dad-early-access form{margin-top:12px}.bespoke-offer__cta{cursor:pointer}
+
+/* Slide the picture up from behind the player, like a letter leaving an envelope. */
+.bespoke-player{isolation:isolate}
+.bespoke-player__reveal{position:relative;z-index:0;transition:grid-template-rows .85s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+.bespoke-player__stage{transform:translateY(100%);transition:transform .85s cubic-bezier(.22,1,.36,1)}
+.bespoke-player.is-open .bespoke-player__stage{transform:translateY(0)}
+.bespoke-player__skin{z-index:2}
+@media(prefers-reduced-motion:reduce){.bespoke-player__reveal,.bespoke-player__stage{transition:none}}
