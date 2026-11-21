@@ -63,6 +63,7 @@ export function studioVideoTimeline(result) {
 }
 export function studioCaptionOpacity(caption, time) {
   if (time < caption.start || (caption.end !== undefined && time >= caption.end)) return 0;
+  if (caption.noFade) return 1;
   if (caption.blink) return time % 1 < 0.7 ? 1 : 0;
   return Math.min(1, (time - caption.start) / CAPTION_FADE,
     caption.end === undefined ? 1 : (caption.end - time) / CAPTION_FADE);
@@ -213,8 +214,8 @@ export function studioTimelineArguments(layers, duration) {
   const filters = [`[0:v]fps=${STUDIO_VIDEO_FPS}[base]`]; let previous = 'base';
   layers.forEach((layer, index) => {
     const fadeOut = layer.end === undefined ? '' : `,fade=t=out:st=${layer.end - CAPTION_FADE}:d=${CAPTION_FADE}:alpha=1`;
-    const fade = layer.blink ? '' : `,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}`;
-    const blink = layer.blink ? `:enable='gte(t,${layer.start})*lt(t,${layer.end})*lt(mod(t,1),0.7)'` : '';
+    const fade = layer.blink || layer.noFade ? '' : `,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}`;
+    const blink = layer.noFade ? `:enable='gte(t,${layer.start})${layer.end === undefined ? '' : `*lt(t,${layer.end})`}'` : layer.blink ? `:enable='gte(t,${layer.start})*lt(t,${layer.end})*lt(mod(t,1),0.7)'` : '';
     filters.push(`[${index + 1}:v]fps=${STUDIO_VIDEO_FPS},format=rgba${fade}[text${index}]`);
     filters.push(`[${previous}][text${index}]overlay=0:${layer.y}:format=auto${blink}[frame${index}]`);
     previous = `frame${index}`;

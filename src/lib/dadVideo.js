@@ -34,8 +34,8 @@ export function dadTimeline(result){
  {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:Math.min(s.treat,s.viewing+7)},
  {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:Math.min(s.secondName-1,s.treat+7)},
  {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
- {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
- {id:'christmas-extra',text:'Merry Christmas! and all that!',start:christmasStart+4}];
+ {id:'christmas',noFade:true,text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
+ {id:'christmas-extra',noFade:true,text:'Merry Christmas! and all that!',start:christmasStart+4}];
 }
 function frames(image,result){
  const width=1280,height=720;
