@@ -16,7 +16,11 @@ export default function StudioMiniDash({ progress = 0, onFinish }) {
   }, [finished, playing]);
   if (finished && !playing) return null;
   return playing ? <SantaDashGame finished={finished} onClose={() => setPlaying(false)} /> : <div className="studio-mini-dash">
-    <button className="smw-button" type="button" onClick={() => setPlaying(true)}>Play Santa Dash</button>
+    <button className="studio-mini-dash__teaser" type="button" aria-label="Play Santa Dash" onClick={() => setPlaying(true)}>
+      <strong>Santa Dash</strong>
+      <span className="studio-mini-dash__teaser-copy">Mince pies &amp; Christmas magic.</span>
+      <span className="studio-mini-dash__teaser-play">Play Santa Dash <span aria-hidden="true">→</span></span>
+    </button>
     <small>A little game while you wait. Your video keeps building.</small>
   </div>;
 }
