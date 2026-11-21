@@ -116,3 +116,20 @@
 .dad-return-home-dialog::backdrop { background: #03150de6; }
 .dad-return-home-dialog h2 { margin: 0; color: #efda9a; }
 .dad-return-home-dialog .dad-actions { flex-wrap: wrap; }
+
+/* Match the kids Studio's 1220px desktop frame throughout the flow. */
+@media (min-width:761px) {
+ .dad-studio.smw-page { width:100%; max-width:1268px; padding-inline:24px; }
+ .dad-layout-focused { max-width:none; }
+}
+.dad-layout-opening {
+ border:12px solid #b99b4f;
+ border-image:url('/images/dad-armchair-framed-v1.png') 28 / 12px stretch;
+ padding:32px 40px;
+ background:#0e2e23;
+ background-clip:padding-box;
+}
+.dad-layout-opening > .dad-panel { border:0; padding:0; background:transparent; }
+@media (max-width:760px) {
+ .dad-layout-opening { padding:20px 16px; border-width:9px; border-image-width:9px; }
+}
