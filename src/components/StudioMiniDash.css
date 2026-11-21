@@ -67,3 +67,9 @@
 .studio-mini-dash__download{display:inline-block;padding:14px 22px;border:2px solid #e6ce86;border-radius:12px;background:#a20f21;color:#fff8e7;font-weight:700;text-decoration:none}
 .studio-mini-dash__download small{font-size:12px;font-weight:400;margin-top:5px}
 .studio-mini-dash__download:focus-visible{outline:3px solid #ffe5a1;outline-offset:4px}
+
+/* A soft snow bank hides the bottom of Santa's tumble naturally. */
+.studio-mini-dash__lane{border-bottom:18px solid #e4f2f8;border-image:linear-gradient(to bottom,#fff 0%,#f6fcff 35%,#c5dfed 100%) 1}
+.studio-mini-dash__lane::after{content:"";position:absolute;z-index:3;left:0;right:0;bottom:0;height:5px;pointer-events:none;background:radial-gradient(ellipse at 50% 100%,#fff 70%,transparent 74%) 0 0/42px 7px repeat-x}
+.studio-mini-dash__item--snowman{display:flex;align-items:flex-end}
+.studio-mini-dash__item--snowman img{display:block;width:44px;height:auto;transform:translateY(1px)}
