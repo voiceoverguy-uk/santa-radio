@@ -58,7 +58,7 @@ function frames(image,result){
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
  const recipientLayers=[{id:'name-badge',text:result.writtenName,start:result.clipStarts.habit,canvas:badge,y:430}];
- const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{maxLines:caption.id.startsWith('christmas')?1:2}));
+ const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528,maxLines:caption.id.startsWith('christmas')?1:2}));
  return {base,layers:[...recipientLayers,...layers]};
 }
 export async function dadPoster(result){
@@ -66,7 +66,7 @@ export async function dadPoster(result){
  const base=frames(image,result).base;
  const name=String(result.writtenName||'Dad');
  const text=`Santa message for Dad (${name})${result.age ? `\nAged ${result.age}` : ''}`;
- const caption=drawVideoCaption({id:'poster-recipient',text,start:0});
+ const caption=drawVideoCaption({id:'poster-recipient',text,start:0},{panelTop:528});
  base.getContext('2d').drawImage(caption.canvas,0,caption.y);
  return base.toDataURL('image/png');
 }
