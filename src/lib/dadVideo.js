@@ -34,8 +34,8 @@ export function dadTimeline(result){
  {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:s.treat},
  {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:s.secondName-1},
  {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
- {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+2},
- {id:'christmas-extra',text:'Merry Christmas!\n… and all that!',start:christmasStart+2}];
+ {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
+ {id:'christmas-extra',text:'Merry Christmas! and all that!',start:christmasStart+4}];
 }
 function frames(image,result){
  const width=1280,height=720;
@@ -58,7 +58,7 @@ function frames(image,result){
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
  const recipientLayers=[{id:'name-badge',text:result.writtenName,start:result.clipStarts.habit,canvas:badge,y:430}];
- const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption));
+ const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{maxLines:caption.id.startsWith('christmas')?1:2}));
  return {base,layers:[...recipientLayers,...layers]};
 }
 export async function dadPoster(result){

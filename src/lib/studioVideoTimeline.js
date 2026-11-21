@@ -157,7 +157,7 @@ export function wrapVideoCaption(context, text, maxWidth) {
   });
 }
 
-export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, shadowOffsetY = 0 } = {}) {
+export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, shadowOffsetY = 0, maxLines = 2 } = {}) {
   const canvas = makeCanvas(STUDIO_VIDEO_WIDTH, panelHeight);
   const text = canvas.getContext('2d');
   const incoming = caption.id === 'incoming';
@@ -166,11 +166,13 @@ export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, s
   let lines;
   while (true) {
     text.font = incoming ? `bold ${size}px "Courier New", monospace` : `bold ${size}px Georgia, serif`;
-    lines = wrapVideoCaption(text, caption.text, maxWidth);
-    if (size === 24 || (lines.length <= 2 && lines.every(line => text.measureText(line).width <= maxWidth))) break;
+    lines = wrapVideoCaption(text, caption.layoutText || caption.text, maxWidth);
+    if (size === 24 || (lines.length <= maxLines && lines.every(line => text.measureText(line).width <= maxWidth))) break;
     size--;
   }
-  text.textAlign = 'center';
+  lines = wrapVideoCaption(text, caption.text, maxWidth);
+  const captionX = caption.layoutText ? (STUDIO_VIDEO_WIDTH - text.measureText(caption.layoutText).width) / 2 : STUDIO_VIDEO_WIDTH / 2;
+  text.textAlign = caption.layoutText ? 'left' : 'center';
   text.textBaseline = 'middle';
   text.fillStyle = incoming ? '#baffad' : '#fff9ed';
   text.shadowColor = '#001b12';
@@ -178,7 +180,7 @@ export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, s
   text.shadowOffsetY = shadowOffsetY;
   const spacing = Math.min(size * 1.2, (panelHeight - size * 2) / Math.max(1, lines.length - 1));
   const first = panelHeight / 2 - 2 - (lines.length - 1) * spacing / 2;
-  lines.forEach((line, index) => text.fillText(line, STUDIO_VIDEO_WIDTH / 2, first + index * spacing, maxWidth));
+  lines.forEach((line, index) => text.fillText(line, captionX, first + index * spacing, maxWidth));
   return { ...caption, canvas, y: panelTop };
 }
 
