@@ -28,11 +28,11 @@ export function dadTimeline(result){
  const s=result.clipStarts;
  const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
  return [{id:'incoming',text:'Incoming message from Santa',start:0,end:5,blink:true},
- {id:'name',text:result.writtenName,start:s.name,end:s.age},
- {id:'age',text:`${result.writtenName}\nAged ${result.age}`,start:s.age,end:s.habit},
- {id:'habit',text:`You’re especially good at ${result.habit}`,start:s.habit,end:s.viewing},
- {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:s.treat},
- {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:s.secondName-1},
+ {id:'name',text:result.writtenName,start:s.name,end:Math.min(s.age,s.name+7)},
+ {id:'age',text:`${result.writtenName}\nAged ${result.age}`,start:s.age,end:Math.min(s.habit,s.age+7)},
+ {id:'habit',text:`You’re especially good at ${result.habit}`,start:s.habit,end:Math.min(s.viewing,s.habit+7)},
+ {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:Math.min(s.treat,s.viewing+7)},
+ {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:Math.min(s.secondName-1,s.treat+7)},
  {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
  {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
  {id:'christmas-extra',text:'Merry Christmas! and all that!',start:christmasStart+4}];
