@@ -191,7 +191,7 @@
   z-index: 3;
   inset: auto 0 100% auto;
   width: max-content;
-  max-width: min(100%, 17rem);
+  max-width: min(17rem, calc(100vw - 32px));
   padding: 9px 12px;
   border: 1px solid #d4af377a;
   border-radius: 8px;

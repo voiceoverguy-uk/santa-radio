@@ -23,7 +23,7 @@ export function studioVideoTimeline(result) {
   const approvedStart = Number.isFinite(result.clipStarts?.secondName) && result.clipStarts.secondName >= 0
     ? Math.max(0, result.clipStarts.secondName - 2) : placeStart + 13;
   const selectedStrengths = [
-    { id: 'talent', text: details.talent ? `Great at ${details.talent}` : '' },
+    { id: 'talent', text: details.talent ? `Great at ${details.talent.charAt(0).toLocaleLowerCase('en-GB')}${details.talent.slice(1)}` : '' },
     { id: 'activity', text: details.activity ? `Well done for trying hard at ${details.activity}` : '' },
     { id: 'achievement', text: details.achievement || '' },
   ].filter(caption => caption.text);
@@ -35,7 +35,7 @@ export function studioVideoTimeline(result) {
       end: Math.min(index + 1 < selectedStrengths.length
         ? result.clipEnds[selectedStrengths[index + 1].id] - 2 : treatStart - 1, treatStart - 1),
     })).filter(caption => caption.end > caption.start)
-    : strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: Math.min(50, treatStart - 1) }] : [];
+    : strengths ? [{ id: 'strengths', text: `Great at ${strengths.charAt(0).toLocaleLowerCase('en-GB')}${strengths.slice(1)}`, start: 38, end: Math.min(50, treatStart - 1) }] : [];
 
   const choiceCaptions = [
     ...strengthCaptions,
@@ -57,8 +57,8 @@ export function studioVideoTimeline(result) {
     { id: 'age', text: `${introduction}\nAged ${studioAge(result)}`, start: ageStart, end: badgeStart },
     { id: 'name-badge', text: name, start: badgeStart },
     ...personalisedCaptions,
-    { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 9 },
-    { id: 'christmas', text: 'Merry Christmas', start: approvedStart + 9 },
+    { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 + CAPTION_FADE },
+    { id: 'christmas', text: 'Merry Christmas!', start: approvedStart + 9 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
@@ -138,6 +138,21 @@ export function wrapVideoCaption(context, text, maxWidth) {
       }
     }
     if (line) lines.push(line);
+    if (lines.length === 2) {
+      const words = paragraph.trim().split(/\s+/);
+      const candidates = [];
+      for (let split = 1; split < words.length; split++) {
+        const first = words.slice(0, split).join(' '), second = words.slice(split).join(' ');
+        const firstWidth = context.measureText(first).width, secondWidth = context.measureText(second).width;
+        if (firstWidth > maxWidth || secondWidth > maxWidth) continue;
+        // Prefer balanced phrases, with at least three words on the last line.
+        const orphanPenalty = words.length - split < 3 && words.length >= 5 ? maxWidth * 4 : 0;
+        const danglingWord = /^(at|for|the|a|an|and|to|of|with)$/i.test(words[split - 1]) ? maxWidth : 0;
+        candidates.push({ lines: [first, second], cost: Math.abs(firstWidth - secondWidth) + orphanPenalty + danglingWord });
+      }
+      candidates.sort((a, b) => a.cost - b.cost);
+      if (candidates.length) return candidates[0].lines;
+    }
     return lines;
   });
 }

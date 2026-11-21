@@ -11,3 +11,5 @@
 .studio-mini-dash__controls button { min-height: 48px; touch-action: manipulation; }
 .studio-mini-dash button:focus-visible { outline: 3px solid #ffe5a1; outline-offset: 3px; }
 .studio-mini-dash small { display: block; margin-top: 10px; }
+.studio-mini-dash__item--tree, .studio-mini-dash__item--snowman { height: 60px; }
+.studio-mini-dash__santa { transform-origin: 50% 90%; }

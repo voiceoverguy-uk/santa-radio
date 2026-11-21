@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { takeStudioReturnFragment } from '../lib/studioReturnFragment.js';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
+import './StudioReturnAccess.css';
 
 // Tokens stay in memory. Email-link scanners cannot redeem on a GET: the
 // visitor explicitly chooses Open my Studio before the protected POST.
@@ -43,7 +44,7 @@ export default function StudioReturnAccess() {
         window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
         navigate(STUDIO_PATH, { replace: true });
       } else if (data.requested === true) {
-        setMessage(data.message);
+        setMessage('If your email is registered with a purchase, check your inbox for your access link. Please check your spam folder too.');
         setEmail('');
       } else throw new Error('Return access could not be confirmed.');
     } catch (failure) {
@@ -64,7 +65,7 @@ export default function StudioReturnAccess() {
       </>}
       <button type="submit" disabled={busy}>{busy ? 'Please wait…' : token ? 'Open my Studio' : 'Email a fresh access link'}</button>
       {token && <button type="button" disabled={busy} onClick={() => setToken('')}>Request a fresh link instead</button>}
-      {message && <p role="status">{message}</p>}
+      {message && <div className="studio-return-confirmation" role="status"><strong>Request received</strong><p>{message}</p></div>}
       {error && <p role="alert">{error}</p>}
     </form>
     <p>Your £6.50 purchase includes two successful creations. Returning keeps your remaining allowance; it does not restore recordings. Download your video message and gifts before leaving Studio.</p>

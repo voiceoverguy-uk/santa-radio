@@ -3,7 +3,7 @@ import './SantaVideoPlayer.css';
 
 const clockTime = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 
-export default function SantaVideoPlayer({ label, onPlay, onPause, onEnded, onPlaying, onError, glow = false, festiveControls = false, onTimeUpdate, onDurationChange, ...media }) {
+export default function SantaVideoPlayer({ label, onPlay, onPause, onEnded, onPlaying, onError, glow = false, festiveControls = false, expandable = true, onTimeUpdate, onDurationChange, ...media }) {
   const skin = festiveControls === 'kids' ? 'kids' : 'dad';
   const video = useRef(null);
   const player = useRef(null);
@@ -29,10 +29,10 @@ export default function SantaVideoPlayer({ label, onPlay, onPause, onEnded, onPl
   };
   return <div ref={player} style={{'--expanded-video-width': `${expandedWidth}px`}} className={`santa-video-player${expanded ? ' santa-video-player--expanded' : ''}${glow ? ' santa-video-player--glow' : ''}${festiveControls ? ' santa-video-player--bar' : ''}`}>
     <div className="santa-video-player__screen">
-    <button ref={expandButton} type="button" className="santa-video-player__expand" aria-label={expanded ? 'Reduce video size' : 'Expand video'} aria-expanded={expanded} onClick={() => {
+    {expandable && <button ref={expandButton} type="button" className="santa-video-player__expand" aria-label={expanded ? 'Reduce video size' : 'Expand video'} aria-expanded={expanded} onClick={() => {
       if (!expanded) setExpandedWidth(player.current.getBoundingClientRect().width * 2);
       setExpanded(value => !value);
-    }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d={expanded ? 'M4 9h5V4m11 5h-5V4M4 15h5v5m11-5h-5v5' : 'M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5'} /></svg></button>
+    }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d={expanded ? 'M4 9h5V4m11 5h-5V4M4 15h5v5m11-5h-5v5' : 'M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5'} /></svg></button>}
     <video {...media} ref={video} muted={festiveControls ? muted : media.muted} playsInline
       onTimeUpdate={event => {
         if (festiveControls) setPosition(event.currentTarget.currentTime);

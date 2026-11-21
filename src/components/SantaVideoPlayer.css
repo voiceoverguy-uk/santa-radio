@@ -41,3 +41,5 @@
 .santa-video-player__seek:focus-within { outline: 2px solid #ffdf75; outline-offset: 2px; }
 .santa-video-player__time { padding-inline: 8%; color: #e6d6a3; text-align: right; font-size: .78rem; font-variant-numeric: tabular-nums; }
 .santa-video-player--bar.santa-video-player--expanded { width: min(var(--expanded-video-width), calc(100vw - 32px), calc((100dvh - 170px) * 16 / 9)); }
+
+.santa-video-player__seek { top: 50%; }

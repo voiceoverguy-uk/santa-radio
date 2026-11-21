@@ -1,5 +1,4 @@
 import StudioScenePicker from './StudioScenePicker.jsx';
-import StudioMiniDash from './StudioMiniDash.jsx';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
@@ -308,7 +307,6 @@ export default function WorkshopMessageAudio({
         </div>
         <div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" /><span>Preparing…</span></div>
       </div>
-      <StudioMiniDash />
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
@@ -318,16 +316,16 @@ export default function WorkshopMessageAudio({
       {!busy && phase !== 'ready' && <div className="smw-actions">{messageAction()}</div>}
       {reviewActionTarget ? createPortal(
         <button type="button" className="smw-button smw-button-next"
-          disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>,
+          disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message →</button>,
         reviewActionTarget
       ) : <button type="button" className="smw-button smw-button-next"
-        disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>}
+        disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message →</button>}
     </>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       keepsakes={index === results.length - 1 ? keepsakes : null}
       footer={index === results.length - 1 && url ? <div className="smw-finished-footer">
-        {remainingNotice}
+        {!finalMessageAvailable && remainingNotice}
         {startAction()}
       </div> : null}
       ordinal={index + 1} visible={visible}
@@ -345,8 +343,13 @@ export default function WorkshopMessageAudio({
     </div>
   );
   return <>
-    {deliveryStep === 'review' && startAction()}
-    {deliveryStep === 'review' && (reviewActionTarget ? createPortal(messageAction(), reviewActionTarget) : messageAction())}
+    {deliveryStep === 'review' && (() => {
+      const actions = <div className="smw-review-header-buttons" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+        {startAction()}
+        {messageAction()}
+      </div>;
+      return reviewActionTarget ? createPortal(actions, reviewActionTarget) : actions;
+    })()}
     {deliveryStep === 'review' && voucherNotice}
     {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>

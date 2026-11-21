@@ -25,11 +25,11 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
         />
         {accessFeedback}
         <BespokeMessageOffers previewName={previewName} />
+        {children}
         {directEntry && <details className="studio-entry-voucher">
           <summary>Have a friends voucher code?</summary>
           <WorkshopPasswordForm onAuthorized={onAuthorized} compact />
         </details>}
-        {children}
         {!directEntry && <SantaMessageReviews />}
       </div>
     </section>

@@ -3,7 +3,7 @@ import { put, head } from '@vercel/blob';
 import { databasePool } from './contenders-database.js';
 import { databasePool as payments } from './name-request-store.js';
 import { livePaidPurchaseId } from './studio-live-access.js';
-import { digest } from './studio-live-store.js';
+import { digest, transaction } from './studio-live-store.js';
 export const accountEnabled = () => process.env.STUDIO_ACCOUNTS_ENABLED === 'true';
 export const kinds = { video: 'video/mp4', audio: 'audio/mpeg', certificate: 'application/pdf', letter: 'application/pdf', picture: 'image/png' };
 export function expiryFor(now = new Date()) {
@@ -21,12 +21,17 @@ export async function archiveRecording(req, audio, operation, name, signal) {
  const purchase = await livePaidPurchaseId(req);
  if (!purchase) return null;
  const db = databasePool();
- const linked = await db.query('SELECT 1 FROM santa_message_accounts WHERE purchase_id=$1', [purchase]);
- if (!linked.rowCount) return null;
  const expiry = expiryFor();
- const { rows: [row] } = await db.query(`INSERT INTO santa_saved_messages(id,purchase_id,operation_id,child_name,expires_at)
- VALUES($1,$2,$3,$4,$5) ON CONFLICT(operation_id) DO UPDATE SET operation_id=EXCLUDED.operation_id RETURNING *`, [randomUUID(), purchase, operation, name.slice(0,80), expiry]);
- if (row.purchase_id !== purchase) throw new Error('Operation belongs to another purchase');
+ const row = await transaction(db, async client => {
+  const linked = await client.query('SELECT 1 FROM santa_message_accounts WHERE purchase_id=$1 FOR UPDATE', [purchase]);
+  if (!linked.rowCount) return null;
+  const { rows: [saved] } = await client.query(`INSERT INTO santa_saved_messages(id,purchase_id,operation_id,child_name,expires_at)
+   VALUES($1,$2,$3,$4,$5) ON CONFLICT(operation_id) DO UPDATE SET operation_id=EXCLUDED.operation_id RETURNING *`,
+   [randomUUID(), purchase, operation, name.slice(0,80), expiry]);
+  if (saved.purchase_id !== purchase) throw new Error('Operation belongs to another purchase');
+  return saved;
+ });
+ if (!row) return null;
  const path = assetPath(row.id, 'audio');
  await put(path, audio, { access:'private', abortSignal:signal, contentType:kinds.audio, addRandomSuffix:false, allowOverwrite:true,
  ttlDays:Math.max(1, Math.ceil((new Date(row.expires_at)-Date.now())/86400000)) });

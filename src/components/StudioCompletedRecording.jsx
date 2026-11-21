@@ -62,7 +62,7 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
     {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioMiniDash />}</div>}
     {error && <div className="smw-finished-preparation" role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
-      <SantaVideoPlayer festiveControls="kids" poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
+      <SantaVideoPlayer expandable={false} festiveControls="kids" poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
         playingVideo.current = event.currentTarget;
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
         resume.current = radio?.pauseForMessage?.() || null;
@@ -74,10 +74,10 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
             onClick={() => { setDownloaded(true); onDownloadRequested(); }}>Download your message <span aria-hidden="true">↓</span></a>
           {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
         </div>
-        <StudioBundleDownload result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
+        <StudioBundleDownload showReminder={false} result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
       </div>
-      <div className="smw-finished-account"><StudioAccountSave result={result} /></div>
-      {keepsakes && <div className="smw-finished-keepsakes">{keepsakes}</div>}
+      {keepsakes && <div className="smw-finished-keepsakes" style={{ borderTop: 0, paddingTop: 0 }}>{keepsakes}</div>}
+      <div className="smw-finished-account" style={{ borderTop: '1px solid #d4af3748', paddingTop: 16 }}><p>Don't forget to download before leaving</p><StudioAccountSave result={result} /></div>
       {footer}
     </>}
   </section>;

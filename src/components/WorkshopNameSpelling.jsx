@@ -195,7 +195,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
       {editorOnly && editor}
       {triggerTarget && !editing && spelling && <p>Gift name: <strong>{previewName}</strong></p>}
       {collapsible ? <details className="smw-gift-reveal">
-        <summary>View your Santa gifts</summary>
+        <summary>Your FREE Santa Gifts</summary>
         {keepsakePreviews}
       </details> : keepsakePreviews}
 

@@ -321,31 +321,7 @@ export default function SantaMessageWorkshop() {
   const stage = stages[stageIndex];
   const isReview = stageIndex === stages.length;
   const isNameAndAge = stage?.key === 'name';
-  useBrowserLayoutEffect(() => {
-    if (!isNameAndAge || isReview) return;
-    const layout = stageHeading.current?.closest('.smw-builder')?.querySelector('.smw-start-layout')
-      || document.querySelector('.smw-start-layout');
-    const artwork = layout?.querySelector('.smw-start-artwork');
-    const picture = artwork?.querySelector('.smw-scene-picture');
-    const fields = layout?.querySelector('.smw-stage-fields');
-    const logo = artwork?.querySelector('.smw-start-logo');
-    if (!picture || !fields || !logo) return;
-    const sizePicture = () => {
-      if (!window.matchMedia('(min-width: 761px)').matches) {
-        picture.style.removeProperty('width');
-        return;
-      }
-      const availableHeight = fields.getBoundingClientRect().bottom - picture.getBoundingClientRect().top;
-      const width = Math.min(artwork.clientWidth, Math.max(0, availableHeight) * 16 / 9);
-      if (width > 0) picture.style.width = `${width}px`;
-    };
-    const observer = new ResizeObserver(sizePicture);
-    observer.observe(fields);
-    observer.observe(logo);
-    window.addEventListener('resize', sizePicture);
-    sizePicture();
-    return () => { observer.disconnect(); window.removeEventListener('resize', sizePicture); };
-  }, [isNameAndAge, isReview, chosenName?.id]);
+
 
   const catalogueCategory = isNameAndAge ? 'age' : stage?.key === 'talent' ? talentCategory : stage?.key;
   const activityRecords = groupWorkshopActivities(catalogueState.catalogue?.categories?.activity || []);
@@ -688,13 +664,7 @@ export default function SantaMessageWorkshop() {
               ))}
             </ol>
           </>}
-          {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
-            <strong>ADMIN — Two-message test complete</strong>
-            <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
-            <button type="button" className="smw-button" disabled={generation.checking} onClick={async () => {
-              if (await generation.startAnother()) window.location.reload();
-            }}>{generation.checking ? 'Resetting test…' : 'ADMIN — Start a new test'}</button>
-          </aside>}
+
           {accessKind === 'paid-sandbox' && <aside className="smw-preview-note" aria-label="Sandbox test notice">
             <span className="smw-preview-mark" aria-hidden="true">
               <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2-2.2 6.3-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
@@ -716,7 +686,7 @@ export default function SantaMessageWorkshop() {
                   <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
                   <StudioScenePicture scene={STUDIO_VIDEO_SCENES[openingSceneIndex]}
                     alt={STUDIO_VIDEO_SCENES[openingSceneIndex].label}
-                    caption={chosenName ? `A message for ${chosenName.name}${selectedAge ? ` (${selectedAge.label})` : ''}` : undefined} />
+                    caption={chosenName ? <span>A message for {chosenName.name}{selectedAge && <><br /><span style={{ whiteSpace: 'nowrap' }}>({selectedAge.label})</span></>}</span> : undefined} />
                 </div>}
               <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && stage.key === 'place')}>
               {stage.key === 'activity' && (
@@ -764,6 +734,13 @@ export default function SantaMessageWorkshop() {
               ) : stage.key === 'talent' ? (
                 <div className="smw-talent-step">
                   <div className="smw-talent-categories" role="group" aria-label="Choose a talent category">
+                    <button type="button" className={talentCategory === 'funny' ? 'is-selected' : ''}
+                      aria-pressed={talentCategory === 'funny'} onClick={() => {
+                        if (talentCategory !== 'funny') {
+                          setTalentCategory('funny');
+                          choose('talent', null);
+                        }
+                      }}>Something fun</button>
                     <button type="button" className={talentCategory === 'sports' ? 'is-selected' : ''}
                       aria-pressed={talentCategory === 'sports'} onClick={() => {
                         if (talentCategory !== 'sports') {
@@ -771,13 +748,6 @@ export default function SantaMessageWorkshop() {
                           choose('talent', null);
                         }
                       }}>Sports &amp; activities</button>
-                    <button type="button" className={talentCategory === 'funny' ? 'is-selected' : ''}
-                      aria-pressed={talentCategory === 'funny'} onClick={() => {
-                        if (talentCategory !== 'funny') {
-                          setTalentCategory('funny');
-                          choose('talent', null);
-                        }
-                      }}>Something funny</button>
                   </div>
                   {catalogueState.status === 'loading' ? (
                     <div className="smw-catalogue-loading" role="status" aria-live="polite">
@@ -804,7 +774,7 @@ export default function SantaMessageWorkshop() {
                     <WorkshopSearchableChoices
                       key={talentCategory}
                       category={talentCategory}
-                      label={talentCategory === 'sports' ? 'Sports & activities' : 'Something funny'}
+                      label={talentCategory === 'sports' ? 'Sports & activities' : 'Something fun'}
                       options={catalogueOptions}
                       value={choices.talent?.category === talentCategory ? choices.talent.id : ''}
                       onChange={id => choose('talent', { category: talentCategory, id: String(id) })}
@@ -1006,6 +976,13 @@ export default function SantaMessageWorkshop() {
                       ?.some(record => record.id === choices.talent.id)}
                 />
               </div>
+          {deliveryStep === 'result' && generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
+            <strong>ADMIN — Two-message test complete</strong>
+            <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
+            <button type="button" className="smw-button" disabled={generation.checking} onClick={async () => {
+              if (await generation.startAnother()) window.location.reload();
+            }}>{generation.checking ? 'Resetting test…' : 'ADMIN — Start a new test'}</button>
+          </aside>}
           {workshopSoundNotice && (
             <p className="smw-sound-notice" role="status" aria-live="polite">
               {workshopSoundNotice}
