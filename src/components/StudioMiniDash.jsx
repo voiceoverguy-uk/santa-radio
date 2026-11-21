@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './StudioMiniDash.css';
 
-const ITEMS = ['pie', 'pie', 'tree', 'pie', 'snowman', 'pie', 'tree', 'chimney'];
+import { RUN_SPEED, startJump, advanceJump, nextItem, nextGap } from '../lib/studioMiniDashPhysics.js';
 const ASSETS = '/media/studio-mini-dash/';
 export default function StudioMiniDash() {
   const [playing, setPlaying] = useState(false);
@@ -13,7 +13,9 @@ export default function StudioMiniDash() {
 
 function SantaDashGame({ onClose }) {
   const lane = useRef(null), santa = useRef(null), items = useRef([]);
-  const engine = useRef({ jump: 0, tripUntil: 0, time: 1, objects: null });
+  const engine = useRef({ height: 0, velocity: 0, held: false, tripUntil: 0, time: 1, objects: null });
+  const [kinds, setKinds] = useState(() => Array.from({ length: 8 }, () => nextItem()));
+  const pointer = useRef(null);
   const sound = useRef({ context: null, buffers: {}, muted: false });
   const [score, setScore] = useState(0), [muted, setMuted] = useState(false);
   const [notice, setNotice] = useState('Collect pies and jump over the obstacles!');
@@ -40,41 +42,71 @@ function SantaDashGame({ onClose }) {
     source.onended = () => { source.disconnect(); gain.disconnect(); };
   };
   useEffect(() => () => { sound.current.context?.close().catch(() => {}); }, []);
-  const jump = () => {
+  const release = () => { engine.current.held = false; pointer.current = null; };
+  const press = () => {
     enableSound();
-    if (paused) { setPaused(false); return; }
-    if (!engine.current.jump && engine.current.time >= engine.current.tripUntil) engine.current.jump = engine.current.time;
+    if (paused) setPaused(false);
+    if (engine.current.held) return;
+    engine.current.held = true;
+    startJump(engine.current);
   };
+  const holdControls = {
+    onPointerDown: event => {
+      if (event.button !== 0 || pointer.current !== null) return;
+      event.preventDefault();
+      pointer.current = event.pointerId;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      press();
+    },
+    onPointerUp: release, onPointerCancel: release, onLostPointerCapture: release,
+    onKeyDown: event => {
+      if (event.code !== 'Space' && event.code !== 'Enter') return;
+      event.preventDefault();
+      if (!event.repeat) press();
+    },
+    onKeyUp: event => {
+      if (event.code === 'Space' || event.code === 'Enter') { event.preventDefault(); release(); }
+    },
+    onBlur: release,
+  };
+  const accessibleClick = event => { if (event.detail === 0 && !engine.current.held) { press(); release(); } };
+  useEffect(() => {
+    window.addEventListener('blur', release);
+    window.addEventListener('pointerup', release);
+    window.addEventListener('keyup', release);
+    return () => { window.removeEventListener('blur', release); window.removeEventListener('pointerup', release); window.removeEventListener('keyup', release); };
+  }, []);
   useEffect(() => {
     if (paused) return;
     let frame, last = performance.now();
-    const gap = 230;
+
     let laneWidth = lane.current.clientWidth;
     const resize = new ResizeObserver(() => { laneWidth = lane.current.clientWidth; });
     resize.observe(lane.current);
-    const objects = engine.current.objects ||= ITEMS.map((kind, i) => ({ kind, x: Math.min(laneWidth, 420) + i * gap, checked: false, collected: false }));
+    let spawnX = Math.min(laneWidth, 420);
+    const objects = engine.current.objects ||= kinds.map(kind => { const object = { kind, x: spawnX, checked: false, collected: false }; spawnX += nextGap(); return object; });
     const tick = frameTime => {
       const dt = Math.min((frameTime - last) / 1000, .05); last = frameTime;
       const now = engine.current.time += dt * 1000;
-      const elapsed = engine.current.jump ? (now - engine.current.jump) / 850 : 0;
-      const height = elapsed > 0 && elapsed < 1 ? Math.sin(elapsed * Math.PI) * 105 : 0;
-      if (elapsed >= 1) engine.current.jump = 0;
+      const height = advanceJump(engine.current, dt);
       const tripped = now < engine.current.tripUntil;
       santa.current.style.transform = tripped ? 'translate3d(0,6px,0) rotate(65deg)' : `translate3d(0,${-height}px,0)`;
       objects.forEach((object, i) => {
         const element = items.current[i];
-        object.x -= 185 * dt;
+        object.x -= RUN_SPEED * dt;
         if (!object.checked && object.x < 100 && object.x > 25) {
           if (object.kind === 'pie' && height > 35 && !tripped) {
             object.checked = true; object.collected = true; setScore(n => n + 10); playSound('pie');
             setNotice('Mince pie collected!'); element.style.visibility = 'hidden';
           } else if (object.kind !== 'pie' && height < 60 && !tripped) {
-            object.checked = true; engine.current.tripUntil = now + 650; engine.current.jump = 0;
+            object.checked = true; engine.current.tripUntil = now + 650; engine.current.height = 0; engine.current.velocity = 0;
             setNotice('Oops! Jump a little earlier — keep going!');
           }
         }
         if (object.x < -60) {
-          object.x = Math.max(laneWidth + 40, ...objects.map(other => other.x)) + gap;
+          object.x = Math.max(laneWidth + 40, ...objects.map(other => other.x)) + nextGap();
+          object.kind = nextItem(object.kind);
+          setKinds(current => current.map((kind, index) => index === i ? object.kind : kind));
           object.checked = false; object.collected = false;
         }
         element.style.visibility = object.collected ? 'hidden' : 'visible';
@@ -83,6 +115,7 @@ function SantaDashGame({ onClose }) {
       frame = requestAnimationFrame(tick);
     };
     const visibility = () => {
+      release();
       cancelAnimationFrame(frame);
       if (!document.hidden) { last = performance.now(); frame = requestAnimationFrame(tick); }
     };
@@ -92,21 +125,21 @@ function SantaDashGame({ onClose }) {
   }, [paused]);
   return <section className="studio-mini-dash" aria-label="Mini Santa Dash while your video is prepared">
     <div className="studio-mini-dash__heading"><strong>Santa Dash</strong><span>Score: {score}</span></div>
-    <div className="studio-mini-dash__lane" ref={lane}>
-      <button ref={santa} className="studio-mini-dash__santa" type="button" aria-label="Make Santa jump" onClick={jump}>
+    <div className="studio-mini-dash__lane" ref={lane} {...holdControls}>
+      <button ref={santa} className="studio-mini-dash__santa" type="button" aria-label="Make Santa jump" onClick={accessibleClick}>
         <img src={`/images/studio-runners/classic${paused ? '-still.png' : '.webp'}`} width="60" height="64" alt="" draggable="false" />
       </button>
-      {ITEMS.map((kind, i) => <span key={i} ref={node => { items.current[i] = node; }} className={`studio-mini-dash__item studio-mini-dash__item--${kind}`} aria-hidden="true" style={{ visibility: paused ? 'hidden' : undefined }}>
+      {kinds.map((kind, i) => <span key={i} ref={node => { items.current[i] = node; }} className={`studio-mini-dash__item studio-mini-dash__item--${kind}`} aria-hidden="true" >
         {kind === 'chimney' ? <span className="studio-mini-dash__chimney" /> : <img src={kind === 'pie' ? '/images/tracker/mince-pie.png' : `${ASSETS}${kind}.png`} alt="" width={kind === 'pie' ? 36 : 44} height={kind === 'pie' ? 36 : 60} />}
       </span>)}
     </div>
     <div className="studio-mini-dash__controls">
-      <button className="smw-button" type="button" onClick={jump}>{paused ? 'Play Santa Dash' : 'Jump ↑'}</button>
-      {!paused && <button className="smw-change" type="button" onClick={() => { setPaused(true); sound.current.context?.suspend().catch(() => {}); }}>Pause game</button>}
+      <button className="smw-button" type="button"  {...holdControls} onClick={accessibleClick}>{paused ? 'Play Santa Dash' : 'Jump ↑'}</button>
+      {!paused && <button className="smw-change" type="button" onClick={() => { release(); setPaused(true); sound.current.context?.suspend().catch(() => {}); }}>Pause game</button>}
       <button className="smw-change" type="button" aria-pressed={muted} onClick={() => { enableSound(); sound.current.muted = !muted; setMuted(!muted); }}>{muted ? 'Sound on' : 'Mute sound'}</button>
       <button className="smw-change" type="button" onClick={onClose}>Close game</button>
       <span>{notice}</span>
     </div>
-    <small>Tap Santa or Jump. With the button selected, Space jumps too. Your video keeps building.</small>
+    <small>Press and hold the game or Jump for a higher jump. Release for a shorter hop. You can also hold Space on the Jump button. Your video keeps building.</small>
   </section>;
 }

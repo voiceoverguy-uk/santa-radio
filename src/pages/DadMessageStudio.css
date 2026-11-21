@@ -168,3 +168,11 @@
 .dad-scene-preview .dad-scene-arrow-left img { transform:translateY(-50%) scaleX(-1); }
 .dad-scene-preview .dad-scene-arrow-right img { left:auto; right:10%; }
 .dad-scene-dialog .dad-scene-preview .dad-scene-arrow:focus-visible { outline:3px solid #fff2c7; outline-offset:-3px; }
+
+.dad-preparation { padding:24px; border:1px solid #918239; border-radius:20px; background:#d4af3708; }
+.dad-preparation-progress { display:flex; gap:16px; align-items:center; margin-top:28px; }
+.dad-preparation-progress .dad-progress { flex:1; height:20px; }
+.dad-preparation-progress>span { flex-shrink:0; font-variant-numeric:tabular-nums; }
+.dad-preparation>p { margin:6px 0 24px; color:#c5d1c3; }
+.dad-studio .dad-cancel-preparation { margin-top:20px; }
+@media(max-width:600px) { .dad-preparation { padding:16px; } }

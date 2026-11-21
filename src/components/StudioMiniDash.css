@@ -16,3 +16,10 @@
 
 .studio-mini-dash__lane { contain: layout paint; }
 .studio-mini-dash__santa, .studio-mini-dash__item { will-change: transform; }
+
+.studio-mini-dash__lane { height:240px; touch-action:none; user-select:none; }
+.studio-mini-dash__controls .smw-button { touch-action:none; user-select:none; }
+/* Keep shared game controls consistent inside Dad's themed page. */
+.dad-studio .studio-mini-dash .smw-button { background:#eee; color:#111; border:0; border-radius:16px; padding:14px 24px; font-weight:700; }
+.dad-studio .studio-mini-dash .smw-change { background:transparent; border:0; color:#e6ce86; }
+.dad-studio .studio-mini-dash__santa { padding:2px; border:0; background:transparent; }
