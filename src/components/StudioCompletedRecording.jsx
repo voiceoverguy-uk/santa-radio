@@ -28,12 +28,13 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
   const [hideProgress, setHideProgress] = useState(false);
+  const [gameDone, setGameDone] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
   const finish = () => { const restore = resume.current; resume.current = null; restore?.(); };
   useEffect(() => {
     if (result.videoBlob) return;
     const controller = new AbortController();
-    setError(''); setProgress(null); setHideProgress(false);
+    setError(''); setProgress(null); setHideProgress(false); setGameDone(false);
     callbacks.current.onBundlePreparing?.(true);
     createStudioVideo(result, { signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value === null ? null : 0.2 + value * 0.8); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
       .then(blob => { if (!controller.signal.aborted) callbacks.current.onVideoReady?.(blob); })
@@ -45,9 +46,9 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
     if (!result.videoBlob) return;
     const objectUrl = URL.createObjectURL(result.videoBlob);
     setUrl(objectUrl); setProgress(1); setStatus('Your personalised Christmas video is ready.');
-    const timer = setTimeout(() => setHideProgress(true), 3000);
-    return () => { clearTimeout(timer); URL.revokeObjectURL(objectUrl); };
+    return () => { URL.revokeObjectURL(objectUrl); };
   }, [result.videoBlob]);
+  useEffect(() => { if (result.videoBlob && gameDone) setHideProgress(true); }, [result.videoBlob, gameDone]);
   useEffect(() => {
     const stop = () => { playingVideo.current?.pause(); finish(); };
     document.addEventListener('studio-stop-audio', stop);
@@ -59,9 +60,9 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
     if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
   }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
     <h4>Your message from Santa to {result.writtenName}</h4>
-    {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioMiniDash />}</div>}
+    {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{<StudioMiniDash progress={progress} onFinish={() => setGameDone(true)} />}</div>}
     {error && <div className="smw-finished-preparation" role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
-    {url && <>
+    {url && gameDone && <>
       <SantaVideoPlayer expandable={false} festiveControls="kids" poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
         playingVideo.current = event.currentTarget;
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();

@@ -23,3 +23,9 @@
 .dad-studio .studio-mini-dash .smw-button { background:#eee; color:#111; border:0; border-radius:16px; padding:14px 24px; font-weight:700; }
 .dad-studio .studio-mini-dash .smw-change { background:transparent; border:0; color:#e6ce86; }
 .dad-studio .studio-mini-dash__santa { padding:2px; border:0; background:transparent; }
+
+.studio-mini-dash__item--pie { display:flex; gap:12px; width:84px; }
+.studio-mini-dash__item--pie img { flex-shrink:0; }
+.studio-mini-dash__item--gary { height:60px; }
+.studio-mini-dash--finished { padding:30px 16px; text-align:center; }
+.studio-mini-dash--finished>strong { font-size:1.5rem; color:#e6ce86; }

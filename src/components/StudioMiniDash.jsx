@@ -3,15 +3,25 @@ import './StudioMiniDash.css';
 
 import { RUN_SPEED, startJump, advanceJump, nextItem, nextGap } from '../lib/studioMiniDashPhysics.js';
 const ASSETS = '/media/studio-mini-dash/';
-export default function StudioMiniDash() {
+export default function StudioMiniDash({ progress = 0, onFinish }) {
   const [playing, setPlaying] = useState(false);
-  return playing ? <SantaDashGame onClose={() => setPlaying(false)} /> : <div className="studio-mini-dash">
+  const finishCallback = useRef(onFinish);
+  finishCallback.current = onFinish;
+  const finished = progress !== null && progress >= .95;
+  useEffect(() => {
+    if (!finished) return;
+    if (!playing) { finishCallback.current?.(); return; }
+    const timer = setTimeout(() => finishCallback.current?.(), 3000);
+    return () => clearTimeout(timer);
+  }, [finished, playing]);
+  if (finished && !playing) return null;
+  return playing ? <SantaDashGame finished={finished} onClose={() => setPlaying(false)} /> : <div className="studio-mini-dash">
     <button className="smw-button" type="button" onClick={() => setPlaying(true)}>Play Santa Dash</button>
     <small>A little game while you wait. Your video keeps building.</small>
   </div>;
 }
 
-function SantaDashGame({ onClose }) {
+function SantaDashGame({ onClose, finished }) {
   const lane = useRef(null), santa = useRef(null), items = useRef([]);
   const engine = useRef({ height: 0, velocity: 0, held: false, tripUntil: 0, time: 1, objects: null });
   const [kinds, setKinds] = useState(() => Array.from({ length: 8 }, () => nextItem()));
@@ -44,6 +54,7 @@ function SantaDashGame({ onClose }) {
   useEffect(() => () => { sound.current.context?.close().catch(() => {}); }, []);
   const release = () => { engine.current.held = false; pointer.current = null; };
   const press = () => {
+    if (finished) return;
     enableSound();
     if (paused) setPaused(false);
     if (engine.current.held) return;
@@ -77,7 +88,7 @@ function SantaDashGame({ onClose }) {
     return () => { window.removeEventListener('blur', release); window.removeEventListener('pointerup', release); window.removeEventListener('keyup', release); };
   }, []);
   useEffect(() => {
-    if (paused) return;
+    if (paused || finished) return;
     let frame, last = performance.now();
 
     let laneWidth = lane.current.clientWidth;
@@ -94,22 +105,27 @@ function SantaDashGame({ onClose }) {
       objects.forEach((object, i) => {
         const element = items.current[i];
         object.x -= RUN_SPEED * dt;
-        if (!object.checked && object.x < 100 && object.x > 25) {
-          if (object.kind === 'pie' && height > 35 && !tripped) {
-            object.checked = true; object.collected = true; setScore(n => n + 10); playSound('pie');
-            setNotice('Mince pie collected!'); element.style.visibility = 'hidden';
-          } else if (object.kind !== 'pie' && height < 60 && !tripped) {
-            object.checked = true; engine.current.tripUntil = now + 650; engine.current.height = 0; engine.current.velocity = 0;
-            setNotice('Oops! Jump a little earlier — keep going!');
-          }
+        if (object.kind === 'pie') {
+          [0, 48].forEach((offset, pieIndex) => {
+            const key = pieIndex === 0 ? 'checked' : 'bonusChecked';
+            if (!object[key] && object.x + offset < 100 && object.x + offset > 25 && height > 35 && !tripped) {
+              object[key] = true; setScore(n => n + 10); playSound('pie'); setNotice('Mince pie collected!');
+            }
+          });
+        } else if (!object.checked && object.x < 100 && object.x > 25 && height < 60 && !tripped) {
+          object.checked = true; engine.current.tripUntil = now + 650; engine.current.height = 0; engine.current.velocity = 0;
+          setNotice('Oops! Jump a little earlier — keep going!');
         }
-        if (object.x < -60) {
+        if (object.x < -100) {
           object.x = Math.max(laneWidth + 40, ...objects.map(other => other.x)) + nextGap();
           object.kind = nextItem(object.kind);
           setKinds(current => current.map((kind, index) => index === i ? object.kind : kind));
-          object.checked = false; object.collected = false;
+          object.checked = false; object.bonusChecked = false;
         }
-        element.style.visibility = object.collected ? 'hidden' : 'visible';
+        if (object.kind === 'pie') {
+          if (element.children[0]) element.children[0].style.visibility = object.checked ? 'hidden' : 'visible';
+          if (element.children[1]) element.children[1].style.visibility = object.bonusChecked ? 'hidden' : 'visible';
+        } else { for (const child of element.children) child.style.visibility = 'visible'; }
         element.style.transform = `translate3d(${object.x}px,0,0)`;
       });
       frame = requestAnimationFrame(tick);
@@ -122,7 +138,11 @@ function SantaDashGame({ onClose }) {
     document.addEventListener('visibilitychange', visibility);
     if (!document.hidden) frame = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(frame); resize.disconnect(); document.removeEventListener('visibilitychange', visibility); };
-  }, [paused]);
+  }, [paused, finished]);
+  if (finished) return <section className="studio-mini-dash studio-mini-dash--finished" role="status">
+    <strong>Congratulations!</strong><p>You collected {score / 10} mince {score === 10 ? 'pie' : 'pies'}.</p><p>Mince pie score: {score}</p>
+    <small>Your Santa video is coming up…</small>
+  </section>;
   return <section className="studio-mini-dash" aria-label="Mini Santa Dash while your video is prepared">
     <div className="studio-mini-dash__heading"><strong>Santa Dash</strong><span>Score: {score}</span></div>
     <div className="studio-mini-dash__lane" ref={lane} {...holdControls}>
@@ -130,7 +150,7 @@ function SantaDashGame({ onClose }) {
         <img src={`/images/studio-runners/classic${paused ? '-still.png' : '.webp'}`} width="60" height="64" alt="" draggable="false" />
       </button>
       {kinds.map((kind, i) => <span key={i} ref={node => { items.current[i] = node; }} className={`studio-mini-dash__item studio-mini-dash__item--${kind}`} aria-hidden="true" >
-        {kind === 'chimney' ? <span className="studio-mini-dash__chimney" /> : <img src={kind === 'pie' ? '/images/tracker/mince-pie.png' : `${ASSETS}${kind}.png`} alt="" width={kind === 'pie' ? 36 : 44} height={kind === 'pie' ? 36 : 60} />}
+        {kind === 'pie' ? <><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/><img src="/images/tracker/mince-pie.png" alt="" width="36" height="36"/></> : <img src={`${ASSETS}${kind}.png`} alt="" width="44" height="60"/>}
       </span>)}
     </div>
     <div className="studio-mini-dash__controls">

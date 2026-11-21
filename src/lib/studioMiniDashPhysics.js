@@ -14,7 +14,7 @@ export function advanceJump(body, dt) {
 }
 export function nextItem(previous, random = Math.random) {
   // Plenty of pies, without a repeating obstacle sequence.
-  const pool = ['pie', 'pie', 'pie', 'tree', 'snowman', 'chimney'].filter(kind => kind === 'pie' || kind !== previous);
+  const pool = ['pie', 'pie', 'pie', 'tree', 'snowman', 'gary'].filter(kind => kind === 'pie' || kind !== previous);
   return pool[Math.floor(random() * pool.length)];
 }
 export function nextGap(random = Math.random) { return 250 + random() * 130; }

@@ -37,9 +37,11 @@ function FittedArtCaption({children, className = "dad-art-caption"}) {
  return <p ref={container} className={className} aria-live="polite"><span ref={text} style={{whiteSpace:'nowrap',flexShrink:0}}>{children}</span></p>;
 }
 export default function DadMessageStudio(){
+ const [gameDone,setGameDone]=useState(false);
  const [preparationMessage,setPreparationMessage]=useState(DAD_PREPARATION_MESSAGES[0]);
  const [ownerCode,setOwnerCode]=useState('');const [sales,setSales]=useState(false);
  const [access,setAccess]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[step,setStep]=useState(0),[choices,setChoices]=useState({}),[art,setArt]=useState(0),[result,setResult]=useState(null),[progress,setProgress]=useState(null),[status,setStatus]=useState(''),[showProgress,setShowProgress]=useState(false),[email,setEmail]=useState(''),[notice,setNotice]=useState('');
+ useEffect(()=>{if(result&&gameDone)setShowProgress(false);},[result,gameDone]);
  useEffect(()=>{
   if(!busy||!showProgress)return;
   let remaining=[],previous;
@@ -103,7 +105,7 @@ export default function DadMessageStudio(){
  };
  const make=async()=>{
   if(videoFlight.current||!saved.current||!sceneChosen)return;
-  videoFlight.current=true;setError('');setBusy(true);setShowProgress(true);setProgress(null);setStatus('Creating your Christmas video…');clearTimeout(hideTimer.current);
+  videoFlight.current=true;setGameDone(false);setError('');setBusy(true);setShowProgress(true);setProgress(null);setStatus('Creating your Christmas video…');clearTimeout(hideTimer.current);
   const controller=new AbortController();job.current=controller;
   // Artwork is selected only now; the confirmed recording stays reusable.
   const current={...saved.current,artwork:DAD_ARTWORK[art].src};
@@ -111,7 +113,7 @@ export default function DadMessageStudio(){
    const poster=await dadPoster(current);controller.signal.throwIfAborted();
    const blob=await createDadVideo(current,{signal:controller.signal,onProgress:setProgress,onStatus:setStatus});controller.signal.throwIfAborted();
    if(videoURL.current)URL.revokeObjectURL(videoURL.current);
-   videoURL.current=URL.createObjectURL(blob);setResult({...current,blob,url:videoURL.current,poster});setProgress(1);setStatus('Your Christmas video is ready.');hideTimer.current=setTimeout(()=>setShowProgress(false),3000);
+   videoURL.current=URL.createObjectURL(blob);setResult({...current,blob,url:videoURL.current,poster});setProgress(1);setStatus('Your Christmas video is ready.');
   }catch(e){setError(controller.signal.aborted?'Video preparation cancelled. Your recording is ready; you can retry without using another creation.':e.message);setShowProgress(false);}
   finally{videoFlight.current=false;setBusy(false);if(job.current===controller)job.current=null;}
  };
@@ -148,10 +150,10 @@ export default function DadMessageStudio(){
  <strong>Your message from Santa to {capitalise(sceneName || 'Dad')}</strong>
  <div className="dad-preparation-progress"><div className="dad-progress" role="progressbar" aria-label="Creating your video" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress===null?undefined:Math.round(progress*100)}><span style={{width:progress===null?'25%':`${progress*100}%`}}/></div><span>{progress===null?'Preparing…':`${Math.round(Math.max(0,Math.min(1,progress))*100)}%`}</span></div>
  <p role="status">{busy?preparationMessage:status} {busy&&'Keep this page open.'}</p>
- {busy&&<StudioMiniDash/>}
+ {<StudioMiniDash progress={progress} onFinish={()=>setGameDone(true)}/>}
  </section>{busy&&<button className="dad-cancel-preparation" onClick={()=>job.current?.abort()}>Cancel preparation</button>}</>}
 
- {result?<><h3>A message for {result.writtenName}</h3><SantaVideoPlayer festiveControls src={result.url} poster={result.poster} glow label={`Santa’s message for ${result.writtenName}`}/><div className="dad-actions dad-result-actions"><a className="dad-primary" href={result.url} download={dadVideoFilename(result)}>Download your message ↓</a><button className="dad-share-button" aria-label={shareResult?"Share your message":"Prepare your message for sharing"} disabled={sharing} onClick={shareResult?share:prepareShare}><Share size={20} aria-hidden="true"/>{sharing?"Preparing share video…":shareResult?"Share":"Prepare to share"}</button></div>{sharing&&<p role="status">Preparing your share video… {shareProgress===null?"":`${Math.round(shareProgress*100)}%`}</p>}{shareResult&&<a href={shareResult.url} download={dadVideoFilename(result).replace(/\.mp4$/,"-share.mp4")}>Download share copy ↓</a>}<DadCertificate name={result.writtenName} downloadable/><p>Download before leaving this page. Your video and certificate are not saved online.</p></>:
+ {result?<>{gameDone&&<><h3>A message for {result.writtenName}</h3><SantaVideoPlayer festiveControls src={result.url} poster={result.poster} glow label={`Santa’s message for ${result.writtenName}`}/><div className="dad-actions dad-result-actions"><a className="dad-primary" href={result.url} download={dadVideoFilename(result)}>Download your message ↓</a><button className="dad-share-button" aria-label={shareResult?"Share your message":"Prepare your message for sharing"} disabled={sharing} onClick={shareResult?share:prepareShare}><Share size={20} aria-hidden="true"/>{sharing?"Preparing share video…":shareResult?"Share":"Prepare to share"}</button></div>{sharing&&<p role="status">Preparing your share video… {shareProgress===null?"":`${Math.round(shareProgress*100)}%`}</p>}{shareResult&&<a href={shareResult.url} download={dadVideoFilename(result).replace(/\.mp4$/,"-share.mp4")}>Download share copy ↓</a>}<DadCertificate name={result.writtenName} downloadable/><p>Download before leaving this page. Your video and certificate are not saved online.</p></>}</>:
  !busy&&access.remaining===0&&!confirmed.current?<><p>Your message creation has been used. Keep your downloaded MP4 to watch and share.</p>{sales&&<button className="dad-primary" onClick={checkout}>Create another Dad message — £5</button>}</>:
  !busy&&<><div className="dad-step-heading"><div><h3>{stages[step]}</h3></div>{step===5&&<button className="dad-primary dad-create-message" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>Create Message <span aria-hidden="true">→</span></button>}{step<4&&continueButton}{step===4&&<div className="dad-review-actions"><button type="button" onClick={()=>{name.choose(null);setChoices({});setEditingReview(false);setError('');setStep(0);}}><span aria-hidden="true">←</span> Start Again</button><button className="dad-primary" onClick={confirm}>Choose picture <span aria-hidden="true">→</span></button></div>}</div>
  <div className="dad-step-progress">
