@@ -175,6 +175,6 @@ function SantaDashGame({ onClose, finished }) {
       <button className="smw-change" type="button" onClick={onClose}>Close game</button>
       <span>{notice}</span>
     </div>
-    <small>Press and hold the game or Jump for a higher jump. Release for a shorter hop. You can also hold Space on the Jump button. Your video keeps building.</small>
+    <small>Press to jump or press longer to jump higher. Your video keeps building.</small>
   </section>;
 }
