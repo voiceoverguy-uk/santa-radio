@@ -115,7 +115,7 @@ export default function DadMessageStudio(){
   }catch(e){setError(controller.signal.aborted?'Video preparation cancelled. Your recording is ready; you can retry without using another creation.':e.message);setShowProgress(false);}
   finally{videoFlight.current=false;setBusy(false);if(job.current===controller)job.current=null;}
  };
- const progressLabels=['Name and age','Household habits','TV choices','Santa’s treat','Review','Picture'];
+ const progressLabels=['Name/Age','Bad Habits','TV choices','Santa’s treat','Review','Picture'];
  const stages=['NAME AND AGE','Household habits','TV choices','Santa’s treat','Review Time','Choose the scene'];
  const valid=step===0?!!name.record&&!!choices.age:step<4?!!choices[['','habit','viewing','treat'][step]]:true;
  const browseScene=direction=>setArt(current=>(current+direction+DAD_ARTWORK.length)%DAD_ARTWORK.length);
