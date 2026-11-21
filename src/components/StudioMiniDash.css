@@ -53,3 +53,17 @@
 
 .studio-mini-dash__item--pie { width:36px; height:36px; }
 .studio-mini-dash__teaser-play { white-space:normal; }
+
+/* Offset transparent sprite padding so feet meet the ground. */
+.studio-mini-dash .studio-mini-dash__santa{bottom:-12px;padding:0;border:0}
+.studio-mini-dash__item--gary{display:flex;align-items:flex-end}
+.studio-mini-dash__item--gary img{display:block;width:88px;height:auto;transform:translateY(8px)}
+.studio-mini-dash--finished{max-width:640px;margin:24px auto 0;padding:28px 20px;border:2px solid #e6ce86;border-radius:20px;background:radial-gradient(ellipse at top,#35583c,#0c3028 75%);box-shadow:inset 0 0 0 5px #e6ce8615;text-align:center}
+.studio-mini-dash__reward{display:block;margin:0 auto 12px}
+.studio-mini-dash--finished>strong{font:700 clamp(26px,4vw,36px)/1.2 Georgia,serif;color:#ffe6a1}
+.studio-mini-dash--finished p{margin:12px 0}
+.studio-mini-dash__final-score{display:flex;flex-direction:column;gap:4px;margin:16px auto;color:#ffe6a1}
+.studio-mini-dash__final-score b{font-size:48px;line-height:1.1}
+.studio-mini-dash__download{display:inline-block;padding:14px 22px;border:2px solid #e6ce86;border-radius:12px;background:#a20f21;color:#fff8e7;font-weight:700;text-decoration:none}
+.studio-mini-dash__download small{font-size:12px;font-weight:400;margin-top:5px}
+.studio-mini-dash__download:focus-visible{outline:3px solid #ffe5a1;outline-offset:4px}
