@@ -133,3 +133,5 @@
 @media (max-width:760px) {
  .dad-layout-opening { padding:20px 16px; border-width:9px; border-image-width:9px; }
 }
+
+.dad-step-progress { margin-bottom:28px; }
