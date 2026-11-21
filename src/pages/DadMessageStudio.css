@@ -135,3 +135,16 @@
 }
 
 .dad-step-progress { margin-bottom:28px; }
+
+.dad-review-actions { display:flex; gap:12px; align-items:center; flex-shrink:0; }
+.dad-review-actions button { display:inline-flex; align-items:center; justify-content:center; gap:12px; white-space:nowrap; min-height:48px; }
+.dad-recap { border:0; border-top:1px solid #b99b4f40; border-radius:0; background:transparent; }
+.dad-recap-row { padding:16px 5px; }
+.dad-recap-row>div { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; }
+.dad-recap dt { color:#c5d1c3; }
+.dad-recap-row button { display:grid; place-items:center; min-width:44px; }
+@media(max-width:760px) {
+ .dad-step-heading:has(.dad-review-actions) { flex-wrap:wrap; }
+ .dad-review-actions { width:100%; justify-content:flex-end; gap:8px; }
+ .dad-review-actions button { font-size:12px; padding:9px 10px; gap:8px; }
+}
