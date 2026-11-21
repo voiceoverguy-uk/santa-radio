@@ -1,3 +1,5 @@
+import { groupWorkshopActivities, uniqueWorkshopActivities } from '../lib/workshopActivityGroups.js';
+import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { STUDIO_GIFT_PICTURE } from '../lib/santaPictureLayout.js';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -259,6 +261,7 @@ export default function SantaMessageWorkshop() {
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
   const [deliveryTarget, setDeliveryTarget] = useState(null);
+  const [reviewActionTarget, setReviewActionTarget] = useState(null);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
@@ -318,8 +321,9 @@ export default function SantaMessageWorkshop() {
   const isReview = stageIndex === stages.length;
   const isNameAndAge = stage?.key === 'name';
   const catalogueCategory = isNameAndAge ? 'age' : stage?.key === 'talent' ? talentCategory : stage?.key;
+  const activityRecords = groupWorkshopActivities(catalogueState.catalogue?.categories?.activity || []);
   const catalogueOptions = stage
-    ? (catalogueState.catalogue?.categories?.[catalogueCategory] || [])
+    ? (stage.key === 'activity' ? uniqueWorkshopActivities(activityRecords, choices.activity) : catalogueState.catalogue?.categories?.[catalogueCategory] || [])
       .filter(record => stage.key !== 'activity' || (record.activityGroup || 'trying') === activityCategory)
     : [];
   const hasCatalogueOptions = catalogueState.status === 'ready' && catalogueOptions.length > 0;
@@ -636,13 +640,11 @@ export default function SantaMessageWorkshop() {
                 {isReview ? ({ review: 'Review Time', scene: 'Choose the scene', result: 'Your Santa message' })[deliveryStep] : stage.heading}
               </h2>
             </div>
-            <span className="smw-step-count" hidden={canContinue} aria-live="polite">
-              {`Step ${currentStep} of ${progressLabels.length}`}
-            </span>
-            {canContinue && <button className="smw-header-continue" type="button" onClick={continueToNext}
+            {!isReview && <button className="smw-header-continue" type="button" onClick={continueToNext} disabled={!audioEditingAllowed || !canContinue}
               aria-label={editing ? 'Return to review from top' : stageIndex === stages.length - 1 ? 'Continue to review' : 'Continue to next step'}>
-              {editing ? 'Return to review' : 'Continue'} <span aria-hidden="true">→</span>
+              {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review my choices' : 'Continue'} <span aria-hidden="true">→</span>
             </button>}
+            {isReview && (deliveryStep === 'review' || deliveryStep === 'scene') && <div className="smw-header-review-action" ref={setReviewActionTarget} />}
           </div>
           {deliveryStep !== 'result' && <>
             <div className="smw-progress" role="progressbar" aria-valuemin="1" aria-valuemax={progressLabels.length}
@@ -706,7 +708,7 @@ export default function SantaMessageWorkshop() {
                 </div>
               )}
               {stage.key === 'name' && (locked ? (
-                <p className="smw-audio-disclaimer">{choices.name} — locked</p>
+                <p className="smw-audio-disclaimer">{santaNameDisplay(choices.name)} — locked</p>
               ) : (
                 <div className="smw-name-preview-layout">
                   <h3 className="smw-journey-heading">Your journey begins</h3>
@@ -847,10 +849,6 @@ export default function SantaMessageWorkshop() {
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>}
-                {!isNameAndAge && <button className="smw-button smw-button-next" type="button" onClick={continueToNext}
-                  disabled={!audioEditingAllowed || !canContinue}>
-                  {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review my choices' : 'Continue'} <span aria-hidden="true">→</span>
-                </button>}
               </div>}
             </div>
           ) : (
@@ -863,12 +861,12 @@ export default function SantaMessageWorkshop() {
                       <dt>{item.reviewLabel || item.label}</dt>
                       <dd>{item.key === 'name'
                         ? <span className="smw-name-review-value">
-                            <span className="smw-summary-answer">{choices.name || 'Not chosen'}</span>
+                            <span className="smw-summary-answer">{choices.name ? santaNameDisplay(choices.name) : 'Not chosen'}</span>
                             {selectedName && <WorkshopNamePreview key={selectedName.id} record={selectedName} cache={namePreviewCache} />}
                           </span>
                         : item.key === 'talent'
                           ? <span className="smw-summary-answer">{choices.talent?.category
-                                ? `${choices.talent.category === 'sports' ? 'Sports & activities' : 'Something funny'} — ${
+                                ? `${choices.talent.category === 'sports' ? 'Sports & activities — ' : ''}${
                                   catalogueState.catalogue?.categories?.[choices.talent.category]
                                     ?.find(record => record.id === choices.talent.id)?.label || 'This choice is no longer available.'}`
                                 : 'Not chosen'}</span>
@@ -901,7 +899,6 @@ export default function SantaMessageWorkshop() {
             </div>
           )}
               <div className={`smw-actions smw-actions--review${deliveryStep === 'review' ? ' smw-review-footer' : ''}`} hidden={!isReview}>
-                {isReview && deliveryStep === 'review' && keepsakes}
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
                   giftExportPending={giftExportPending}
@@ -930,6 +927,7 @@ export default function SantaMessageWorkshop() {
                   keepsakes={deliveryStep === 'result' ? keepsakes : null}
                   giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
                   deliveryStep={deliveryStep} onDeliveryStep={setDeliveryStep}
+                  reviewActionTarget={reviewActionTarget}
                   deliveryTarget={deliveryTarget}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
                   onCorrection={() => setCorrection(true)} visible={isReview}

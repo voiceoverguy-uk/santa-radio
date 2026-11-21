@@ -109,6 +109,8 @@
 }
 
 .smw-destination-picker .smw-choice-wheel-footer-row {
+  box-sizing: border-box;
+  width: min(100%, 640px);
   display: flex;
   flex-wrap: wrap;
   align-items: center;

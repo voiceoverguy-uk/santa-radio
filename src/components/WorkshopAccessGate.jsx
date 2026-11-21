@@ -228,6 +228,16 @@ export default function WorkshopAccessGate({ children }) {
     </div>}
   </div>;
 
+  if (status === 'checking' || status === 'error') {
+    return <main className="workshop-gate workshop-gate--promotion">
+      <PageSeo metadata={metadata} />
+      <section className="container studio-entry-loading" aria-label="Opening your Studio">
+        <h1>Santa’s Message Maker Studio</h1>
+        {accessFeedback}
+      </section>
+    </main>;
+  }
+
   return <main className="workshop-gate workshop-gate--promotion">
     <PageSeo metadata={metadata} />
     <HomepageSantaStudio directEntry onAuthorized={onAuthorized} accessFeedback={accessFeedback}>

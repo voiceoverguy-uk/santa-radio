@@ -1,4 +1,4 @@
-import { studioAge, drawStudioVideoFrames, prepareStudioVideoFrames, STUDIO_VIDEO_ARTWORK } from './studioVideoTimeline.js';
+import { studioAge, drawVideoCaption, drawStudioVideoFrames, prepareStudioVideoFrames, STUDIO_VIDEO_ARTWORK } from './studioVideoTimeline.js';
 import { createSantaVideo } from './createSantaVideo.js';
 import { getWorkshopDownloadName } from './workshopNameSpelling.js';
 export { STUDIO_VIDEO_ARTWORK };
@@ -15,6 +15,8 @@ export function studioVideoRecipient(result) { return `${result.writtenName} age
 export async function createStudioVideoPoster(result) {
   const image = new Image(); image.src = result.artwork || STUDIO_VIDEO_ARTWORK; await image.decode();
   const { base } = await drawStudioVideoFrames(image, result);
+  const caption = drawVideoCaption({ id: 'poster', text: `${result.writtenName} - Aged ${studioAge(result)}` }, { panelTop: 517, panelHeight: 190, shadowOffsetY: 2 });
+  base.getContext('2d').drawImage(caption.canvas, 0, caption.y);
   return base.toDataURL('image/png');
 }
 export function createStudioVideo(result, options) {

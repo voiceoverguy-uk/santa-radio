@@ -28,12 +28,6 @@ export default function StudioVoucherSuccess({ onContinue }) {
           : remaining === 0 ? 'You’ve created both messages included with this voucher.'
           : `You have ${remaining} ${remaining === 1 ? 'message' : 'messages'} remaining.`}</p>
         <button type="button" className="btn-red studio-success__start" onClick={onContinue}>{remaining === 0 ? 'Open your Studio' : 'Create your bespoke message'}</button>
-        <div className="studio-success__return">
-          <h2>Your Christmas creations await</h2>
-          <p>Opening Studio doesn’t use a message. Your allowance is used only when a recording is successfully created.</p>
-          <p>Return using this same browser to keep access to your remaining messages.</p>
-          <p className="studio-success__download">Download each recording and its keepsakes before leaving Studio so you can keep them forever.</p>
-        </div>
         <Link className="studio-success__later" to="/">Back to Santa Radio — I’ll create them later</Link>
       </div>
     </section>

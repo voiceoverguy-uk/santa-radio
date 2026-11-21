@@ -1,0 +1,23 @@
+.smw-scene-option { position: relative; min-width: 0; }
+.smw-scene-options .smw-scene-select { display: block; width: 100%; }
+.smw-scene-options .smw-scene-zoom {
+  position: absolute;
+  right: 12px;
+  bottom: 28%;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+  border: 1px solid #e8cb7c;
+  border-radius: 50%;
+  background: #092c22ed;
+  color: #fff2c7;
+  touch-action: manipulation;
+}
+.smw-scene-options .smw-scene-zoom:hover { background: #9d1020; }
+.smw-scene-options button:focus-visible { outline: 3px solid #fff2c7; outline-offset: 3px; }
+
+@media (min-width: 761px) {
+  .smw-start-artwork .smw-scene-picture { width: 82%; }
+}

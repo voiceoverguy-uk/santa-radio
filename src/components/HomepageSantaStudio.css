@@ -41,3 +41,8 @@
   background-position: center, center top;
   background-repeat: no-repeat, repeat;
 }
+
+.studio-entry-loading { min-height: 45vh; padding-block: 64px; }
+.studio-entry-voucher { border: 1px solid #d4af3780; border-radius: 12px; padding: 20px; }
+.studio-entry-voucher summary { cursor: pointer; color: var(--gold-light); }
+.studio-entry-voucher form { margin-top: 20px; }

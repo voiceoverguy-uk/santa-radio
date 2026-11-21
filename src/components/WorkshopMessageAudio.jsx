@@ -22,7 +22,7 @@ function trapDialogFocus(event) {
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, ageLabel, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  deliveryTarget = null, onStartAgain, remainingNotice, keepsakes,
+  reviewActionTarget = null, deliveryTarget = null, onStartAgain, remainingNotice, keepsakes,
   giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested, deliveryStep, onDeliveryStep,
 }) {
   const accessKind = useContext(StudioAccessContext);
@@ -315,11 +315,13 @@ export default function WorkshopMessageAudio({
     {deliveryStep === 'scene' && <>
       <StudioScenePicker selected={scene} onSelect={setScene}
         recipientCaption={writtenName && ageLabel ? `${writtenName} - aged ${ageLabel.replace(/\s+old$/i, '')}` : writtenName} />
-      <div className="smw-actions">
-        {!busy && phase !== 'ready' && messageAction()}
+      {!busy && phase !== 'ready' && <div className="smw-actions">{messageAction()}</div>}
+      {reviewActionTarget ? createPortal(
         <button type="button" className="smw-button smw-button-next"
-          disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>
-      </div>
+          disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>,
+        reviewActionTarget
+      ) : <button type="button" className="smw-button smw-button-next"
+        disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>}
     </>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
@@ -344,7 +346,7 @@ export default function WorkshopMessageAudio({
   );
   return <>
     {deliveryStep === 'review' && startAction()}
-    {deliveryStep === 'review' && messageAction()}
+    {deliveryStep === 'review' && (reviewActionTarget ? createPortal(messageAction(), reviewActionTarget) : messageAction())}
     {deliveryStep === 'review' && voucherNotice}
     {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>

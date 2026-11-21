@@ -1,7 +1,9 @@
 import { useId, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { STUDIO_VIDEO_ARTWORK, STUDIO_VIDEO_SCENES } from '../lib/studioVideo.js';
 import { STUDIO_SCENE_INSET, STUDIO_VIDEO_WIDTH, STUDIO_VIDEO_HEIGHT } from '../lib/studioVideoTimeline.js';
+
+import './StudioScenePicker.css';
 
 const sceneInset = {
   left: `${100 * STUDIO_SCENE_INSET.x / STUDIO_VIDEO_WIDTH}%`,
@@ -27,13 +29,20 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
 
   return <>
     <div className="smw-scene-options" role="group" aria-label="Choose a picture">
-      {STUDIO_VIDEO_SCENES.map((option, position) => <button key={option.src} type="button"
-        aria-haspopup="dialog" aria-pressed={selected === option.src} onClick={() => {
-          setIndex(position);
-          dialogRef.current.showModal();
-        }}>
-        <StudioScenePicture scene={option} caption={option.label} />
-      </button>)}
+      {STUDIO_VIDEO_SCENES.map((option, position) => <div className="smw-scene-option" key={option.src}>
+        <button className="smw-scene-select" type="button"
+          aria-label={`Select ${option.label}`} aria-pressed={selected === option.src}
+          onClick={() => onSelect(option.src)}>
+          <StudioScenePicture scene={option} caption={option.label} />
+        </button>
+        <button className="smw-scene-zoom" type="button"
+          aria-label={`Enlarge ${option.label}`} aria-haspopup="dialog" onClick={() => {
+            setIndex(position);
+            dialogRef.current.showModal();
+          }}>
+          <ZoomIn size={24} aria-hidden="true" />
+        </button>
+      </div>)}
     </div>
     <dialog ref={dialogRef} className="smw-scene-dialog" aria-labelledby={titleId} onKeyDown={event => {
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
