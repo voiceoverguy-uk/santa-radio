@@ -2,9 +2,9 @@ import {useEffect,useRef,useState} from 'react';
 const time = value => `${Math.floor((value || 0)/60)}:${String(Math.floor((value || 0)%60)).padStart(2,'0')}`;
 export default function BespokeExamplePlayer({kind}) {
  const ref=useRef(null),[open,setOpen]=useState(false),[playing,setPlaying]=useState(false),[muted,setMuted]=useState(false),[position,setPosition]=useState(0),[duration,setDuration]=useState(0),[error,setError]=useState('');
- const src=kind==='dad'?'/videos/examples/dad-simon-v2.mp4':'/videos/examples/santa-premium-charlotte-v2.mp4';
+ const src=kind==='dad'?'/videos/examples/dad-simon-v3.mp4':'/videos/examples/santa-premium-charlotte-v2.mp4';
  useEffect(()=>{if(!open||playing)return;const timer=setTimeout(()=>setOpen(false),3000);return()=>clearTimeout(timer);},[open,playing,position]);
- const cue=(kind==='dad'?[7.69,20.75,43.5,64,78.75,102.25]:[10,18,30.5,40,46,58,68.5,84.75]).some(start=>position>=start+2&&position<start+2+3.5);
+ const cue=kind==='dad' ? [10,23,42,60,80,103].some(start=>position>=start&&position<start+4) : [10,18,30.5,40,46,58,68.5,84.75].some(start=>position>=start+2&&position<start+2+3.5);
  async function toggle(){const video=ref.current;if(!video)return;if(!video.paused){video.pause();return;}setOpen(true);setError('');document.querySelectorAll('video,audio').forEach(other=>{if(other!==video)other.pause();});try{await video.play();}catch{setError('Please tap Play to try again.');}}
  return <div className={`bespoke-player ${kind}${open?' is-open':''}`}>
   <div className="bespoke-player__reveal" aria-hidden={!open} inert={open?undefined:""}><div><div className="bespoke-player__stage"><video ref={ref} src={src} poster={src.replace('.mp4','.jpg')} preload="metadata" playsInline muted={muted} onPlay={()=>setPlaying(true)} onPause={()=>setPlaying(false)} onEnded={()=>setPlaying(false)} onTimeUpdate={e=>setPosition(e.currentTarget.currentTime)} onLoadedMetadata={e=>setDuration(e.currentTarget.duration)} aria-label={`Example Santa message for ${kind==='dad'?'Dad':'Charlotte'}`}/><button type="button" className="bespoke-player__expand" aria-label="Expand example video" onClick={()=>{const v=ref.current;const fn=v.requestFullscreen||v.webkitEnterFullscreen;fn?.call(v);}}>⤢</button></div></div></div>
