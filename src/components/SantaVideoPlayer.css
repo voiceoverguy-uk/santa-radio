@@ -43,3 +43,5 @@
 .santa-video-player--bar.santa-video-player--expanded { width: min(var(--expanded-video-width), calc(100vw - 32px), calc((100dvh - 170px) * 16 / 9)); }
 
 .santa-video-player__seek { top: 50%; }
+
+.santa-video-player__dad-skin .santa-video-player__time {position:absolute;right:18%;bottom:16%;padding:0;font-size:clamp(9px,1.2vw,12px);line-height:1;pointer-events:none}

@@ -782,3 +782,18 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 @media (max-width: 760px) {
   .smw-review-footer > .smw-written-name { flex-basis: 100%; }
 }
+
+/* Keep finished-message actions together, with full-width gifts when opened. */
+.smw-finished-tools {display:flow-root;min-width:0}
+.smw-finished-tools .smw-download-actions {float:right;margin:0 0 8px 16px;max-width:70%}
+.smw-finished-tools .smw-written-name,.smw-finished-tools .smw-gift-reveal {margin-top:0}
+.smw-finished-tools .smw-gift-reveal summary {display:list-item;max-width:fit-content;min-height:44px;box-sizing:border-box}
+.smw-finished-tools .smw-studio-preview {clear:both;padding-top:12px}
+.smw-finished-bottom {display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;border-top:1px solid #d4af3748;padding-top:12px}
+.smw-finished-bottom .smw-finished-account {flex:1 1 280px;min-width:0}
+.smw-finished-bottom .smw-finished-footer {margin-left:auto}
+.smw-message-finished > .santa-video-player {margin-block:4px}
+@media(max-width:900px){.smw-finished-tools .smw-download-actions {float:none;max-width:none;margin:0 0 12px}.smw-finished-bottom {align-items:flex-start}}
+.smw-finished-bottom .smw-finished-footer {min-width:0;max-width:100%}
+.smw-finished-bottom .smw-finished-footer .smw-button {white-space:normal;max-width:100%}
+@media(max-width:600px){.smw-finished-bottom .smw-finished-account{flex-basis:100%}.smw-finished-bottom .smw-finished-footer{width:100%}}

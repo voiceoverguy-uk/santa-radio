@@ -68,7 +68,7 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
         resume.current = radio?.pauseForMessage?.() || null;
       }} onPause={finish} onEnded={finish} />
-      <div className="smw-download-actions">
+      <div className="smw-finished-tools"><div className="smw-download-actions">
         <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
         <div className="smw-download-control">
           <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`} href={url} download={studioVideoFilename(result)}
@@ -78,8 +78,9 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
         <StudioBundleDownload showReminder={false} result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
       </div>
       {keepsakes && <div className="smw-finished-keepsakes" style={{ borderTop: 0, paddingTop: 0 }}>{keepsakes}</div>}
-      <div className="smw-finished-account" style={{ borderTop: '1px solid #d4af3748', paddingTop: 16 }}><p>Don't forget to download before leaving</p><StudioAccountSave result={result} /></div>
-      {footer}
+      </div>
+      <div className="smw-finished-bottom"><div className="smw-finished-account"><p>Don't forget to download before leaving</p><StudioAccountSave result={result} /></div>
+      {footer}</div>
     </>}
   </section>;
 }

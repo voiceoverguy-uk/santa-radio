@@ -69,8 +69,8 @@ export default function SantaVideoPlayer({ label, onPlay, onPause, onEnded, onPl
         </div>
         <button type="button" className="santa-video-player__bar-mute" aria-label={muted ? 'Unmute video' : 'Mute video'}
           onClick={() => setMuted(value => !value)}>{muted ? '×' : null}</button>
+        <div className="santa-video-player__time">{clockTime(position)} / {clockTime(duration)}</div>
       </div>
-      <div className="santa-video-player__time">{clockTime(position)} / {clockTime(duration)}</div>
     </div>}
     {error && <p className="santa-video-player__error" role="alert">{error}</p>}
   </div>;

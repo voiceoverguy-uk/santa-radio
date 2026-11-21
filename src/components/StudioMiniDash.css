@@ -24,7 +24,6 @@
 .dad-studio .studio-mini-dash .smw-change { background:transparent; border:0; color:#e6ce86; }
 .dad-studio .studio-mini-dash__santa { padding:2px; border:0; background:transparent; }
 
-.studio-mini-dash__item--pie { display:flex; gap:12px; width:84px; }
 .studio-mini-dash__item--pie img { flex-shrink:0; }
 .studio-mini-dash__item--gary { height:60px; }
 .studio-mini-dash--finished { padding:30px 16px; text-align:center; }
@@ -51,3 +50,6 @@
 .studio-mini-dash__teaser>strong { max-width:50%; font-size:30px; }
 .studio-mini-dash__teaser-wait { font-size:13px; color:#fff2c7; }
 @media(max-width:480px) { .studio-mini-dash .studio-mini-dash__teaser { min-height:235px; } .studio-mini-dash__teaser>strong { font-size:24px; } }
+
+.studio-mini-dash__item--pie { width:36px; height:36px; }
+.studio-mini-dash__teaser-play { white-space:normal; }
