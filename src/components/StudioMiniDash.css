@@ -13,3 +13,6 @@
 .studio-mini-dash small { display: block; margin-top: 10px; }
 .studio-mini-dash__item--tree, .studio-mini-dash__item--snowman { height: 60px; }
 .studio-mini-dash__santa { transform-origin: 50% 90%; }
+
+.studio-mini-dash__lane { contain: layout paint; }
+.studio-mini-dash__santa, .studio-mini-dash__item { will-change: transform; }
