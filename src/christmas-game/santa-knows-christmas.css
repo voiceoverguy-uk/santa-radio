@@ -193,3 +193,18 @@
 .christmas-study-promo form { display: grid; gap: .45rem; max-width: 23rem; }
 .christmas-study-promo button { background: #eed29a; color: #17372b; font-weight: 700; cursor: pointer; }
 .christmas-study-promo h2 { display: inline-block; border: 2px solid #c99f58; border-radius: 1em; padding: .18em .6em; color: #ffe7aa; background: #15392d; }
+
+.christmas-study__voucher-code {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: .6rem auto 1rem;
+  padding: .4em .8em;
+  border: 2px dashed #dfbd74;
+  border-radius: .55rem;
+  background: #173b2f;
+  color: #fff1cc;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  letter-spacing: .05em;
+  user-select: all;
+}

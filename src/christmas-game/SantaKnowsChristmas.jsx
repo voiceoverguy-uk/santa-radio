@@ -299,16 +299,14 @@ export default function SantaKnowsChristmas() {
         </>}
 
         {phase === 'result' && <>
-          <h2 ref={heading} tabIndex={-1}>{winner === 'player' ? 'You stumped Santa!' : 'Santa got it!'}</h2>
+          <h2 ref={heading} tabIndex={-1}>{matchWinner === 'player' ? 'You beat Santa!' : matchWinner === 'santa' ? 'Santa wins the match!' : winner === 'player' ? 'You stumped Santa!' : 'Santa got it!'}</h2>
           {guess && <p>Santa guessed <strong>{describe(guess)}</strong>.</p>}
-          {matchWinner && <p className="christmas-study__match">
-            {matchWinner === 'player' ? 'You win the match!' : 'Santa wins the match!'}
-          </p>}
           {matchWinner === 'player' && <div className="christmas-study__reward">
-            <p>You beat Santa! Use <strong>ELFDISCOUNT20</strong> at checkout for 20% off a bespoke message from Santa.</p>
+            <p>Use your code at checkout for 20% off a bespoke Santa&nbsp;message.</p>
+            <strong className="christmas-study__voucher-code">ELFDISCOUNT20</strong>
             <a href="/#bespoke-santa-messages">Choose a message for the kids or Dad →</a>
           </div>}
-          {winner === 'player' && <p>{reaction}</p>}
+          {winner === 'player' && !matchWinner && <p>{reaction}</p>}
           <button type="button" className="christmas-study__next" onClick={() => resetRound(Boolean(matchWinner))}>
             {matchWinner ? 'Play a new match' : 'Next round'}
           </button>
