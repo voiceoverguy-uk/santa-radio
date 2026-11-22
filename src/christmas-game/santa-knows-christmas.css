@@ -190,6 +190,13 @@
   font: inherit; padding: .7em 1em; border: 1px solid #ac8750; border-radius: .7rem;
 }
 .christmas-category select, .christmas-study-promo input { width: 100%; background: #fff7e2; color: #18372c; }
+.christmas-category__field { position: relative; display: grid; }
+.christmas-category__field select { appearance: none; padding-inline-end: 3.5rem; }
+.christmas-category__field svg {
+  position: absolute; inset-inline-end: 1.25rem; top: 50%; transform: translateY(-50%);
+  color: #18372c; pointer-events: none;
+}
+
 .christmas-study-promo form { display: grid; gap: .45rem; max-width: 23rem; }
 .christmas-study-promo button { background: #eed29a; color: #17372b; font-weight: 700; cursor: pointer; }
 .christmas-study-promo h2 { display: inline-block; border: 2px solid #c99f58; border-radius: 1em; padding: .18em .6em; color: #ffe7aa; background: #15392d; }

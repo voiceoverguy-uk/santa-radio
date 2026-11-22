@@ -1,11 +1,14 @@
-import { ShipWheel } from 'lucide-react';
+import { ChevronDown, ShipWheel } from 'lucide-react';
 import { modeLabels } from './people.js';
 
 export function GameCategory({ value, onChange, disabled }) {
   return <label className="christmas-category">Choose your game
-    <select value={value} disabled={disabled} onChange={e => onChange(e.target.value)}>
-      {Object.entries(modeLabels).map(([key,label]) => <option key={key} value={key}>{label}</option>)}
-    </select>
+    <span className="christmas-category__field">
+      <select value={value} disabled={disabled} onChange={e => onChange(e.target.value)}>
+        {Object.entries(modeLabels).map(([key,label]) => <option key={key} value={key}>{label}</option>)}
+      </select>
+      <ChevronDown size={24} strokeWidth={2.5} aria-hidden="true" />
+    </span>
   </label>;
 }
 
