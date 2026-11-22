@@ -276,7 +276,7 @@ export default function SantaKnowsChristmas() {
             {matchWinner === 'player' ? 'You win the match!' : 'Santa wins the match!'}
           </p>}
           {matchWinner === 'player' && <div className="christmas-study__reward">
-            <p>You beat Santa! Use <strong>Santa20</strong> at checkout for 20% off a bespoke message from Santa.</p>
+            <p>You beat Santa! Use <strong>ELFDISCOUNT20</strong> at checkout for 20% off a bespoke message from Santa.</p>
             <a href="/#bespoke-santa-messages">Choose a message for the kids or Dad →</a>
           </div>}
           {winner === 'santa' && sealed && <p>Your film was <strong>{secret.trim()}</strong>.</p>}
