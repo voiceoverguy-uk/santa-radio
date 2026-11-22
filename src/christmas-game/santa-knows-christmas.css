@@ -4,14 +4,14 @@
   padding: clamp(1rem, 4vw, 3rem) 1rem 4rem;
 }
 .christmas-study__hero {
-  background: linear-gradient(180deg, #091e19db, transparent 42%, #091e1944), url('/images/christmas-study.webp') center 43% / cover, #153b32;
+  overflow: hidden;
   border: 1px solid #ab844a;
   border-radius: 1.25rem 1.25rem 0 0;
-  min-height: clamp(16rem, 41vw, 28rem);
+
   margin: auto;
   max-width: 54rem;
   text-align: center;
-  padding: 1.2rem .8rem;
+
 }
 .christmas-study h1, .christmas-study h2, .christmas-study-promo h2 {
   font-family: Georgia, serif;
@@ -149,3 +149,5 @@
   .christmas-study__vault::after,
   .christmas-study__vault svg { animation: none; }
 }
+
+.christmas-study__hero img { display: block; width: 100%; height: auto; }

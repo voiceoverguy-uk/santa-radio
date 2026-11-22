@@ -85,3 +85,41 @@ export function matchesTitle(film, title) {
 export function isAmbiguousTitle(title) {
   return films.filter(film => matchesTitle(film, title)).length > 1;
 }
+
+function titleKey(value) {
+  return normaliseTitle(value.toLowerCase().replace(/\bxmas\b/g, 'christmas').replace(/\bst\.?$/g, 'street'));
+}
+
+function titleDistance(left, right) {
+  let row = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let i = 0; i < left.length; i++) {
+    const next = [i + 1];
+    for (let j = 0; j < right.length; j++) {
+      next.push(Math.min(row[j + 1] + 1, next[j] + 1, row[j] + Number(left[i] !== right[j])));
+    }
+    row = next;
+  }
+  return row[right.length];
+}
+
+export function suggestFilms(title) {
+  const year = title.match(/\b((?:19|20)\d{2})\)?\s*$/);
+  const query = titleKey(year ? title.slice(0, year.index) : title);
+  if (query.length < 3) return [];
+  const limit = Math.min(3, Math.floor(query.length / 4));
+  let best = limit + 1;
+  let choices = [];
+  for (const film of films) {
+    if (year && film.year !== Number(year[1])) continue;
+    for (const name of [film.title, ...film.aliases]) {
+      const candidate = titleKey(name);
+      if (Math.abs(query.length - candidate.length) > limit) continue;
+      const distance = titleDistance(query, candidate);
+      if (distance > limit || distance > best) continue;
+      if (distance < best) choices = [];
+      best = distance;
+      if (!choices.includes(film)) choices.push(film);
+    }
+  }
+  return choices.slice(0, 5);
+}

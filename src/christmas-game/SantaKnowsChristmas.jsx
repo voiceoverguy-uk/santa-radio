@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LockKeyhole } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { isAmbiguousTitle, matchesTitle, MAX_QUESTIONS, nextTurn } from './engine.js';
+import { suggestFilms, matchesTitle, MAX_QUESTIONS, nextTurn } from './engine.js';
 import { films } from './films.js';
 import { questionWording } from './question-wording.js';
 import './santa-knows-christmas.css';
@@ -19,7 +19,8 @@ export default function SantaKnowsChristmas() {
   const [score, setScore] = useState({ player: 0, santa: 0 });
   const [secret, setSecret] = useState('');
   const [sealed, setSealed] = useState(false);
-  const [needsYear, setNeedsYear] = useState(false);
+  const [titleChoices, setTitleChoices] = useState(null);
+  const [confirmedTitle, setConfirmedTitle] = useState(false);
   const [reveal, setReveal] = useState('');
   const [revealed, setRevealed] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -87,7 +88,8 @@ export default function SantaKnowsChristmas() {
     if (resetMatch) setScore({ player: 0, santa: 0 });
     setSecret('');
     setSealed(false);
-    setNeedsYear(false);
+    setTitleChoices(null);
+    setConfirmedTitle(false);
     setReveal('');
     setRevealed(false);
     setWinner(null);
@@ -99,7 +101,7 @@ export default function SantaKnowsChristmas() {
   return (
     <main id="main-content" className="christmas-study">
       <div className="christmas-study__hero">
-        <h1>Santa Knows Christmas</h1>
+        <h1><img src="/images/santa-film-cinema.jpg" alt="Santa Knows Christmas" fetchPriority="high" /></h1>
       </div>
       <div className="christmas-study__panel">
         <div className="christmas-study__score" aria-live="polite">
@@ -113,8 +115,8 @@ export default function SantaKnowsChristmas() {
           <form onSubmit={async event => {
             event.preventDefault();
             if (busy.current || sealing) return;
-            if (isAmbiguousTitle(secret)) {
-              setNeedsYear(true);
+            if (secret.trim() && !confirmedTitle && films.filter(film => matchesTitle(film, secret)).length !== 1) {
+              setTitleChoices(suggestFilms(secret));
               return;
             }
             const seed = Math.floor(Math.random() * 1_000_000);
@@ -137,15 +139,27 @@ export default function SantaKnowsChristmas() {
             <div className="christmas-study__vault-field">
               <input id="christmas-secret" disabled={sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
-                setNeedsYear(false);
+                setTitleChoices(null);
+                setConfirmedTitle(false);
               }}
                 placeholder="Type the film title" maxLength={160} autoComplete="off"
-                aria-invalid={needsYear} aria-describedby="christmas-secret-help" />
+                aria-describedby="christmas-secret-help" />
               {sealing && <span className="christmas-study__vault" role="status">
                 <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
               </span>}
             </div>
-            {needsYear && <p role="alert">Add the release year to tell versions with the same title apart.</p>}
+            {titleChoices && <div aria-live="polite">
+              <p>{titleChoices.length ? 'Did you mean one of these films?' : 'Ho ho, that title has me stumped already! Is it a real Christmas film? Check the spelling or confirm your title.'}</p>
+              {titleChoices.map(film => <button type="button" key={film.title + film.year} onClick={() => {
+                setSecret(`${film.title} (${film.year})`);
+                setTitleChoices(null);
+                setConfirmedTitle(true);
+              }}>{film.title} ({film.year})</button>)}
+              {!films.some(film => matchesTitle(film, secret)) && <button type="button" onClick={() => {
+                setTitleChoices(null);
+                setConfirmedTitle(true);
+              }}>Yes, my title is correct</button>}
+            </div>}
             <small id="christmas-secret-help">Your title stays in this tab. It’s only used to check Santa’s guess.</small>
             <button type="submit" disabled={pending || sealing}>{pending || sealing ? "Santa’s thinking…" : `Start round ${round}`}</button>
           </form>
