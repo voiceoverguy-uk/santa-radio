@@ -92,15 +92,23 @@ export default function SantaKnowsChristmas() {
     setHistory(updated);
     const turn = adaptive ?? nextTurn(updated, questionOrder);
     if (turn.question) return;
-    if (!turn.guess) {
-      finishRound('player');
-    } else if (sealed) {
-      if (matchesTitle(turn.guess, secret)) finishRound('santa');
-      else if (suggestFilms(secret).some(film => film.title === turn.guess.title && film.year === turn.guess.year)) {
-        setPhase('check-spelling');
-      } else finishRound('player');
+    if (sealed) setPhase('committed');
+    else if (!turn.guess) finishRound('player');
+    else setPhase('guess');
+  }
+
+  async function revealCommittedGuess() {
+    if (busy.current) return;
+    busy.current = true;
+    setPhase('opening');
+    await new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450));
+    busy.current = false;
+    if (guess && matchesTitle(guess, secret)) finishRound('santa');
+    else if (guess && suggestFilms(secret).some(film => film.title === guess.title && film.year === guess.year)) {
+      setPhase('check-spelling');
     } else {
-      setPhase('guess');
+      openVault(secret);
+      finishRound('player');
     }
   }
 
@@ -194,12 +202,23 @@ export default function SantaKnowsChristmas() {
           </div>
         </>}
 
+        {(phase === 'committed' || phase === 'opening') && <>
+          <h2 ref={heading} tabIndex={-1}>{guess ? `My final guess is ${guess.title} (${guess.year})!` : 'You’ve got me guessing. I’ll pass!'}</h2>
+          {phase === 'committed' ? <>
+            <p>Your film is still sealed. Shall we see what’s inside?</p>
+            <button type="button" onClick={revealCommittedGuess}>Open the vault</button>
+          </> : <div className="christmas-study__vault-field christmas-study__reveal">
+            <strong>{secret.trim()}</strong>
+            <span className="christmas-study__vault christmas-study__vault--opening" aria-hidden="true" />
+          </div>}
+        </>}
+
         {phase === 'check-spelling' && <>
           <h2 ref={heading} tabIndex={-1}>Santa guessed {guess.title} ({guess.year}).</h2>
           <p>The vault says “{secret.trim()}”. Did Santa guess the film you meant?</p>
           <div className="christmas-study__answers">
             <button type="button" onClick={() => finishRound('santa')}>Yes, that’s my film</button>
-            <button type="button" onClick={() => finishRound('player')}>No, I stumped Santa</button>
+            <button type="button" onClick={() => { openVault(secret); finishRound('player'); }}>No, I stumped Santa</button>
           </div>
         </>}
 
@@ -221,14 +240,10 @@ export default function SantaKnowsChristmas() {
             <p>You beat Santa! Use <strong>Santa20</strong> at checkout for 20% off a bespoke message from Santa.</p>
             <a href="/#bespoke-santa-messages">Choose a message for the kids or Dad →</a>
           </div>}
-          {winner === 'player' && sealed && !revealed && <>
-            <p>You win this round. Let’s open the vault and see which film you were thinking of.</p>
-            <button type="button" onClick={() => openVault(secret)}>Open the vault</button>
-          </>}
+          {winner === 'santa' && sealed && <p>Your film was <strong>{secret.trim()}</strong>.</p>}
           {winner === 'player' && revealed && <div aria-live="polite">
             <div className="christmas-study__vault-field christmas-study__reveal">
               <strong>{sealed ? secret.trim() : reveal.trim()}</strong>
-              {sealed && <span className="christmas-study__vault christmas-study__vault--opening" aria-hidden="true" />}
             </div>
             <p>{reaction}</p>
           </div>}
