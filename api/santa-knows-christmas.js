@@ -6,7 +6,11 @@ let pool;
 let table;
 
 async function reserve(preview) {
-  pool ||= new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 2, connectionTimeoutMillis: 3000 });
+  const raw = process.env.DATABASE_URL.trim();
+  // Neon can copy a psql command as well as a bare connection URL.
+  const snippet = raw.match(/^psql\s+(['"])(postgres(?:ql)?:\/\/[^\s]+)\1$/);
+  const connectionString = snippet ? snippet[2] : raw;
+  pool ||= new pg.Pool({ connectionString, max: 2, connectionTimeoutMillis: 3000 });
   table ||= pool.query(`CREATE TABLE IF NOT EXISTS santa_knows_christmas_api_budget (
     period text PRIMARY KEY, calls integer NOT NULL
   )`).catch(error => { table = undefined; throw error; });
@@ -53,13 +57,18 @@ export default async function handler(req, res) {
   });
   if (Buffer.byteLength(body) > 5500) return res.status(200).json({ mode: 'local' });
 
+  let stage = 'database';
   try {
     if (!await reserve(preview)) return res.status(200).json({ mode: 'local' });
+    stage = 'openai';
     const response = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body, signal: AbortSignal.timeout(4500),
     });
-    if (!response.ok) return res.status(200).json({ mode: 'local' });
+    if (!response.ok) {
+      console.warn('Santa game OpenAI status', response.status);
+      return res.status(200).json({ mode: 'local' });
+    }
     const data = await response.json();
     const output = data.output?.flatMap(item => item.content || []).find(item => item.type === 'output_text');
     const turn = JSON.parse(output?.text || '{}');
@@ -74,7 +83,7 @@ export default async function handler(req, res) {
     }
     if (turn.action === 'concede' && history.length) return res.status(200).json({ mode: 'ai', guess: null });
   } catch {
-    // The local game remains available if billing, storage or the API fails.
+    console.warn('Santa game fallback', stage);
   }
   return res.status(200).json({ mode: 'local' });
 }
