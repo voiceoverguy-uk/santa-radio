@@ -269,9 +269,11 @@ export default function SantaKnowsChristmas() {
           <h2 ref={heading} tabIndex={-1}>{strikes >= 3 ? 'Careful, you’re getting close to the naughty list!' :
             phase === 'language' ? 'Let’s keep it family-friendly, shall we?' :
             phase === 'invented' ? 'Ho ho, I think you made that one up!' : 'That one has my film elves scratching their heads.'}</h2>
-          <p>{strikes >= 3 ? 'Three cheeky entries in a row! Back to the start. Pick a real Christmas film this time.' :
-            phase === 'unknown' ? 'I couldn’t verify that Christmas film. Check the spelling or try another. No point either way.' :
-            'We’ll pretend that didn’t happen. No point either way. Let’s try this round again with a real Christmas film.'}</p>
+          <p className="christmas-study__replay-message">{strikes >= 3 ? 'Three cheeky entries in a row! Back to the start. Pick a real Christmas film this time.' :
+            phase === 'unknown' ? 'I couldn’t verify that Christmas film. Check the spelling or try another.' :
+            'We’ll pretend that didn’t happen. Try again with a real Christmas film.'}
+            {strikes < 3 && <span>No point either way.</span>}
+          </p>
           <button onClick={() => resetRound(strikes >= 3)}>{strikes >= 3 ? 'Start a new match' : 'Replay this round'}</button>
         </>}
 
