@@ -142,6 +142,7 @@ export default function SantaKnowsChristmas() {
 
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>Can you stump Santa?</h2>
+          <p>Santa’s watched {films.length} Christmas films and specials. Pick one, keep it secret and put him to the test.</p>
           <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p>
           <form onSubmit={async event => {
             event.preventDefault();

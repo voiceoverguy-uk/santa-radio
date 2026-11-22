@@ -1,6 +1,15 @@
 // Shared plot clues cover the principal story. Entries with the same title
 // can be distinguished by including the year in parentheses.
 export const plotQuestions = [
+  ["mccallisters", "Are Kevin McCallister and his big brother Buzz in it?", ["Home Alone", "Home Alone 2: Lost in New York"]],
+  ["heard", "Would you recognise John Heard as Kevin’s dad?", ["Home Alone", "Home Alone 2: Lost in New York"]],
+  ["ratray", "Does Devin Ratray appear as Buzz McCallister?", ["Home Alone", "Home Alone 2: Lost in New York", "Home Sweet Home Alone"]],
+  ["tim-allen", "Would you recognise Tim Allen in a leading role?", ["The Santa Clause", "The Santa Clause 2", "The Santa Clause 3: The Escape Clause", "Christmas with the Kranks"]],
+  ["will-ferrell", "Does Will Ferrell play one of the main characters?", ["Elf", "Spirited"]],
+  ["kurt-russell", "Does Kurt Russell play Santa?", ["The Christmas Chronicles", "The Christmas Chronicles 2"]],
+  ["vanessa", "Does Vanessa Hudgens play the heroine?", ["The Knight Before Christmas", "The Princess Switch", "The Princess Switch: Switched Again", "The Princess Switch 3: Romancing the Star"]],
+  ["clark", "Is Clark Griswold determined to give his family the perfect Christmas?", ["National Lampoon’s Christmas Vacation"]],
+  ["buddy", "Is the central character a grown man called Buddy in a green elf suit?", ["Elf"]],
   ['muppets', 'Would you recognise Kermit the Frog among the characters?', [
     'The Muppet Christmas Carol', 'A Muppet Family Christmas', 'A Muppets Christmas: Letters to Santa', 'It’s a Very Merry Muppet Christmas Movie',
   ]],
