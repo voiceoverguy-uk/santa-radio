@@ -235,7 +235,7 @@ export default function SantaKnowsChristmas() {
 
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
-          {round === 1 && <p className="christmas-study__challenge">{MAX_QUESTIONS} questions. One guess. Beat Santa twice for 20% off a bespoke Santa&nbsp;message.</p>}
+          {round === 1 && <p className="christmas-study__challenge">{MAX_QUESTIONS} questions. One guess. Beat Santa twice to win a discount code for 20% off a bespoke Santa&nbsp;message.</p>}
           <form onSubmit={event => { event.preventDefault(); startRound(); }}>
             <GameCategory value={category} disabled={sealed || pending} onChange={value => { setCategory(value); setSecret(''); }} />
             <label htmlFor="christmas-secret">{category === 'film' ? 'Which Christmas film are you thinking of?' : category === 'actor' ? 'Which Christmas film actor are you thinking of?' : 'Which Christmas film character are you thinking of?'}</label>
