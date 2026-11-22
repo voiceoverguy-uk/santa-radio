@@ -21,6 +21,10 @@ export const categories = {
 };
 
 const rows = [
+  ['A Muppet Family Christmas', 1987, 'family music travel', 'Do Fozzie and his friends surprise his mum at her farmhouse?'],
+  ['A Muppets Christmas: Letters to Santa', 2008, 'santa travel music', 'Does Gonzo head to the North Pole to deliver letters that missed the post?'],
+  ['It’s a Very Merry Muppet Christmas Movie', 2002, 'magic music work event', 'Does an angel show Kermit what life would be like without him as the Muppets try to save their theatre?'],
+  ['Emmet Otter’s Jug-Band Christmas', 1977, 'family music child event smallTown', 'Do a mother and son secretly enter the same talent contest to buy each other Christmas presents?'],
   ['Home Alone', 1990, 'family crime child travel', 'Does a boy defend his house from burglars with homemade traps?'],
   ['Home Alone 2: Lost in New York', 1992, 'family crime child travel sequel', 'Does a boy use his dad’s credit card to stay at the Plaza in New York?', ['Home Alone 2', 'Lost in New York']],
   ['Home Alone 3', 1997, 'family crime child sequel', 'Is a stolen microchip hidden in a remote-controlled toy car?'],
@@ -38,7 +42,7 @@ const rows = [
   ['The Grinch', 2018, 'animated child smallTown', 'Does Benedict Cumberbatch voice a green recluse whose dog is called Max?', ['The Grinch 2018', 'The Grinch (2018)']],
   ['How the Grinch Stole Christmas!', 1966, 'animated child smallTown', 'Does Boris Karloff narrate and voice the Grinch?', ['The Grinch 1966', 'How the Grinch Stole Christmas 1966']],
   ['The Nightmare Before Christmas', 1993, 'animated santa magic travel', 'Does the Pumpkin King discover Christmas Town?', ['Nightmare Before Christmas']],
-  ['The Muppet Christmas Carol', 1992, 'magic family uk', 'Do Gonzo and Rizzo narrate while Michael Caine plays Scrooge?', ['Muppet Christmas Carol']],
+  ['The Muppet Christmas Carol', 1992, 'magic family music uk', 'Does Kermit the Frog play Bob Cratchit alongside a human Scrooge?', ['Muppet Christmas Carol', 'Muppets Christmas Carol', 'The Muppets Christmas Carol']],
   ['A Christmas Carol', 2009, 'animated magic uk', 'Does Jim Carrey voice Scrooge and all three Christmas spirits?', ['Disney’s A Christmas Carol', 'A Christmas Carol 2009']],
   ['Scrooged', 1988, 'magic romance work', 'Is Bill Murray a TV executive putting on a live Christmas Carol broadcast?', ['Scrooged 1988']],
   ['Spirited', 2022, 'magic music work', 'Does Will Ferrell play the Ghost of Christmas Present opposite Ryan Reynolds?'],

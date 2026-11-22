@@ -1,6 +1,9 @@
 // Shared plot clues cover the principal story. Entries with the same title
 // can be distinguished by including the year in parentheses.
 export const plotQuestions = [
+  ['muppets', 'Would you recognise Kermit the Frog among the characters?', [
+    'The Muppet Christmas Carol', 'A Muppet Family Christmas', 'A Muppets Christmas: Letters to Santa', 'It’s a Very Merry Muppet Christmas Movie',
+  ]],
   ['journey', 'Does a journey go wrong and set the story in motion?', [
     'Home Alone', 'Home Alone 2: Lost in New York', 'A Christmas Detour', 'Christmas Island', 'Love You Like Christmas', 'Four Christmases', 'Christmas in Evergreen', 'The Christmas Chronicles', 'Trapped in Paradise', 'Christmas Inheritance',
   ]],
