@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { LockKeyhole } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { isAmbiguousTitle, matchesTitle, MAX_QUESTIONS, nextTurn } from './engine.js';
 import { films } from './films.js';
@@ -22,6 +23,7 @@ export default function SantaKnowsChristmas() {
   const [revealed, setRevealed] = useState(false);
   const [winner, setWinner] = useState(null);
   const heading = useRef(null);
+  const sealing = phase === 'sealing';
   const { question, guess } = aiTurn ?? nextTurn(history, questionOrder);
   const matchWinner = score.player === 2 ? 'player' : score.santa === 2 ? 'santa' : null;
   const round = score.player + score.santa + (phase === 'result' ? 0 : 1);
@@ -104,12 +106,12 @@ export default function SantaKnowsChristmas() {
           <span>Santa <strong>{score.santa}</strong></span>
         </div>
 
-        {phase === 'ready' && <>
+        {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>Think of a Christmas film</h2>
           <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins.</p>
           <form onSubmit={async event => {
             event.preventDefault();
-            if (busy.current) return;
+            if (busy.current || sealing) return;
             if (isAmbiguousTitle(secret)) {
               setNeedsYear(true);
               return;
@@ -119,20 +121,31 @@ export default function SantaKnowsChristmas() {
             const opener = nextTurn([], { seed, recentOpeners }).question.id;
             recentOpenerIds.current = [...recentOpeners, opener].slice(-3);
             setQuestionOrder({ seed, recentOpeners, wordingIndex: roundsStarted.current++ });
-            setSealed(Boolean(secret.trim()));
-            setAiTurn(await requestTurn([]));
+            const hasSecret = Boolean(secret.trim());
+            setSealed(hasSecret);
+            if (hasSecret) setPhase('sealing');
+            const sealConfirmation = hasSecret
+              ? new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 650))
+              : undefined;
+            const [turn] = await Promise.all([requestTurn([]), sealConfirmation]);
+            setAiTurn(turn);
             setPhase('question');
           }}>
             <label htmlFor="christmas-secret">Seal your film title (optional)</label>
-            <input id="christmas-secret" value={secret} onChange={event => {
-              setSecret(event.target.value);
-              setNeedsYear(false);
-            }}
-              placeholder="Type the film title" maxLength={160} autoComplete="off"
-              aria-invalid={needsYear} aria-describedby="christmas-secret-help" />
+            <div className="christmas-study__vault-field">
+              <input id="christmas-secret" disabled={sealing || pending} value={secret} onChange={event => {
+                setSecret(event.target.value);
+                setNeedsYear(false);
+              }}
+                placeholder="Type the film title" maxLength={160} autoComplete="off"
+                aria-invalid={needsYear} aria-describedby="christmas-secret-help" />
+              {sealing && <span className="christmas-study__vault" role="status">
+                <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
+              </span>}
+            </div>
             {needsYear && <p role="alert">Add the release year to tell versions with the same title apart.</p>}
             <small id="christmas-secret-help">Your title stays in this tab. It’s only used to check Santa’s guess.</small>
-            <button type="submit" disabled={pending}>{pending ? "Santa’s thinking…" : `Start round ${round}`}</button>
+            <button type="submit" disabled={pending || sealing}>{pending || sealing ? "Santa’s thinking…" : `Start round ${round}`}</button>
           </form>
         </>}
 
