@@ -123,7 +123,7 @@ export default function SantaKnowsChristmas() {
     setReaction('');
     setReveal('');
     setRevealed(false);
-    setWinner(null);
+    if (resetMatch) setWinner(null);
     setHistory([]);
     setAiTurn(null);
     setPhase('ready');
@@ -141,9 +141,9 @@ export default function SantaKnowsChristmas() {
         </div>
 
         {(phase === 'ready' || sealing) && <>
-          <h2 ref={heading} tabIndex={-1}>Can you stump Santa?</h2>
-          <p>Santa’s watched {films.length} Christmas films and specials. Pick one, keep it secret and put him to the test.</p>
-          <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p>
+          <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
+          {round === 1 && <><p>Santa’s watched {films.length} Christmas films and specials. Pick one, keep it secret and put him to the test.</p>
+          <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p></>}
           <form onSubmit={async event => {
             event.preventDefault();
             if (busy.current || sealing) return;
@@ -165,12 +165,12 @@ export default function SantaKnowsChristmas() {
             setAiTurn(turn);
             setPhase('question');
           }}>
-            <label htmlFor="christmas-secret">Seal your film title (optional)</label>
+            <label htmlFor="christmas-secret">{round === 1 ? 'Seal your film title (optional)' : round === 2 ? 'Fancy locking your second film in the vault?' : 'One last film for the vault?'} </label>
             <div className="christmas-study__vault-field">
               <input id="christmas-secret" disabled={sealed || sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
               }}
-                placeholder="Type the film title" maxLength={160} autoComplete="off"
+                placeholder={round === 1 ? 'Type the film title' : 'Type your next film (optional)'} maxLength={160} autoComplete="off"
                 aria-describedby="christmas-secret-help" />
               {sealed && <span className="christmas-study__vault" role="status">
                 <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
@@ -238,7 +238,7 @@ export default function SantaKnowsChristmas() {
           }}>
             <label htmlFor="christmas-reveal">Which Christmas film was it?</label>
             <input id="christmas-reveal" value={reveal} onChange={event => setReveal(event.target.value)}
-              placeholder="Type the film title" maxLength={160} autoComplete="off" />
+              placeholder={round === 1 ? 'Type the film title' : 'Type your next film (optional)'} maxLength={160} autoComplete="off" />
             <button type="submit" disabled={!reveal.trim()}>Reveal my film</button>
           </form>}
           <button type="button" className="christmas-study__next" onClick={() => resetRound(Boolean(matchWinner))}>
