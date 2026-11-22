@@ -14,6 +14,7 @@ export default function SantaKnowsChristmas() {
   const [history, setHistory] = useState([]);
   const recentOpenerIds = useRef([]);
   const roundsStarted = useRef(0);
+  const wordingOffset = useRef(null);
   const [questionOrder, setQuestionOrder] = useState({ seed: 0, recentOpeners: [] });
   const [score, setScore] = useState({ player: 0, santa: 0 });
   const [secret, setSecret] = useState('');
@@ -38,14 +39,14 @@ export default function SantaKnowsChristmas() {
     setPhase('result');
   }
 
-  async function requestTurn(turns) {
+  async function requestTurn(turns, seed = questionOrder.seed) {
     busy.current = true;
     setPending(true);
     try {
       const response = await fetch('/api/santa-knows-christmas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ history: turns.map(({ question, answer }) => ({ question: question.text, answer })) }),
+        body: JSON.stringify({ seed, history: turns.map(({ question, answer }) => ({ question: question.text, answer })) }),
         signal: AbortSignal.timeout(8000),
       });
       if (!response.ok) return null;
@@ -120,14 +121,15 @@ export default function SantaKnowsChristmas() {
             const recentOpeners = recentOpenerIds.current;
             const opener = nextTurn([], { seed, recentOpeners }).question.id;
             recentOpenerIds.current = [...recentOpeners, opener].slice(-3);
-            setQuestionOrder({ seed, recentOpeners, wordingIndex: roundsStarted.current++ });
+            wordingOffset.current ??= seed % 4;
+            setQuestionOrder({ seed, recentOpeners, wordingIndex: wordingOffset.current + roundsStarted.current++ });
             const hasSecret = Boolean(secret.trim());
             setSealed(hasSecret);
             if (hasSecret) setPhase('sealing');
             const sealConfirmation = hasSecret
               ? new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 650))
               : undefined;
-            const [turn] = await Promise.all([requestTurn([]), sealConfirmation]);
+            const [turn] = await Promise.all([requestTurn([], seed), sealConfirmation]);
             setAiTurn(turn);
             setPhase('question');
           }}>
@@ -150,7 +152,7 @@ export default function SantaKnowsChristmas() {
         </>}
 
         {phase === 'question' && <>
-          <p className="christmas-study__progress">Round {round} · Question {history.length + 1} of {MAX_QUESTIONS}</p>
+          <p className="christmas-study__progress">Round {round} · Question {history.length + 1} of {MAX_QUESTIONS} · {aiTurn ? 'GPT' : 'Film catalogue'}</p>
           <h2 ref={heading} tabIndex={-1}>{questionWording(question, questionOrder.wordingIndex)}</h2>
           <div className="christmas-study__answers">
             <button type="button" disabled={pending} onClick={() => answer(true)}>Yes</button>

@@ -16,7 +16,11 @@ const alternateWording = {
   animated: 'Are the characters animated?',
   hallmark: 'Is this one of Hallmark’s own films?',
   romance: 'Is there a love story at the heart of it?',
-  magic: 'Would the plot fall apart without something supernatural?',
+  magic: [
+    'Does the film need a bit of real magic for its story to work?',
+    'Does something impossible happen that changes where the story goes?',
+    'Do spells, spirits or other impossible events play a major part in the plot?',
+  ],
   family: 'Does the story hinge on the relationship between family members?',
   crime: 'Is there a crime or a criminal scheme at the heart of the film?',
   child: 'Does a child have one of the main roles?',
@@ -31,5 +35,10 @@ const alternateWording = {
 };
 
 export function questionWording(question, roundIndex) {
-  return (roundIndex % 2 === 1 && alternateWording[question.id]) || question.text;
+  const alternatives = alternateWording[question.id];
+  if (Array.isArray(alternatives)) {
+    const wording = [question.text, ...alternatives];
+    return wording[roundIndex % wording.length];
+  }
+  return (roundIndex % 2 === 1 && alternatives) || question.text;
 }
