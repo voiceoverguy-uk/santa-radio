@@ -85,7 +85,8 @@
 .christmas-study__answers { display: flex; justify-content: center; gap: .6rem; flex-wrap: wrap; margin-top: 1.4rem; }
 .christmas-study__next { margin-top: 1rem; }
 .christmas-study__match { font-weight: 800; font-size: 1.2rem; }
-.christmas-study__back { display: inline-block; color: inherit; margin-top: 1rem; }
+.christmas-study__hero h1 a { display: block; }
+.christmas-study__hero h1 a:focus-visible { outline: 3px solid #ffdf85; outline-offset: -4px; }
 .christmas-study-promo {
   background: linear-gradient(90deg, #102e25 20%, #102e25d9 49%, #102e2555), url('/images/christmas-study.webp') right 41% / cover, #102e25;
   color: #fff0cd;
@@ -165,6 +166,7 @@
 @media (prefers-reduced-motion: reduce) { .christmas-study__vault--opening { display: none; } }
 .christmas-study__hero { position: relative; }
 .christmas-study__watched {
+  pointer-events: none;
   position: absolute;
   bottom: clamp(.35rem, 1.2vw, 1rem);
   left: clamp(.35rem, 1.2vw, 1rem);

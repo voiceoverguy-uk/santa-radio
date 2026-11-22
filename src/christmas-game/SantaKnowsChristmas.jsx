@@ -184,7 +184,7 @@ export default function SantaKnowsChristmas() {
   return (
     <main id="main-content" className="christmas-study">
       <div className="christmas-study__hero">
-        <h1><img src="/images/santa-film-cinema.jpg" alt="Santa Knows Christmas" fetchPriority="high" /></h1>
+        <h1><Link to="/" aria-label="Santa Knows Christmas – Santa Radio homepage"><img src="/images/santa-film-cinema.jpg" alt="Santa Knows Christmas" fetchPriority="high" /></Link></h1>
         <MoviesWatched />
       </div>
       <div className="christmas-study__panel">
@@ -290,7 +290,6 @@ export default function SantaKnowsChristmas() {
             {matchWinner ? 'Play a new match' : 'Next round'}
           </button>
         </>}
-        {phase !== 'result' && round === 1 && <Link to="/" className="christmas-study__back">Back to Santa Radio</Link>}
       </div>
     </main>
   );
