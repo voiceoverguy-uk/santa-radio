@@ -46,3 +46,11 @@ h1,h2,h3 { font-family: 'Cinzel', serif; font-weight: 400; line-height: 1.2; }
 .skip-link { position: fixed; top: -100px; left: 20px; z-index: 2000; background: var(--cream); color: var(--navy-dark); padding: 10px 20px; border-radius: 12px; }
 .skip-link:focus { top: 15px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *,*::before,*::after { animation: none !important; transition: none !important; } }
+
+/* Balance display copy and discourage lone words at the end of prose. */
+:where(h1, h2, h3, h4, h5, h6, figcaption) {
+  text-wrap: balance;
+}
+:where(p, blockquote) {
+  text-wrap: pretty;
+}

@@ -191,7 +191,7 @@ export default function SantaKnowsChristmas() {
 
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
-          {round === 1 && <p>{MAX_QUESTIONS} questions. One guess. Beat Santa twice for 20% off a bespoke Santa message.</p>}
+          {round === 1 && <p className="christmas-study__challenge">{MAX_QUESTIONS} questions. One guess. Beat Santa twice for 20% off a bespoke Santa&nbsp;message.</p>}
           <form onSubmit={async event => {
             event.preventDefault();
             if (busy.current || sealing || !secret.trim()) return;

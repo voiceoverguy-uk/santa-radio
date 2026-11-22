@@ -167,3 +167,4 @@
 }
 .christmas-study__watched b { display: inline-block; min-width: 3ch; font-variant-numeric: tabular-nums; text-align: right; }
 .christmas-study__watched .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.christmas-study__challenge { text-wrap: balance; }
