@@ -1,6 +1,6 @@
 import { containsWorkshopProfanity } from '../lib/workshopSpellingLanguage.js';
 import { useEffect, useRef, useState } from 'react';
-import { LockKeyhole } from 'lucide-react';
+import { ShipWheel } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { suggestFilms, matchesTitle, MAX_QUESTIONS, nextTurn } from './engine.js';
 import { films } from './films.js';
@@ -22,6 +22,13 @@ const reactions = [
   'Even with twenty questions in my stocking, that one got away!',
   'Mrs Claus is going to ask how I missed that one.',
 ];
+
+function VaultDoors({ opening = false }) {
+  return <span className={`christmas-study__vault${opening ? ' christmas-study__vault--opening' : ''}`}
+    role={opening ? undefined : 'status'} aria-hidden={opening || undefined}>
+    <span className="christmas-study__vault-plate"><ShipWheel size={26} aria-hidden="true" /> Locked in Santa’s vault</span>
+  </span>;
+}
 
 function MoviesWatched() {
   const [count, setCount] = useState(films.length);
@@ -217,9 +224,7 @@ export default function SantaKnowsChristmas() {
               }}
                 placeholder="Lock your answer in the vault" maxLength={160} autoComplete="off"
                 aria-describedby="christmas-secret-help" />
-              {sealed && <span className="christmas-study__vault" role="status">
-                <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
-              </span>}
+              {sealed && <VaultDoors />}
             </div>
             {secret.trim() && !sealed && <button type="button" disabled={pending} onClick={() => {
               setSealed(true);
@@ -243,7 +248,7 @@ export default function SantaKnowsChristmas() {
           className="christmas-study__vault-field christmas-study__reveal" aria-live="polite">
           <small>Your locked-in film</small>
           <strong>{phase === 'language' || containsWorkshopProfanity(secret) ? 'Title hidden for language' : secret}</strong>
-          {phase === 'opening' && <span className="christmas-study__vault christmas-study__vault--opening" aria-hidden="true" />}
+          {phase === 'opening' && <VaultDoors opening />}
         </div>}
 
         {(phase === 'committed' || phase === 'opening') && <>
