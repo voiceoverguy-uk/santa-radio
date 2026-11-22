@@ -218,7 +218,7 @@ export default function SantaKnowsChristmas() {
               <input id="christmas-secret" required disabled={sealed || sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
               }}
-                placeholder={round === 1 ? 'Enter a film title, e.g. Elf' : 'Type your next film'} maxLength={160} autoComplete="off"
+                placeholder="Lock your answer in the vault" maxLength={160} autoComplete="off"
                 aria-describedby="christmas-secret-help" />
               {sealed && <span className="christmas-study__vault" role="status">
                 <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
