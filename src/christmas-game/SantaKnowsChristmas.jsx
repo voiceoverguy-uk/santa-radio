@@ -1,7 +1,9 @@
 import { nextUnknownReaction } from './unknown-reactions.js';
 import { containsWorkshopProfanity } from '../lib/workshopSpellingLanguage.js';
 import { useEffect, useRef, useState } from 'react';
-import { ShipWheel } from 'lucide-react';
+import { GameCategory, VaultDoors } from './VaultControls.jsx';
+import { peopleGames } from './people.js';
+import { vaultTransfer } from './vault-transfer.js';
 import { Link } from 'react-router-dom';
 import { suggestFilms, matchesTitle, MAX_QUESTIONS, nextTurn } from './engine.js';
 import { films } from './films.js';
@@ -24,13 +26,6 @@ const reactions = [
   'Mrs Claus is going to ask how I missed that one.',
 ];
 
-function VaultDoors({ opening = false }) {
-  return <span className={`christmas-study__vault${opening ? ' christmas-study__vault--opening' : ''}`}
-    role={opening ? undefined : 'status'} aria-hidden={opening || undefined}>
-    <span className="christmas-study__vault-plate"><ShipWheel size={26} aria-hidden="true" /> Locked in Santa’s vault</span>
-  </span>;
-}
-
 function MoviesWatched() {
   const [count, setCount] = useState(films.length);
   useEffect(() => {
@@ -50,6 +45,11 @@ function MoviesWatched() {
 }
 
 export default function SantaKnowsChristmas() {
+  const [arrival] = useState(() => vaultTransfer.current);
+  const [category, setCategory] = useState(arrival?.category ?? 'film');
+  const game = peopleGames[category];
+  const entries = game?.entries ?? films;
+  const describe = entry => category === 'film' ? `${entry.title} (${entry.year})` : entry.title;
   const [aiTurn, setAiTurn] = useState(null);
   const [pending, setPending] = useState(false);
   const busy = useRef(false);
@@ -60,8 +60,8 @@ export default function SantaKnowsChristmas() {
   const wordingOffset = useRef(null);
   const [questionOrder, setQuestionOrder] = useState({ seed: 0, recentOpeners: [] });
   const [score, setScore] = useState({ player: 0, santa: 0 });
-  const [secret, setSecret] = useState('');
-  const [sealed, setSealed] = useState(false);
+  const [secret, setSecret] = useState(arrival?.answer ?? '');
+  const [sealed, setSealed] = useState(Boolean(arrival));
   const roundId = useRef(null);
   const trackingStart = useRef(null);
   const [reaction, setReaction] = useState('');
@@ -70,13 +70,41 @@ export default function SantaKnowsChristmas() {
   const [winner, setWinner] = useState(null);
   const heading = useRef(null);
   const sealing = phase === 'sealing';
-  const { question, guess } = aiTurn ?? nextTurn(history, questionOrder);
+  const { question, guess } = aiTurn ?? nextTurn(history, questionOrder, game);
   const matchWinner = score.player === 2 ? 'player' : score.santa === 2 ? 'santa' : null;
   const round = score.player + score.santa + (phase === 'result' ? 0 : 1);
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, [phase, history.length]);
+
+  async function startRound() {
+    if (busy.current || sealing || !secret.trim()) return;
+    roundId.current = window.crypto.randomUUID();
+    trackingStart.current = trackRound('game-start', roundId.current);
+    const seed = Math.floor(Math.random() * 1_000_000);
+    const recentOpeners = recentOpenerIds.current;
+    const opener = nextTurn([], { seed, recentOpeners }, game).question.id;
+    recentOpenerIds.current = [...recentOpeners, opener].slice(-3);
+    wordingOffset.current ??= seed % 4;
+    setQuestionOrder({ seed, recentOpeners, wordingIndex: wordingOffset.current + roundsStarted.current++ });
+    const hasSecret = Boolean(secret.trim());
+    setSealed(hasSecret);
+    if (hasSecret && !sealed) setPhase('sealing');
+    const sealConfirmation = hasSecret && !sealed
+      ? new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 650))
+      : undefined;
+    const [turn] = await Promise.all([requestTurn([], seed), sealConfirmation]);
+    setAiTurn(turn);
+    setPhase('question');
+  }
+
+  useEffect(() => {
+    if (arrival && vaultTransfer.current === arrival) {
+      vaultTransfer.current = null;
+      startRound();
+    }
+  }, [arrival]);
 
   function finishRound(roundWinner) {
     setWinner(roundWinner);
@@ -91,7 +119,7 @@ export default function SantaKnowsChristmas() {
       const response = await fetch('/api/santa-knows-christmas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seed, history: turns.map(({ question, answer }) => ({ question: question.text, answer })) }),
+        body: JSON.stringify({ category, seed, history: turns.map(({ question, answer }) => ({ question: question.text, answer })) }),
         signal: AbortSignal.timeout(8000),
       });
       if (!response.ok) return null;
@@ -101,7 +129,7 @@ export default function SantaKnowsChristmas() {
         return { question: { id: `ai-${turns.length}`, text: turn.question, responses: [] } };
       }
       const guess = turn.guess;
-      return { guess: guess && (films.find(film => film.year === guess.year && matchesTitle(film, guess.title)) ??
+      return { guess: guess && (entries.find(film => (category !== 'film' || film.year === guess.year) && matchesTitle(film, guess.title)) ??
         { ...guess, aliases: [] }) };
     } catch {
       return null;
@@ -117,7 +145,7 @@ export default function SantaKnowsChristmas() {
     const adaptive = aiTurn ? await requestTurn(updated) : null;
     setAiTurn(adaptive);
     setHistory(updated);
-    const turn = adaptive ?? nextTurn(updated, questionOrder);
+    const turn = adaptive ?? nextTurn(updated, questionOrder, game);
     if (turn.question) return;
     setPhase('committed');
   }
@@ -142,13 +170,13 @@ export default function SantaKnowsChristmas() {
   function scoreFilm(film) {
 
     setStrikes(0);
-    if (guess && film.year === guess.year && (matchesTitle(guess, film.title) || matchesTitle(film, guess.title))) {
+    if (guess && (category !== 'film' || film.year === guess.year) && (matchesTitle(guess, film.title) || matchesTitle(film, guess.title))) {
       finishRound('santa');
       return;
     }
     setReaction(reactions[Math.floor(Math.random() * reactions.length)]);
     const id = roundId.current;
-    trackingStart.current?.then(() => trackRound('game-reveal', id, film.title));
+    if (category === 'film') trackingStart.current?.then(() => trackRound('game-reveal', id, film.title));
     finishRound('player');
   }
 
@@ -159,9 +187,9 @@ export default function SantaKnowsChristmas() {
     try {
       await new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 850 : 1300));
       if (containsWorkshopProfanity(secret)) return rejectEntry('language');
-      const exact = films.filter(film => matchesTitle(film, secret));
+      const exact = entries.filter(film => matchesTitle(film, secret));
       if (exact.length === 1) return scoreFilm(exact[0]);
-      const candidates = exact.length ? exact : suggestFilms(secret);
+      const candidates = exact.length ? exact : suggestFilms(secret, entries);
       if (candidates.length) {
         setChoices(candidates);
         return setPhase('confirm-film');
@@ -169,7 +197,7 @@ export default function SantaKnowsChristmas() {
       if (/\b(?:poo|poop|pooping|farting)\b/i.test(secret)) return rejectEntry('language');
       const response = await fetch('/api/santa-knows-christmas', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify-film', title: secret.trim() }), signal: AbortSignal.timeout(9000),
+        body: JSON.stringify({ action: 'verify-film', category, title: secret.trim() }), signal: AbortSignal.timeout(9000),
       });
       const result = response.ok ? await response.json() : {};
       if (result.verdict === 'recognised') return scoreFilm({ title: result.title, year: result.year, aliases: [] });
@@ -208,28 +236,9 @@ export default function SantaKnowsChristmas() {
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
           {round === 1 && <p className="christmas-study__challenge">{MAX_QUESTIONS} questions. One guess. Beat Santa twice for 20% off a bespoke Santa&nbsp;message.</p>}
-          <form onSubmit={async event => {
-            event.preventDefault();
-            if (busy.current || sealing || !secret.trim()) return;
-            roundId.current = window.crypto.randomUUID();
-            trackingStart.current = trackRound('game-start', roundId.current);
-            const seed = Math.floor(Math.random() * 1_000_000);
-            const recentOpeners = recentOpenerIds.current;
-            const opener = nextTurn([], { seed, recentOpeners }).question.id;
-            recentOpenerIds.current = [...recentOpeners, opener].slice(-3);
-            wordingOffset.current ??= seed % 4;
-            setQuestionOrder({ seed, recentOpeners, wordingIndex: wordingOffset.current + roundsStarted.current++ });
-            const hasSecret = Boolean(secret.trim());
-            setSealed(hasSecret);
-            if (hasSecret && !sealed) setPhase('sealing');
-            const sealConfirmation = hasSecret && !sealed
-              ? new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 650))
-              : undefined;
-            const [turn] = await Promise.all([requestTurn([], seed), sealConfirmation]);
-            setAiTurn(turn);
-            setPhase('question');
-          }}>
-            <label htmlFor="christmas-secret">{round === 1 ? 'Which Christmas film are you thinking of?' : round === 2 ? 'Which film shall we seal for round two?' : 'One last film for the vault?'} </label>
+          <form onSubmit={event => { event.preventDefault(); startRound(); }}>
+            <GameCategory value={category} disabled={sealed || pending} onChange={value => { setCategory(value); setSecret(''); }} />
+            <label htmlFor="christmas-secret">{category === 'film' ? 'Which Christmas film are you thinking of?' : category === 'actor' ? 'Which Christmas film actor are you thinking of?' : 'Which Christmas film character are you thinking of?'}</label>
             <div className="christmas-study__vault-field">
               <input id="christmas-secret" required disabled={sealed || sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
@@ -247,7 +256,7 @@ export default function SantaKnowsChristmas() {
         </>}
 
         {phase === 'question' && <>
-          <p className="christmas-study__progress">Round {round} · Question {history.length + 1} of {MAX_QUESTIONS} · {aiTurn ? 'GPT' : 'Film catalogue'}</p>
+          <p className="christmas-study__progress">Round {round} · Question {history.length + 1} of {MAX_QUESTIONS} · {aiTurn ? 'GPT' : 'Catalogue'}</p>
           <h2 ref={heading} tabIndex={-1}>{questionWording(question, questionOrder.wordingIndex)}</h2>
           <div className="christmas-study__answers">
             <button type="button" disabled={pending} onClick={() => answer(true)}>Yes</button>
@@ -258,32 +267,32 @@ export default function SantaKnowsChristmas() {
 
         {['opening', 'confirm-film', 'unknown', 'invented', 'language', 'result'].includes(phase) && <div
           className="christmas-study__vault-field christmas-study__reveal" aria-live="polite">
-          <small>Your locked-in film</small>
+          <small>Your locked-in {category}</small>
           <strong>{phase === 'language' || containsWorkshopProfanity(secret) ? 'Title hidden for language' : secret}</strong>
           {phase === 'opening' && <VaultDoors opening />}
         </div>}
 
         {(phase === 'committed' || phase === 'opening') && <>
-          <h2 ref={heading} tabIndex={-1}>{guess ? `My final guess is ${guess.title} (${guess.year})!` : 'You’ve got me guessing. I’ll pass!'}</h2>
+          <h2 ref={heading} tabIndex={-1}>{guess ? `My final guess is ${describe(guess)}!` : 'You’ve got me guessing. I’ll pass!'}</h2>
           {phase === 'committed' ? <>
-            <p>Your film is still sealed. Shall we see what’s inside?</p>
+            <p>Your answer is still sealed. Shall we see what’s inside?</p>
             <button type="button" onClick={revealCommittedGuess}>Open the vault</button>
           </> : null}
         </>}
 
         {phase === 'confirm-film' && <>
-          <h2 ref={heading} tabIndex={-1}>The vault is open. Which film did you mean?</h2>
-          {choices.map(film => <button key={film.title + film.year} onClick={() => scoreFilm(film)}>{film.title} ({film.year})</button>)}
-          <button onClick={() => rejectEntry('unknown')}>A different film</button>
+          <h2 ref={heading} tabIndex={-1}>The vault is open. Which {category} did you mean?</h2>
+          {choices.map(film => <button key={film.title + film.year} onClick={() => scoreFilm(film)}>{describe(film)}</button>)}
+          <button onClick={() => rejectEntry('unknown')}>A different {category}</button>
         </>}
 
         {['language','invented','unknown'].includes(phase) && <>
           <h2 ref={heading} tabIndex={-1}>{strikes >= 3 ? 'Careful, you’re getting close to the naughty list!' :
             phase === 'language' ? 'Let’s keep it family-friendly, shall we?' :
-            phase === 'invented' ? 'Ho ho, I think you made that one up!' : reaction}</h2>
-          <p className="christmas-study__replay-message">{strikes >= 3 ? 'Three cheeky entries in a row! Back to the start. Pick a real Christmas film this time.' :
-            phase === 'unknown' ? 'I couldn’t verify that Christmas film. Check the spelling or try another.' :
-            'We’ll pretend that didn’t happen. Try again with a real Christmas film.'}
+            phase === 'invented' ? 'Ho ho, I think you made that one up!' : category === 'film' ? reaction : 'I’ll need the elves’ help with that name!'}</h2>
+          <p className="christmas-study__replay-message">{strikes >= 3 ? 'Three cheeky entries in a row! Back to the start. Choose a real answer this time.' :
+            phase === 'unknown' ? `I couldn’t verify that ${category}. Check the spelling or try another.` :
+            'We’ll pretend that didn’t happen. Try again with a real answer.'}
             {strikes < 3 && <span>No point either way.</span>}
           </p>
           <button onClick={() => resetRound(strikes >= 3)}>{strikes >= 3 ? 'Start a new match' : 'Replay this round'}</button>
@@ -291,7 +300,7 @@ export default function SantaKnowsChristmas() {
 
         {phase === 'result' && <>
           <h2 ref={heading} tabIndex={-1}>{winner === 'player' ? 'You stumped Santa!' : 'Santa got it!'}</h2>
-          {guess && <p>Santa guessed <strong>{guess.title} ({guess.year})</strong>.</p>}
+          {guess && <p>Santa guessed <strong>{describe(guess)}</strong>.</p>}
           {matchWinner && <p className="christmas-study__match">
             {matchWinner === 'player' ? 'You win the match!' : 'Santa wins the match!'}
           </p>}

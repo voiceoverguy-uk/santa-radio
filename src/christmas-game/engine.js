@@ -22,9 +22,9 @@ const questionBank = [
   })),
 ];
 
-export function nextTurn(history, { seed = 0, recentOpeners = [] } = {}) {
+export function nextTurn(history, { seed = 0, recentOpeners = [] } = {}, { entries = films, questions = questionBank } = {}) {
   const asked = new Set(history.map(({ question }) => question.id));
-  const weights = films.map((_, index) => history.reduce((weight, { question, answer }) => {
+  const weights = entries.map((_, index) => history.reduce((weight, { question, answer }) => {
     const expected = question.responses[index];
     if (answer === null || expected == null) return weight * 0.5;
     const accuracy = question.specific ? 0.995 : 0.9;
@@ -37,11 +37,11 @@ export function nextTurn(history, { seed = 0, recentOpeners = [] } = {}) {
   const confidence = probabilities[leader];
 
   if ((confirmedPlot && confidence >= 0.8) || history.length >= MAX_QUESTIONS) {
-    return { guess: confidence >= 0.25 ? films[leader] : null };
+    return { guess: confidence >= 0.25 ? entries[leader] : null };
   }
 
   const ranked = [];
-  for (const question of questionBank) {
+  for (const question of questions) {
     if (asked.has(question.id)) continue;
     let yes = 0;
     let no = 0;
@@ -56,7 +56,7 @@ export function nextTurn(history, { seed = 0, recentOpeners = [] } = {}) {
   const storyQuestions = ranked.filter(({ question, score }) => question.story && score > 0.1);
   if (history.length === 0) {
     const fresh = storyQuestions.filter(({ question }) => !recentOpeners.includes(question.id));
-    const pool = fresh.length ? fresh : storyQuestions;
+    const pool = fresh.length ? fresh : storyQuestions.length ? storyQuestions : ranked.slice(0, 3);
     return { question: pool[seed % pool.length].question };
   }
   if (history.length === 1 && storyQuestions[0]?.score >= ranked[0].score * 0.35) {
@@ -102,14 +102,14 @@ function titleDistance(left, right) {
   return row[right.length];
 }
 
-export function suggestFilms(title) {
+export function suggestFilms(title, entries = films) {
   const year = title.match(/\b((?:19|20)\d{2})\)?\s*$/);
   const query = titleKey(year ? title.slice(0, year.index) : title);
   if (query.length < 3) return [];
   const limit = Math.min(3, Math.floor(query.length / 4));
   let best = limit + 1;
   let choices = [];
-  for (const film of films) {
+  for (const film of entries) {
     if (year && film.year !== Number(year[1])) continue;
     for (const name of [film.title, ...film.aliases]) {
       const candidate = titleKey(name);

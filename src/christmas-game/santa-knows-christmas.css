@@ -185,3 +185,11 @@
 
 .christmas-study__replay-message { text-wrap: balance; }
 .christmas-study__replay-message > span { display: block; }
+.christmas-category { display: grid; gap: .35rem; }
+.christmas-category select, .christmas-study-promo input, .christmas-study-promo button {
+  font: inherit; padding: .7em 1em; border: 1px solid #ac8750; border-radius: .7rem;
+}
+.christmas-category select, .christmas-study-promo input { width: 100%; background: #fff7e2; color: #18372c; }
+.christmas-study-promo form { display: grid; gap: .45rem; max-width: 23rem; }
+.christmas-study-promo button { background: #eed29a; color: #17372b; font-weight: 700; cursor: pointer; }
+.christmas-study-promo h2 { display: inline-block; border: 2px solid #c99f58; border-radius: 1em; padding: .18em .6em; color: #ffe7aa; background: #15392d; }
