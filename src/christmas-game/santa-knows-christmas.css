@@ -153,3 +153,17 @@
 .christmas-study__reveal { margin: 1rem auto; padding: .8rem; max-width: 29rem; overflow-wrap: anywhere; }
 .christmas-study__vault--opening::before { animation-direction: reverse; }
 @media (prefers-reduced-motion: reduce) { .christmas-study__vault--opening { display: none; } }
+.christmas-study__hero { position: relative; }
+.christmas-study__watched {
+  position: absolute;
+  bottom: clamp(.35rem, 1.2vw, 1rem);
+  left: clamp(.35rem, 1.2vw, 1rem);
+  padding: .25em .65em;
+  border: 1px solid #bea064;
+  border-radius: 1rem;
+  background: #12372ef2;
+  color: #fff0cd;
+  font-size: clamp(.7rem, 1.25vw, 1rem);
+}
+.christmas-study__watched b { display: inline-block; min-width: 3ch; font-variant-numeric: tabular-nums; text-align: right; }
+.christmas-study__watched .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

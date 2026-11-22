@@ -23,6 +23,24 @@ const reactions = [
   'Mrs Claus is going to ask how I missed that one.',
 ];
 
+function MoviesWatched() {
+  const [count, setCount] = useState(films.length);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const start = performance.now();
+    let frame;
+    function tick(now) {
+      const progress = Math.min(1, (now - start) / 650);
+      setCount(Math.round(films.length * (1 - (1 - progress) ** 3)));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    }
+    setCount(0);
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return <span className="christmas-study__watched">Christmas movies watched: <b aria-hidden="true">{count}</b><span className="sr-only">{films.length}</span></span>;
+}
+
 export default function SantaKnowsChristmas() {
   const [aiTurn, setAiTurn] = useState(null);
   const [pending, setPending] = useState(false);
@@ -163,6 +181,7 @@ export default function SantaKnowsChristmas() {
     <main id="main-content" className="christmas-study">
       <div className="christmas-study__hero">
         <h1><img src="/images/santa-film-cinema.jpg" alt="Santa Knows Christmas" fetchPriority="high" /></h1>
+        <MoviesWatched />
       </div>
       <div className="christmas-study__panel">
         <div className="christmas-study__score" aria-live="polite">
@@ -172,8 +191,7 @@ export default function SantaKnowsChristmas() {
 
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
-          {round === 1 && <><p>Santa’s watched {films.length} Christmas films and specials. Think of a film title and see if he can guess it.</p>
-          <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p></>}
+          {round === 1 && <p>{MAX_QUESTIONS} questions. One guess. Beat Santa twice for 20% off a bespoke Santa message.</p>}
           <form onSubmit={async event => {
             event.preventDefault();
             if (busy.current || sealing || !secret.trim()) return;
@@ -209,7 +227,7 @@ export default function SantaKnowsChristmas() {
             {secret.trim() && !sealed && <button type="button" disabled={pending} onClick={() => {
               setSealed(true);
             }}>Lock it in</button>}
-            <small id="christmas-secret-help">Play locks your title. Santa guesses from your answers alone. After the reveal, we check the film and count verified wins.</small>
+            <small id="christmas-secret-help">Play seals your title until Santa’s final guess.</small>
             <button type="submit" disabled={pending || sealing || !secret.trim()}>{pending || sealing ? "Santa’s thinking…" : `Play round ${round}`}</button>
           </form>
         </>}
