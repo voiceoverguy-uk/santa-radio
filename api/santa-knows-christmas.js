@@ -1,6 +1,6 @@
 import pg from 'pg';
 
-const start = Date.parse('2026-12-01T00:00:00Z');
+const start = Date.parse('2026-11-22T00:00:00Z');
 const end = Date.parse('2026-12-27T00:00:00Z');
 let pool;
 let table;
