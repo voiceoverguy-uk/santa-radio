@@ -98,7 +98,8 @@ export default function SantaKnowsChristmas() {
   }
 
   function rejectEntry(reason) {
-    if (reason !== 'unknown') setStrikes(count => count + 1);
+    if (reason === 'unknown') setStrikes(0);
+    else setStrikes(count => count + 1);
     setPhase(reason);
   }
 
@@ -171,7 +172,7 @@ export default function SantaKnowsChristmas() {
 
         {(phase === 'ready' || sealing) && <>
           <h2 ref={heading} tabIndex={-1}>{round === 1 ? 'Can you stump Santa?' : round === 3 ? 'One apiece! Time for the decider.' : winner === 'player' ? 'Nice win! Right, my turn to try for a point…' : 'Got that one! Can you stump me this time?'}</h2>
-          {round === 1 && <><p>Santa’s watched {films.length} Christmas films and specials. Pick one, keep it secret and put him to the test.</p>
+          {round === 1 && <><p>Santa’s watched {films.length} Christmas films and specials. Think of a film title and see if he can guess it.</p>
           <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p></>}
           <form onSubmit={async event => {
             event.preventDefault();
@@ -194,12 +195,12 @@ export default function SantaKnowsChristmas() {
             setAiTurn(turn);
             setPhase('question');
           }}>
-            <label htmlFor="christmas-secret">{round === 1 ? 'Seal your Christmas film title' : round === 2 ? 'Which film shall we seal for round two?' : 'One last film for the vault?'} </label>
+            <label htmlFor="christmas-secret">{round === 1 ? 'Which Christmas film are you thinking of?' : round === 2 ? 'Which film shall we seal for round two?' : 'One last film for the vault?'} </label>
             <div className="christmas-study__vault-field">
               <input id="christmas-secret" required disabled={sealed || sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
               }}
-                placeholder={round === 1 ? 'Type the film title' : 'Type your next film'} maxLength={160} autoComplete="off"
+                placeholder={round === 1 ? 'Enter a film title, e.g. Elf' : 'Type your next film'} maxLength={160} autoComplete="off"
                 aria-describedby="christmas-secret-help" />
               {sealed && <span className="christmas-study__vault" role="status">
                 <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
