@@ -95,7 +95,10 @@ export default function SantaKnowsChristmas() {
     if (!turn.guess) {
       finishRound('player');
     } else if (sealed) {
-      finishRound(matchesTitle(turn.guess, secret) ? 'santa' : 'player');
+      if (matchesTitle(turn.guess, secret)) finishRound('santa');
+      else if (suggestFilms(secret).some(film => film.title === turn.guess.title && film.year === turn.guess.year)) {
+        setPhase('check-spelling');
+      } else finishRound('player');
     } else {
       setPhase('guess');
     }
@@ -187,6 +190,15 @@ export default function SantaKnowsChristmas() {
             <button type="button" disabled={pending} onClick={() => answer(true)}>Yes</button>
             <button type="button" disabled={pending} onClick={() => answer(false)}>No</button>
             <button type="button" disabled={pending} onClick={() => answer(null)}>I don’t know</button>
+          </div>
+        </>}
+
+        {phase === 'check-spelling' && <>
+          <h2 ref={heading} tabIndex={-1}>Santa guessed {guess.title} ({guess.year}).</h2>
+          <p>The vault says “{secret.trim()}”. Did Santa guess the film you meant?</p>
+          <div className="christmas-study__answers">
+            <button type="button" onClick={() => finishRound('santa')}>Yes, that’s my film</button>
+            <button type="button" onClick={() => finishRound('player')}>No, I stumped Santa</button>
           </div>
         </>}
 
