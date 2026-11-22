@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import PageSeo from './PageSeo.jsx';
 import { pageMetadata, mugPhotoTermsPath } from './catalogue.js';
 const pages = {
+  '/santa-knows-christmas': ['Santa Knows Christmas | Christmas Film Guessing Game', 'Think of a Christmas film and see if Santa can guess it in 20 questions. Play the free Santa Knows Christmas game and try to beat Santa.'],
   '/naughty-or-nice-list-checker': ['Naughty or Nice List Checker & Free Certificate | Santa Radio', 'Are you on Santa’s Nice List? Take Head Elf’s free Naughty or Nice quiz and download your personalised certificate. A playful Christmas treat for families.'],
   '/christmas-contenders': ['Christmas Contenders 2026: New Christmas Songs | Santa Radio', 'Discover new Christmas songs and the artists behind them. Explore Santa Radio’s Christmas Contenders and find your next festive favourite.'],
   [mugPhotoTermsPath]: ['Photo usage and licensing | Santa Radio', 'Read the copyright and permission-required reuse terms for Santa Radio’s Mugshot photographs, with photographer credits and how to request permission.'],

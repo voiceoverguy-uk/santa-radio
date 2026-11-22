@@ -1,0 +1,101 @@
+.christmas-study {
+  background: radial-gradient(ellipse at top, #204b3d, #091e19 75%);
+  color: #fff0cd;
+  padding: clamp(1rem, 4vw, 3rem) 1rem 4rem;
+}
+.christmas-study__hero {
+  background: linear-gradient(180deg, #091e19db, transparent 42%, #091e1944), url('/images/christmas-study.webp') center 43% / cover, #153b32;
+  border: 1px solid #ab844a;
+  border-radius: 1.25rem 1.25rem 0 0;
+  min-height: clamp(16rem, 41vw, 28rem);
+  margin: auto;
+  max-width: 54rem;
+  text-align: center;
+  padding: 1.2rem .8rem;
+}
+.christmas-study h1, .christmas-study h2, .christmas-study-promo h2 {
+  font-family: Georgia, serif;
+  line-height: 1.07;
+  margin: 0;
+}
+.christmas-study h1 {
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  text-shadow: 0 3px 12px #091811;
+  color: #ffecbb;
+}
+.christmas-study__panel {
+  background: radial-gradient(ellipse at top, #fff1cf, #e9c68e);
+  border: 1px solid #ab844a;
+  border-radius: 0 0 1.25rem 1.25rem;
+  color: #1c3527;
+  margin: auto;
+  max-width: 54rem;
+  padding: clamp(1.1rem, 4vw, 2.8rem);
+  text-align: center;
+}
+.christmas-study h2 { font-size: clamp(1.7rem, 4vw, 2.8rem); }
+.christmas-study p { margin: .85rem auto; max-width: 38rem; }
+.christmas-study__score {
+  display: flex;
+  justify-content: center;
+  gap: .65rem;
+  margin-bottom: 1.4rem;
+}
+.christmas-study__score span {
+  background: #16382d;
+  border: 1px solid #ad884a;
+  border-radius: 2rem;
+  color: #fff0cd;
+  padding: .38rem 1rem;
+}
+.christmas-study__score strong { margin-left: .35rem; }
+.christmas-study__progress { font-weight: 650; }
+.christmas-study form { display: grid; gap: .65rem; margin: 1.4rem auto 0; max-width: 29rem; }
+.christmas-study label { font-weight: 700; text-align: left; }
+.christmas-study input {
+  width: 100%;
+  min-height: 3.4rem;
+  border: 2px solid #8a602c;
+  border-radius: .8rem;
+  background: #fff8e4;
+  color: #183a2d;
+  box-shadow: inset 0 2px 5px #68400e26, 0 0 0 2px #d1a458;
+  padding: .75rem 1rem;
+  font-size: 1rem;
+}
+.christmas-study input::placeholder { color: #635645; }
+.christmas-study button, .christmas-study-promo a {
+  min-height: 2.9rem;
+  padding: .65rem 1.15rem;
+  border: 1px solid #a98341;
+  border-radius: .8rem;
+  background: #153a2d;
+  color: #fff0cd;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.christmas-study button:hover, .christmas-study-promo a:hover { background: #245441; }
+.christmas-study :is(button, input, a):focus-visible, .christmas-study-promo a:focus-visible {
+  outline: 3px solid #986025;
+  outline-offset: 3px;
+}
+.christmas-study button:disabled { opacity: .58; cursor: default; }
+.christmas-study__answers { display: flex; justify-content: center; gap: .6rem; flex-wrap: wrap; margin-top: 1.4rem; }
+.christmas-study__next { margin-top: 1rem; }
+.christmas-study__match { font-weight: 800; font-size: 1.2rem; }
+.christmas-study__back { display: inline-block; color: inherit; margin-top: 1rem; }
+.christmas-study-promo {
+  background: linear-gradient(90deg, #102e25 20%, #102e25d9 49%, #102e2555), url('/images/christmas-study.webp') right 41% / cover, #102e25;
+  color: #fff0cd;
+  border: 1px solid #a98341;
+  border-radius: 1rem;
+  max-width: 75rem;
+  margin: 2rem auto;
+  width: calc(100% - 2rem);
+  padding: clamp(1.25rem, 5vw, 3.5rem);
+}
+.christmas-study-promo h2 { font-size: clamp(1.8rem, 5vw, 3rem); }
+.christmas-study-promo p { margin: .7rem 0 1rem; }
+.christmas-study-promo a { display: inline-flex; align-items: center; }

@@ -1,0 +1,35 @@
+const alternateWording = {
+  journey: 'Does the trouble begin when someone’s travel plans go wrong?',
+  'save-business': 'Is a shop, inn or another business in need of a Christmas rescue?',
+  'pretend-romance': 'Does someone pass off a fake relationship as the real thing?',
+  royalty: 'Is there a royal at the heart of the story?',
+  lookalikes: 'Does anyone use their resemblance to someone else to swap places?',
+  scrooge: 'Will I spot Ebenezer Scrooge or a character based on him?',
+  animals: 'Would the story play out differently without a pet or wild animal?',
+  'winter-travel': 'Does wintry weather bring someone’s travel plans to a halt?',
+  letter: 'Does the adventure start with a letter, a card or a diary?',
+  wish: 'Does someone make a wish or find something magical that changes the story?',
+  'north-pole': 'Do we spend any of the film up at my place, the North Pole?',
+  performance: 'Is there a show or performance that people are working towards or putting on?',
+  strangers: 'Do people who’ve just met find themselves spending Christmas together?',
+  steal: 'Is a big part of the plot someone trying to pinch something specific or valuable?',
+  animated: 'Are the characters animated?',
+  hallmark: 'Is this one of Hallmark’s own films?',
+  romance: 'Is there a love story at the heart of it?',
+  magic: 'Would the plot fall apart without something supernatural?',
+  family: 'Does the story hinge on the relationship between family members?',
+  crime: 'Is there a crime or a criminal scheme at the heart of the film?',
+  child: 'Does a child have one of the main roles?',
+  sequel: 'Did this film follow on from an earlier one?',
+  uk: 'Do most of the events take place in Britain or Northern Ireland?',
+  smallTown: 'Does most of the action happen in a village or small town?',
+  santa: 'Do I turn up as the real Santa in this one?',
+  travel: 'Is taking a trip or coming home a major part of the story?',
+  music: 'Does music or performing play a big part in what happens?',
+  work: 'Does somebody’s job or business drive the plot?',
+  event: 'Does a particular competition, show or festive event drive the story?',
+};
+
+export function questionWording(question, roundIndex) {
+  return (roundIndex % 2 === 1 && alternateWording[question.id]) || question.text;
+}

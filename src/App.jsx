@@ -18,6 +18,7 @@ import StudioCheckout from './pages/StudioCheckout.jsx';
 import DadMessageStudio from './pages/DadMessageStudio.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
+import SantaKnowsChristmas from "./christmas-game/SantaKnowsChristmas.jsx";
 import NaughtyNicePage from './naughty-or-nice/NaughtyNicePage.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import SantaTrackerPrivacy from './pages/SantaTrackerPrivacy.jsx';
@@ -85,6 +86,7 @@ function WebsiteLayout() {
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/christmas-contenders" element={<ChristmasContenders />} />
+        <Route path="/santa-knows-christmas" element={<SantaKnowsChristmas />} />
         <Route path="/naughty-or-nice-list-checker" element={<NaughtyNicePage />} />
         <Route path="/platforms" element={<Links />} />
         <Route path="/links" element={<Navigate to="/platforms" replace />} />

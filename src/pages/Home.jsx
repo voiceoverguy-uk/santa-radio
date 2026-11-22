@@ -11,6 +11,7 @@ import NameChart from '../components/NameChart.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import NaughtyNiceWidget from '../naughty-or-nice/NaughtyNiceWidget.jsx';
 import ChristmasPairs from '../components/ChristmasPairs.jsx';
+import ChristmasStudyPromo from "../christmas-game/ChristmasStudyPromo.jsx";
 import SantaDashPromo from '../components/SantaDashPromo.jsx';
 import HomepageSantaStudio from '../components/HomepageSantaStudio.jsx';
 import YouTubeSection from '../components/YouTubeSection.jsx';
@@ -62,6 +63,7 @@ export default function Home() {
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />
+      <ChristmasStudyPromo />
       <NaughtyNiceWidget key={checkerEntry.id} initialName={checkerEntry.name} />
       <ChristmasPairs />
       <NameChart />
