@@ -121,5 +121,18 @@ export function suggestFilms(title, entries = films) {
       if (!choices.includes(film)) choices.push(film);
     }
   }
+  if (!choices.length && entries === films) {
+    // A distinctive opening, such as “National Lampoon’s”, can identify a franchise.
+    // Offer the matching titles at reveal so the player decides which one they meant.
+    const prefix = (year ? title.slice(0, year.index) : title).trim();
+    if (query.length >= 8 && prefix.split(/\s+/).length >= 2) {
+      choices = entries.filter(film => (!year || film.year === Number(year[1])) &&
+        [film.title, ...film.aliases].some(name => {
+          const words = name.split(/\s+/);
+          return words.some((_, index) => titleKey(words.slice(0, index + 1).join(' ')) === query);
+        }));
+      if (choices.length > 5) return [];
+    }
+  }
   return choices.slice(0, 5);
 }
