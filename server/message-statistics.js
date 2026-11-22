@@ -1,3 +1,4 @@
+import { gameReport, recordGameRound } from './christmas-game-statistics.js';
 import { dashboardTodos } from './dashboard-todos.js';
 import { appleDownloadReport } from './apple-download-statistics.js';
 import { recordCheckerDownload, checkerDownloadReport, validDownloadId } from './checker-download-statistics.js';
@@ -26,6 +27,15 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         if (!origin || origin.host !== getClerkProxyHost(req) || req.headers['sec-fetch-site']==='cross-site') return res.status(403).json({error:'Please use the Santa Radio website.'});
       }
       if(req.method==='POST') {
+        if (['game-start','game-reveal'].includes(req.body?.action)) {
+          const { eventId, title, action } = req.body;
+          if (!validDownloadId(eventId) || (action === 'game-reveal'
+            ? typeof title !== 'string' || !title.trim() || title.length > 160 : title !== undefined))
+            return res.status(400).json({error:'Invalid round.'});
+          await checkerLimit(req, 'checkerDownload');
+          await recordGameRound(eventId, title?.trim());
+          return res.json({ok:true});
+        }
         if (req.body?.action === 'checker-pdf-download') {
           if (!validDownloadId(req.body.eventId) || Object.keys(req.body).some(key => !['action','eventId'].includes(key)))
             return res.status(400).json({error:'Invalid download event.'});
@@ -58,6 +68,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         if(req.body.action==='recorded')await complete(name.key);else await dismiss(name.key,req.body.action==='restore');return res.json({ok:true});
       }
       const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);
+      data.christmasGame=await gameReport().catch(()=>null);
       data.appleDownloads=await appleDownloads().catch(()=>null);
       data.checkerDownloads=await checkerDownloads().catch(()=>null);
       data.paid=paidResult; data.brevo=null; data.websiteEmails=emailResult;

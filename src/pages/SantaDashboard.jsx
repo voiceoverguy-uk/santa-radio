@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async';
 import './SantaDashboard.css';
 import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 export default function SantaDashboard() {
+  const [moreGameDays,setMoreGameDays]=useState(false);
   const [dismissed,setDismissed]=useState('');
   const [rejectionNotice,setRejectionNotice]=useState('');
   const [namePage,setNamePage]=useState(1),[namePageSize,setNamePageSize]=useState(10);
@@ -55,6 +56,13 @@ export default function SantaDashboard() {
       <section className="dashboard-themed dashboard-themed--money"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">£ 💷 £</div><p>SANTA’S STUDIO TAKINGS</p><h2>Paid Message Maker · all time</h2></header>{data.paid ? <><div className="santa-dashboard__cards"><section><strong>{data.paid.purchases.toLocaleString()}</strong><span>Confirmed purchases</span></section><section><strong>{data.paid.creations.toLocaleString()}</strong><span>Paid messages created</span></section><section><strong>{data.paid.grossPence === null ? 'Unavailable' : new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(data.paid.grossPence/100)}</strong><span>Collected through Stripe</span></section></div><PaidRevenueChart daily={data.paid.daily} /><p>Live website purchases only; test payments and vouchers are excluded. Creations count successful messages recorded against those purchases. Stripe totals include discounts, before fees and refunds.</p>{data.paid.grossPence === null && <p>Stripe totals could not load. Refresh figures to try again.</p>}<a href="https://dashboard.stripe.com/payments" target="_blank" rel="noopener noreferrer">Open Stripe payments ↗</a></> : <p>Paid figures could not load. Refresh figures to try again.</p>}</section>
       <AppleAppDownloads report={data.appleDownloads} />
       <section className="dashboard-themed dashboard-themed--elf"><header className="dashboard-themed__header"><img className="dashboard-themed__elf" src="/images/dashboard-elf-peek.png" alt="" aria-hidden="true"/><p>HEAD ELF’S CERTIFICATE DESK</p><h2>Naughty or Nice PDF downloads</h2></header><div className="santa-dashboard__cards">{[['today','Today'],['last30Days','Last 30 days'],['allTime','Since tracking began']].map(([key,label])=><section key={key}><strong>{data.checkerDownloads?.[key]?.toLocaleString() ?? 'Unavailable'}</strong><span>{label}</span></section>)}</div><p>PDFs generated and handed to the browser for download, not confirmed saved files or unique people. Repeat downloads count; failed generation does not. No names, answers or verdicts are recorded. UK dates. Tracking starts with this update; earlier downloads are unavailable.</p></section>
+      <section><h2>Santa Knows Christmas</h2>{data.christmasGame ? <>
+        <h3>Rounds started per day</h3>
+        {table(['UK date','Plays'],data.christmasGame.daily.slice(0,moreGameDays ? undefined : 5).map(r=>[r.day,r.plays]))}
+        {data.christmasGame.daily.length > 5 && <button aria-expanded={moreGameDays} onClick={()=>setMoreGameDays(!moreGameDays)}>{moreGameDays ? 'Show five days' : 'Reveal more days'}</button>}
+        <h3>Films players revealed after beating Santa</h3>
+        {table(['Film','Wins'],data.christmasGame.titles.map(r=>[r.title,r.wins]))}
+      </> : <p>Game figures are temporarily unavailable.</p>}</section>
       <BigStitcher />
       <DashboardTodos ownerToken={token.current} />
       <ReviewInbox ownerToken={token.current} />

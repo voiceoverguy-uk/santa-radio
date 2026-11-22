@@ -150,3 +150,6 @@
 .christmas-study__hero img { display: block; width: 100%; height: auto; }
 
 .christmas-study__reward a { color: #15382c; font-weight: 700; text-decoration: underline; }
+.christmas-study__reveal { margin: 1rem auto; padding: .8rem; max-width: 29rem; overflow-wrap: anywhere; }
+.christmas-study__vault--opening::before { animation-direction: reverse; }
+@media (prefers-reduced-motion: reduce) { .christmas-study__vault--opening { display: none; } }
