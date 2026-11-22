@@ -59,7 +59,6 @@ export default function SantaKnowsChristmas() {
   const [reaction, setReaction] = useState('');
   const [strikes, setStrikes] = useState(0);
   const [choices, setChoices] = useState([]);
-  const [revealed, setRevealed] = useState(false);
   const [winner, setWinner] = useState(null);
   const heading = useRef(null);
   const sealing = phase === 'sealing';
@@ -122,14 +121,13 @@ export default function SantaKnowsChristmas() {
   }
 
   function scoreFilm(film) {
-    setSecret(film.title);
+
     setStrikes(0);
     if (guess && film.year === guess.year && (matchesTitle(guess, film.title) || matchesTitle(film, guess.title))) {
       finishRound('santa');
       return;
     }
     setReaction(reactions[Math.floor(Math.random() * reactions.length)]);
-    setRevealed(true);
     const id = roundId.current;
     trackingStart.current?.then(() => trackRound('game-reveal', id, film.title));
     finishRound('player');
@@ -140,7 +138,7 @@ export default function SantaKnowsChristmas() {
     busy.current = true;
     setPhase('opening');
     try {
-      await new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450));
+      await new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 850 : 1300));
       if (containsWorkshopProfanity(secret)) return rejectEntry('language');
       const exact = films.filter(film => matchesTitle(film, secret));
       if (exact.length === 1) return scoreFilm(exact[0]);
@@ -170,7 +168,6 @@ export default function SantaKnowsChristmas() {
     setSealed(false);
     setReaction('');
     setChoices([]);
-    setRevealed(false);
     if (resetMatch) { setWinner(null); setStrikes(0); }
     setHistory([]);
     setAiTurn(null);
@@ -242,15 +239,19 @@ export default function SantaKnowsChristmas() {
           </div>
         </>}
 
+        {['opening', 'confirm-film', 'unknown', 'invented', 'language', 'result'].includes(phase) && <div
+          className="christmas-study__vault-field christmas-study__reveal" aria-live="polite">
+          <small>Your locked-in film</small>
+          <strong>{phase === 'language' || containsWorkshopProfanity(secret) ? 'Title hidden for language' : secret}</strong>
+          {phase === 'opening' && <span className="christmas-study__vault christmas-study__vault--opening" aria-hidden="true" />}
+        </div>}
+
         {(phase === 'committed' || phase === 'opening') && <>
           <h2 ref={heading} tabIndex={-1}>{guess ? `My final guess is ${guess.title} (${guess.year})!` : 'You’ve got me guessing. I’ll pass!'}</h2>
           {phase === 'committed' ? <>
             <p>Your film is still sealed. Shall we see what’s inside?</p>
             <button type="button" onClick={revealCommittedGuess}>Open the vault</button>
-          </> : <div className="christmas-study__vault-field christmas-study__reveal">
-            <strong>Checking the film…</strong>
-            <span className="christmas-study__vault christmas-study__vault--opening" aria-hidden="true" />
-          </div>}
+          </> : null}
         </>}
 
         {phase === 'confirm-film' && <>
@@ -279,13 +280,7 @@ export default function SantaKnowsChristmas() {
             <p>You beat Santa! Use <strong>ELFDISCOUNT20</strong> at checkout for 20% off a bespoke message from Santa.</p>
             <a href="/#bespoke-santa-messages">Choose a message for the kids or Dad →</a>
           </div>}
-          {winner === 'santa' && sealed && <p>Your film was <strong>{secret.trim()}</strong>.</p>}
-          {winner === 'player' && revealed && <div aria-live="polite">
-            <div className="christmas-study__vault-field christmas-study__reveal">
-              <strong>{secret.trim()}</strong>
-            </div>
-            <p>{reaction}</p>
-          </div>}
+          {winner === 'player' && <p>{reaction}</p>}
           <button type="button" className="christmas-study__next" onClick={() => resetRound(Boolean(matchWinner))}>
             {matchWinner ? 'Play a new match' : 'Next round'}
           </button>
