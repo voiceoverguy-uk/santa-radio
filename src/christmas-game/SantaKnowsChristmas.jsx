@@ -1,3 +1,4 @@
+import { nextUnknownReaction } from './unknown-reactions.js';
 import { containsWorkshopProfanity } from '../lib/workshopSpellingLanguage.js';
 import { useEffect, useRef, useState } from 'react';
 import { ShipWheel } from 'lucide-react';
@@ -121,7 +122,18 @@ export default function SantaKnowsChristmas() {
     setPhase('committed');
   }
 
+  const unknownHistory = useRef(null);
   function rejectEntry(reason) {
+    if (reason === 'unknown') {
+      if (unknownHistory.current === null) {
+        try { unknownHistory.current = JSON.parse(sessionStorage.getItem('santa-film-reactions')); }
+        catch { unknownHistory.current = []; }
+      }
+      const history = nextUnknownReaction(unknownHistory.current);
+      unknownHistory.current = history;
+      setReaction(history.at(-1));
+      try { sessionStorage.setItem('santa-film-reactions', JSON.stringify(history)); } catch { /* In-memory history still works. */ }
+    }
     if (reason === 'unknown') setStrikes(0);
     else setStrikes(count => count + 1);
     setPhase(reason);
@@ -268,7 +280,7 @@ export default function SantaKnowsChristmas() {
         {['language','invented','unknown'].includes(phase) && <>
           <h2 ref={heading} tabIndex={-1}>{strikes >= 3 ? 'Careful, you’re getting close to the naughty list!' :
             phase === 'language' ? 'Let’s keep it family-friendly, shall we?' :
-            phase === 'invented' ? 'Ho ho, I think you made that one up!' : 'That one has my film elves scratching their heads.'}</h2>
+            phase === 'invented' ? 'Ho ho, I think you made that one up!' : reaction}</h2>
           <p className="christmas-study__replay-message">{strikes >= 3 ? 'Three cheeky entries in a row! Back to the start. Pick a real Christmas film this time.' :
             phase === 'unknown' ? 'I couldn’t verify that Christmas film. Check the spelling or try another.' :
             'We’ll pretend that didn’t happen. Try again with a real Christmas film.'}
