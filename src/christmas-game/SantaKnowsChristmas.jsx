@@ -84,6 +84,13 @@ export default function SantaKnowsChristmas() {
     }
   }
 
+  function validateSecret() {
+    if (sealed || !secret.trim() || confirmedTitle) return true;
+    if (films.filter(film => matchesTitle(film, secret)).length === 1) return true;
+    setTitleChoices(suggestFilms(secret));
+    return false;
+  }
+
   function resetRound(resetMatch = false) {
     if (resetMatch) setScore({ player: 0, santa: 0 });
     setSecret('');
@@ -110,15 +117,12 @@ export default function SantaKnowsChristmas() {
         </div>
 
         {(phase === 'ready' || sealing) && <>
-          <h2 ref={heading} tabIndex={-1}>Think of a Christmas film</h2>
-          <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins.</p>
+          <h2 ref={heading} tabIndex={-1}>Can you stump Santa?</h2>
+          <p>Santa has up to {MAX_QUESTIONS} questions and one guess. Stump him to score a point. First to two points wins a 20% voucher for a bespoke message from Santa.</p>
           <form onSubmit={async event => {
             event.preventDefault();
             if (busy.current || sealing) return;
-            if (secret.trim() && !confirmedTitle && films.filter(film => matchesTitle(film, secret)).length !== 1) {
-              setTitleChoices(suggestFilms(secret));
-              return;
-            }
+            if (!validateSecret()) return;
             const seed = Math.floor(Math.random() * 1_000_000);
             const recentOpeners = recentOpenerIds.current;
             const opener = nextTurn([], { seed, recentOpeners }).question.id;
@@ -127,8 +131,8 @@ export default function SantaKnowsChristmas() {
             setQuestionOrder({ seed, recentOpeners, wordingIndex: wordingOffset.current + roundsStarted.current++ });
             const hasSecret = Boolean(secret.trim());
             setSealed(hasSecret);
-            if (hasSecret) setPhase('sealing');
-            const sealConfirmation = hasSecret
+            if (hasSecret && !sealed) setPhase('sealing');
+            const sealConfirmation = hasSecret && !sealed
               ? new Promise(resolve => window.setTimeout(resolve, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 350 : 650))
               : undefined;
             const [turn] = await Promise.all([requestTurn([], seed), sealConfirmation]);
@@ -137,17 +141,20 @@ export default function SantaKnowsChristmas() {
           }}>
             <label htmlFor="christmas-secret">Seal your film title (optional)</label>
             <div className="christmas-study__vault-field">
-              <input id="christmas-secret" disabled={sealing || pending} value={secret} onChange={event => {
+              <input id="christmas-secret" disabled={sealed || sealing || pending} value={secret} onChange={event => {
                 setSecret(event.target.value);
                 setTitleChoices(null);
                 setConfirmedTitle(false);
               }}
                 placeholder="Type the film title" maxLength={160} autoComplete="off"
                 aria-describedby="christmas-secret-help" />
-              {sealing && <span className="christmas-study__vault" role="status">
+              {sealed && <span className="christmas-study__vault" role="status">
                 <LockKeyhole size={19} aria-hidden="true" /> Locked in Santa’s vault
               </span>}
             </div>
+            {secret.trim() && !sealed && <button type="button" disabled={pending} onClick={() => {
+              if (validateSecret()) setSealed(true);
+            }}>Lock it in</button>}
             {titleChoices && <div aria-live="polite">
               <p>{titleChoices.length ? 'Did you mean one of these films?' : 'Ho ho, that title has me stumped already! Is it a real Christmas film? Check the spelling or confirm your title.'}</p>
               {titleChoices.map(film => <button type="button" key={film.title + film.year} onClick={() => {
@@ -161,7 +168,7 @@ export default function SantaKnowsChristmas() {
               }}>Yes, my title is correct</button>}
             </div>}
             <small id="christmas-secret-help">Your title stays in this tab. It’s only used to check Santa’s guess.</small>
-            <button type="submit" disabled={pending || sealing}>{pending || sealing ? "Santa’s thinking…" : `Start round ${round}`}</button>
+            <button type="submit" disabled={pending || sealing}>{pending || sealing ? "Santa’s thinking…" : `Play round ${round}`}</button>
           </form>
         </>}
 
@@ -189,6 +196,10 @@ export default function SantaKnowsChristmas() {
           {matchWinner && <p className="christmas-study__match">
             {matchWinner === 'player' ? 'You win the match!' : 'Santa wins the match!'}
           </p>}
+          {matchWinner === 'player' && <div className="christmas-study__reward">
+            <p>You beat Santa! Use <strong>Santa20</strong> at checkout for 20% off a bespoke message from Santa.</p>
+            <a href="/#bespoke-santa-messages">Choose a message for the kids or Dad →</a>
+          </div>}
           {winner === 'player' && (sealed || revealed) &&
             <p>Your film was <strong>{sealed ? secret.trim() : reveal.trim()}</strong>.</p>}
           {winner === 'player' && !sealed && !revealed && <form onSubmit={event => {

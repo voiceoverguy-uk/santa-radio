@@ -115,25 +115,23 @@
   font-weight: 700;
   animation: christmas-vault-seal 650ms both;
 }
-.christmas-study__vault::before,
-.christmas-study__vault::after {
+.christmas-study__vault::before {
   content: '';
   position: absolute;
   z-index: -1;
   top: 0;
   bottom: 0;
-  width: 50%;
+  left: 0;
+  right: 0;
   border: 2px solid #c2a066;
   background: linear-gradient(145deg, #284b3b, #0a2019);
   box-shadow: inset 0 0 0 3px #122f24;
   animation: christmas-vault-close 380ms cubic-bezier(.3, .8, .35, 1) both;
 }
-.christmas-study__vault::before { left: 0; --vault-travel: -101%; }
-.christmas-study__vault::after { right: 0; --vault-travel: 101%; }
 .christmas-study__vault svg { animation: christmas-vault-lock 650ms both; }
 @keyframes christmas-vault-close {
-  from { transform: translateX(var(--vault-travel)); }
-  to { transform: translateX(0); }
+  from { transform: translateY(-101%); }
+  to { transform: translateY(0); }
 }
 @keyframes christmas-vault-seal {
   0%, 55% { color: transparent; }
@@ -146,8 +144,9 @@
 @media (prefers-reduced-motion: reduce) {
   .christmas-study__vault,
   .christmas-study__vault::before,
-  .christmas-study__vault::after,
   .christmas-study__vault svg { animation: none; }
 }
 
 .christmas-study__hero img { display: block; width: 100%; height: auto; }
+
+.christmas-study__reward a { color: #15382c; font-weight: 700; text-decoration: underline; }
