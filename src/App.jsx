@@ -15,6 +15,7 @@ import KaraokeLyrics from './pages/KaraokeLyrics.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
 import StudioCheckout from './pages/StudioCheckout.jsx';
+import Etsy from './pages/Etsy.jsx';
 import DadMessageStudio from './pages/DadMessageStudio.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
@@ -55,7 +56,9 @@ function StudioRedirect() {
 function WebsiteLayout() {
   const capture = isTrackerCapturePath(useLocation().pathname);
   const checkout = useLocation().pathname === STUDIO_CHECKOUT_PATH;
+  const etsy = useLocation().pathname.replace(/\/+$/, '') === '/etsy';
   if (checkout) return <StudioCheckout />;
+  if (etsy) return <Etsy />;
   return (
     <>
       {!capture && <><a href="#page-content" className="skip-link">Skip to content</a><Navbar /></>}

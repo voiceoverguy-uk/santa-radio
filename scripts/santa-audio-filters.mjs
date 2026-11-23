@@ -2,7 +2,7 @@
 // on-demand name clips. All pauses and joins come from the recordings themselves:
 // no silence trimming, padding, overlap or crossfade on any voice segment.
 export const voiceFilter = () => 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-  'loudnorm=I=-18:TP=-2:LRA=11,aresample=48000,' +
+  'loudnorm=I=-18:TP=-2:LRA=11,aresample=48000,aformat=channel_layouts=stereo,' +
   'afade=t=in:d=0.005,areverse,afade=t=in:d=0.005,areverse';
 
 export function renderArgs(intro, name, outro, bells, output, prepared = false) {

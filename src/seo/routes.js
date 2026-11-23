@@ -135,6 +135,10 @@ export function resolvePublicRequest(raw) {
     }
     return { status: 200, noindex: true };
   }
+  if (normalized === '/etsy') {
+    if (path !== normalized) return { status: 308, location: normalized + url.search };
+    return { status: 200, noindex: true };
+  }
   const staffDocument = staffDocumentPath(normalized);
   if (staffDocument) return { status: 200, noindex: true, documentPath: staffDocument };
   const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
