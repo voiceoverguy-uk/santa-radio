@@ -22,6 +22,14 @@
     }
   ],
   "functions": {
+    "api/helper-submissions.js": {
+      "installCommand": "",
+      "maxDuration": 60
+    },
+    "api/little-helpers.js": {
+      "installCommand": "",
+      "maxDuration": 60
+    },
     "api/name-recording-uploads.js": {
       "installCommand": "",
       "maxDuration": 30,
@@ -111,14 +119,6 @@
     },
     "api/**/*.js": {
       "installCommand": ""
-    },
-    "api/helper-submissions.js": {
-      "installCommand": "",
-      "maxDuration": 60
-    },
-    "api/little-helpers.js": {
-      "installCommand": "",
-      "maxDuration": 60
     }
   },
   "routes": [
@@ -232,7 +232,7 @@
       "dest": "/api/public-page?__sr_route=/christmas-artist/111-frank-sinatra-%26-cyndi-lauper-santa-claus-is-coming-to-town"
     },
     {
-      "src": "/((?:apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|bespoke-personalised-message-from-santa|bespoke-pesonalised-message-from-santa|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|naughty-or-nice-list-checker|santa-knows-christmas|music|artist)(?:/.*)?|)",
+      "src": "/((?:etsy|apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|bespoke-personalised-message-from-santa|bespoke-pesonalised-message-from-santa|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|naughty-or-nice-list-checker|santa-knows-christmas|music|artist)(?:/.*)?|)",
       "dest": "/api/public-page?__sr_route=/$1"
     },
     {
