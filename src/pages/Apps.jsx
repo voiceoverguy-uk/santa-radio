@@ -53,9 +53,15 @@ function AppSection({ app }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="app-dl-btn"
-                  aria-label={`Download on the App Store — ${app.title} (opens in a new tab)`}
+                  aria-label={`${platform === 'Android' ? 'Get it on Google Play' : 'Download on the App Store'} — ${app.title} (opens in a new tab)`}
                 >
-                  <img src="/images/download-on-the-app-store.svg" alt="Download on the App Store" width="150" height="50" />
+                  <img
+                    src={platform === 'Android' ? '/images/get-it-on-google-play.png' : '/images/download-on-the-app-store.svg'}
+                    alt={platform === 'Android' ? 'Get it on Google Play' : 'Download on the App Store'}
+                    className={platform === 'Android' ? 'app-google-play-badge' : undefined}
+                    width={platform === 'Android' ? '180' : '150'}
+                    height={platform === 'Android' ? '70' : '50'}
+                  />
                 </a>
               ))}
             </div>

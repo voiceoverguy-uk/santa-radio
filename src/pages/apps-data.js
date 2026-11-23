@@ -183,9 +183,10 @@ export const christmasApps = [
       interactiveMode: 'santa-radio',
       liveClock: '#102e22',
     },
-    downloads: downloads(
-      'https://apps.apple.com/us/app/santa-radio/id1021183593',
-    ),
+    downloads: [
+      ...downloads('https://apps.apple.com/us/app/santa-radio/id1021183593'),
+      { platform: 'Android', href: 'https://play.google.com/store/apps/details?id=com.guy.santaradio&pli=1' },
+    ],
     features: [
       feature('Christmas music', 'Listen to Christmas music\naround the clock.', 'radio'),
       feature('Now playing', 'See the current artist and song\nand what is coming up next.', 'play'),

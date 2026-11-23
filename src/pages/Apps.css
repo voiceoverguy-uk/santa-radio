@@ -200,7 +200,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   margin-top: 20px;
 }
@@ -443,3 +443,6 @@
 }
 
 .apps-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto 20px; }
+
+/* Official Google Play artwork includes its required clear space. */
+.apps-page .app-dl-btn img.app-google-play-badge { width: 180px; }
