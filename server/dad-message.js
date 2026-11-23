@@ -1,3 +1,4 @@
+import { dadVoucherSession } from './dad-vouchers.js';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -14,6 +15,8 @@ import {renderDadMessage} from './dad-render.js';
 const fail=(status,message)=>Object.assign(new Error(message),{status});
 export async function dadIdentity(req){
  if(workshopSession(req)?.admin)return null;
+ const voucher=dadVoucherSession(req);
+ if(voucher)return voucher;
  const purchase=await livePaidPurchaseId(req);
  if(!purchase)throw fail(403,'Please purchase Dad Studio access or reopen your private return link.');
  return {key:digest(`dad-purchase:${purchase}`),expiresAt:null};

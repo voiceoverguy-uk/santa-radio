@@ -1,0 +1,63 @@
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { databasePool } from './name-request-store.js';
+import { friendClaim } from './friend-vouchers.js';
+const COOKIE = 'santa-dad-voucher';
+const MONTH = 30 * 86400000;
+const digest = value => createHash('sha256').update(value).digest('hex');
+const sign = (value, key) => createHmac('sha256', key).update(`dad-voucher:v1:${value}`).digest('base64url');
+export function dadVoucherSession(req, key = process.env.SESSION_SECRET, now = Date.now()) {
+  if (typeof key !== 'string' || key.length < 32) return null;
+  const raw = req.headers?.cookie || '';
+  if (raw.length > 16384) return null;
+  const cookies = raw.split(';').map(s => s.trim()).filter(s => s.startsWith(`${COOKIE}=`));
+  if (cookies.length !== 1) return null;
+  const [id, expiry, signature, extra] = cookies[0].slice(COOKIE.length + 1).split('.');
+  if (extra !== undefined || !/^[a-f0-9-]{36}$/.test(id || '') || !/^\d{13}$/.test(expiry || '') || +expiry <= now || !/^[A-Za-z0-9_-]{43}$/.test(signature || '')) return null;
+  if (!timingSafeEqual(Buffer.from(signature), Buffer.from(sign(`${id}.${expiry}`, key)))) return null;
+  return { key: digest(`dad-voucher:${id}`), expiresAt: +expiry };
+}
+async function transaction(pool, work) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    // Serialize pool replenishment and redemption across all server instances.
+    await client.query("SELECT pg_advisory_xact_lock(731926150)");
+    const value = await work(client);
+    await client.query('COMMIT'); return value;
+  } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
+  finally { client.release(); }
+}
+async function replenish(client) {
+  const { rows: [row] } = await client.query('SELECT count(*)::int AS active FROM public.santa_dad_vouchers WHERE redeemed_at IS NULL');
+  for (let i = row.active; i < 15; i++) {
+    const code = randomBytes(10).toString('hex').toUpperCase();
+    await client.query('INSERT INTO public.santa_dad_vouchers(id,code) VALUES($1,$2)', [randomUUID(), `DAD-${code.slice(0,10)}-${code.slice(10)}`]);
+  }
+}
+export async function listDadVouchers(pool = databasePool()) {
+  return transaction(pool, async client => {
+    await replenish(client);
+    const { rows } = await client.query(`SELECT id,code,redeemed_at AS "redeemedAt",
+      CASE WHEN redeemed_at IS NULL THEN 'ACTIVE' ELSE 'USED' END AS status
+      FROM public.santa_dad_vouchers WHERE redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '5 days'
+      ORDER BY redeemed_at IS NOT NULL,created_at,id`);
+    return { vouchers: rows };
+  });
+}
+export async function redeemDadVoucher(req, res, code, { pool = databasePool(), key = process.env.SESSION_SECRET } = {}) {
+  if (typeof code !== 'string' || !/^DAD-[A-F0-9]{10}-[A-F0-9]{10}$/.test(code.trim().toUpperCase())) return false;
+  if (typeof key !== 'string' || key.length < 32) throw Error('DAD_VOUCHER_SIGNING_UNAVAILABLE');
+  const claim = digest(friendClaim(req, res, key));
+  const row = await transaction(pool, async client => {
+    const { rows: [row] } = await client.query(`UPDATE public.santa_dad_vouchers
+      SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()),claimant_sha256=COALESCE(claimant_sha256,$2)
+      WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)
+      AND (redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '30 days') RETURNING id,redeemed_at`, [code.trim().toUpperCase(),claim]);
+    if (row) await replenish(client);
+    return row;
+  });
+  if (!row) return false;
+  const expiresAt = +new Date(row.redeemed_at) + MONTH, payload = `${row.id}.${expiresAt}`;
+  res.cookie(COOKIE, `${payload}.${sign(payload,key)}`, { httpOnly:true, secure:!!(req.socket?.encrypted || req.headers['x-forwarded-proto'] === 'https'), sameSite:'strict', path:'/', maxAge:Math.max(0,expiresAt-Date.now()) });
+  return { authorized:true,expiresAt,voucher:{dad:true,unlimited:false} };
+}
