@@ -9,3 +9,8 @@
 .website-visitors__note { font-size:.8rem; color:#cdd8ca; }
 .website-visitors summary { cursor:pointer; color:#e8cc7c; }
 @media(max-width:600px) { .website-visitors { padding:16px; } .website-visitors__stats { gap:16px; } .website-visitors__stats strong { font-size:1.5rem; } }
+
+.website-visitors__movement { display:block; color:#e8cc7c; font-size:.9rem; margin-top:5px; white-space:nowrap; }
+.website-visitors__movement--up { color:#a5e5b2; }
+.website-visitors__movement--down { color:#ffb5aa; }
+.website-visitors__movement small { font-size:.75rem; }
