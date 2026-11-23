@@ -14,6 +14,7 @@ function Movement({ value, previous }) {
 export default function WebsiteVisitors({ ownerToken }) {
   const [visibleDays, setVisibleDays] = useState(10);
   const [breakdown, setBreakdown] = useState('countries');
+  const [visibleRows, setVisibleRows] = useState({ countries: 5, sources: 5, pages: 5 });
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [refresh, setRefresh] = useState(0);
@@ -45,8 +46,9 @@ export default function WebsiteVisitors({ ownerToken }) {
         <div className="website-visitors__tabs" role="group" aria-label="Visitor breakdown">
           {Object.entries({countries:'Top countries', sources:'Traffic sources', pages:'Popular pages'}).map(([key, title]) => <button type="button" key={key} aria-pressed={breakdown === key} onClick={() => setBreakdown(key)}>{title}</button>)}
         </div>
-        <p className="website-visitors__note">Top 10 · Last 30 complete days · {breakdown === 'countries' ? 'Active visitors by country' : breakdown === 'sources' ? 'Visits by traffic channel' : 'Page views by page'}</p>
-        {data.breakdowns?.[breakdown] == null ? <p>These figures are temporarily unavailable.</p> : data.breakdowns[breakdown].length === 0 ? <p>No activity recorded for this period.</p> : <div className="santa-dashboard__table"><table><thead><tr><th>{breakdown === 'countries' ? 'Country' : breakdown === 'sources' ? 'Channel' : 'Page'}</th><th>{breakdown === 'countries' ? 'Visitors' : breakdown === 'sources' ? 'Visits' : 'Page views'}</th></tr></thead><tbody>{data.breakdowns[breakdown].map(row => <tr key={row.label}><td className="website-visitors__page">{row.label === '(not set)' ? 'Unknown' : row.label}</td><td>{number(row.value)}</td></tr>)}</tbody></table></div>}
+        <p className="website-visitors__note">Last 30 complete days · {breakdown === 'countries' ? 'Active visitors by country' : breakdown === 'sources' ? 'Visits by traffic channel' : 'Page views by page'}</p>
+        {data.breakdowns?.[breakdown] == null ? <p>These figures are temporarily unavailable.</p> : data.breakdowns[breakdown].length === 0 ? <p>No activity recorded for this period.</p> : <div className="santa-dashboard__table"><table><thead><tr><th>{breakdown === 'countries' ? 'Country' : breakdown === 'sources' ? 'Channel' : 'Page'}</th><th>{breakdown === 'countries' ? 'Visitors' : breakdown === 'sources' ? 'Visits' : 'Page views'}</th></tr></thead><tbody>{data.breakdowns[breakdown].slice(0, visibleRows[breakdown]).map(row => <tr key={row.label}><td className="website-visitors__page">{row.label === '(not set)' ? 'Unknown' : row.label}</td><td>{number(row.value)}</td></tr>)}</tbody></table></div>}
+        {data.breakdowns?.[breakdown]?.length > visibleRows[breakdown] && <button type="button" onClick={() => setVisibleRows(rows => ({ ...rows, [breakdown]: rows[breakdown] + 5 }))}>Load more</button>}
       </div>
     </>}
   </section>;
