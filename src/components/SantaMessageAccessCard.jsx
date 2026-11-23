@@ -85,7 +85,7 @@ export default function SantaMessageAccessCard({
         <input type="hidden" name="locale" value="en" />
 
         <label className="santa-message-access__marketing">
-          <input type="checkbox" name="marketingOptIn" defaultChecked={false} disabled={pending || !!verification} />
+          <input type="checkbox" name="marketingOptIn" defaultChecked={true} disabled={pending || !!verification} />
           <span>{FREE_MARKETING_COPY} <Link to="/privacy-policy" onClick={onPrivacyNavigate}>Privacy policy</Link>. <small>Optional — your free message is available either way.</small></span>
         </label>
         {verification && <div className="santa-message-access__field">
