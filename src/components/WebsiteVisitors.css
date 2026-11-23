@@ -14,3 +14,8 @@
 .website-visitors__movement--up { color:#a5e5b2; }
 .website-visitors__movement--down { color:#ffb5aa; }
 .website-visitors__movement small { font-size:.75rem; }
+
+.website-visitors__breakdowns { margin-top:24px; padding-top:20px; border-top:1px solid #536348; }
+.website-visitors__tabs { display:flex; flex-wrap:wrap; gap:8px; }
+.santa-dashboard .website-visitors__tabs button[aria-pressed="true"] { background:#e8cc7c; color:#102e23; }
+.website-visitors__page { overflow-wrap:anywhere; }

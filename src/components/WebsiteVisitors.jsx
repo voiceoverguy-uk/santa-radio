@@ -12,6 +12,8 @@ function Movement({ value, previous }) {
   </span>;
 }
 export default function WebsiteVisitors({ ownerToken }) {
+  const [visibleDays, setVisibleDays] = useState(10);
+  const [breakdown, setBreakdown] = useState('countries');
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [refresh, setRefresh] = useState(0);
@@ -38,7 +40,14 @@ export default function WebsiteVisitors({ ownerToken }) {
         {[0, 7, 14, 21, 29].map(i => <text key={i} x={48 + i * 844 / 29} y="242" textAnchor="middle">{label(days[i].date)}</text>)}
       </svg>
       <p className="website-visitors__note">Visitors means Google Analytics active users. A returning visitor can count on multiple days. Figures may be delayed and exclude visits Google cannot measure. Reporting timezone: {data.timeZone}.</p>
-      <details><summary>View daily figures</summary><div className="santa-dashboard__table"><table><thead><tr><th>Date</th><th>Visitors</th><th>Daily change</th><th>Page views</th></tr></thead><tbody>{[...days].reverse().map((day, index) => <tr key={day.date}><td>{label(day.date)}</td><td>{number(day.visitors)}</td><td><Movement value={day.visitors} previous={days[days.length - index - 2]?.visitors} /></td><td>{number(day.views)}</td></tr>)}</tbody></table></div></details>
+      <details><summary>View daily figures</summary><div className="santa-dashboard__table"><table><thead><tr><th>Date</th><th>Visitors</th><th>Daily change</th><th>Page views</th></tr></thead><tbody>{[...days].reverse().slice(0, visibleDays).map((day, index) => <tr key={day.date}><td>{label(day.date)}</td><td>{number(day.visitors)}</td><td><Movement value={day.visitors} previous={days[days.length - index - 2]?.visitors} /></td><td>{number(day.views)}</td></tr>)}</tbody></table></div>{visibleDays < days.length && <button type="button" onClick={() => setVisibleDays(count => count + 10)}>Load more</button>}</details>
+      <div className="website-visitors__breakdowns">
+        <div className="website-visitors__tabs" role="group" aria-label="Visitor breakdown">
+          {Object.entries({countries:'Top countries', sources:'Traffic sources', pages:'Popular pages'}).map(([key, title]) => <button type="button" key={key} aria-pressed={breakdown === key} onClick={() => setBreakdown(key)}>{title}</button>)}
+        </div>
+        <p className="website-visitors__note">Top 10 · Last 30 complete days · {breakdown === 'countries' ? 'Active visitors by country' : breakdown === 'sources' ? 'Visits by traffic channel' : 'Page views by page'}</p>
+        {data.breakdowns?.[breakdown] == null ? <p>These figures are temporarily unavailable.</p> : data.breakdowns[breakdown].length === 0 ? <p>No activity recorded for this period.</p> : <div className="santa-dashboard__table"><table><thead><tr><th>{breakdown === 'countries' ? 'Country' : breakdown === 'sources' ? 'Channel' : 'Page'}</th><th>{breakdown === 'countries' ? 'Visitors' : breakdown === 'sources' ? 'Visits' : 'Page views'}</th></tr></thead><tbody>{data.breakdowns[breakdown].map(row => <tr key={row.label}><td className="website-visitors__page">{row.label === '(not set)' ? 'Unknown' : row.label}</td><td>{number(row.value)}</td></tr>)}</tbody></table></div>}
+      </div>
     </>}
   </section>;
 }

@@ -41,7 +41,27 @@ export function createVisitorReport({ env = process.env, fetcher = fetch, now = 
       const values = rows.get(date(day).replaceAll('-', ''));
       return { date: date(day), visitors: Number(values?.[0]?.value || 0), views: Number(values?.[1]?.value || 0) };
     });
-    return { days, timeZone: report.metadata?.timeZone || env.GOOGLE_ANALYTICS_TIME_ZONE || 'America/Los_Angeles', fetchedAt: new Date(now()).toISOString() };
+    const definitions = [
+      ['countries', 'country', 'activeUsers'],
+      ['sources', 'sessionDefaultChannelGroup', 'sessions'],
+      ['pages', 'pagePath', 'screenPageViews'],
+    ];
+    const breakdowns = Object.fromEntries(await Promise.all(definitions.map(async ([name, dimension, metric]) => {
+      try {
+        const result = await fetcher(`https://analyticsdata.googleapis.com/v1beta/properties/${property}:runReport`, {
+          method: 'POST', signal: AbortSignal.timeout(15000),
+          headers: { Authorization: `Bearer ${token.access_token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dateRanges: [{ startDate: date(start), endDate: date(end) }],
+            dimensions: [{ name: dimension }], metrics: [{ name: metric }],
+            dimensionFilter: { filter: { fieldName: 'hostName', inListFilter: { values: ['santaradio.co.uk', 'www.santaradio.co.uk'] } } },
+            orderBys: [{ metric: { metricName: metric }, desc: true }], limit: 10 }),
+        });
+        if (!result.ok) return [name, null];
+        const resultData = await result.json();
+        return [name, (resultData.rows || []).map(row => ({ label: row.dimensionValues[0].value, value: Number(row.metricValues[0].value || 0) }))];
+      } catch { return [name, null]; }
+    })));
+    return { days, breakdowns, timeZone: report.metadata?.timeZone || env.GOOGLE_ANALYTICS_TIME_ZONE || 'America/Los_Angeles', fetchedAt: new Date(now()).toISOString() };
   }
   return async () => {
     if (cached && now() < expires) return cached;
