@@ -148,7 +148,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
         {ownerToken ? <DashboardBackButton onClick={onSignOut} /> : <button className="staff-text-action" type="button" onClick={onSignOut}>Sign out</button>}</div>
       <p className="staff-kicker">A quiet little list from the message desk</p>
       <h1 id="ledger-title">Name requests</h1>
-      <p className="staff-lede">Outstanding names appear most requested first. After uploading a recording, use Send availability email when you are ready.
+      <p className="staff-lede">Outstanding names appear most requested first. After uploading a recording, use Send email when you are ready.
         This keeps its counts and dates in completed history; it does not upload or change an audio file.</p>
       <div className="staff-list-switch" role="group" aria-label="Request list">
         {['outstanding', 'completed'].map(view => <button key={view} className={`staff-button${status === view ? ' primary' : ''}`}
@@ -210,7 +210,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
             <td>{formatDate(item.firstRequestedAt)}</td><td>{formatDate(item.lastRequestedAt)}</td>
             <td>{status === 'completed' ? <div>{formatDate(item.recordedAt)} <button type="button" className="staff-button" disabled={tidying} onClick={()=>tidy(item)}>Delete from history</button></div> : <button className="staff-button" type="button"
               aria-label={`Mark ${item.name} recorded`} disabled={pending.includes(item.name)} onClick={() => record(item.name)}>
-              {pending.includes(item.name) ? 'Saving…' : 'Send availability email'}</button>}</td></tr>)}</tbody>
+              {pending.includes(item.name) ? 'Saving…' : 'Send email'}</button>}</td></tr>)}</tbody>
         </table></div>
         <nav className="staff-pagination" aria-label="Name request pages">
           <span>Page {result.page} of {pageCount} · {result.total.toLocaleString('en-GB')} {result.total === 1 ? 'entry' : 'entries'}</span>
