@@ -60,7 +60,9 @@ function VoucherList({ view, ownerToken }) {
   const [busy, setBusy] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [copyError, setCopyError] = useState('');
-  const [copied, setCopied] = useState('');
+  const [notice, setNotice] = useState('');
+  const [copying, setCopying] = useState('');
+  const [unsaved, setUnsaved] = useState(new Set());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -88,38 +90,75 @@ function VoucherList({ view, ownerToken }) {
       }
     }
     load();
-    const timer = isDad && setInterval(() => { if (!document.hidden) load(); }, 30000);
+    function refreshWhenVisible() { if (!document.hidden) load(); }
+    const timer = setInterval(refreshWhenVisible, 30000);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
     return () => {
       clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
       controller.abort();
     };
-  }, [view, isDad, ownerToken, refresh]);
+  }, [view, ownerToken, refresh]);
 
-  async function copy(code) {
-    setCopied('');
+  async function copy(row) {
+    const { code } = row;
+    const needsSave = unsaved.has(code);
+    setCopying(code);
     setCopyError('');
+    setNotice('');
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(code);
+      if (!needsSave) {
+        try {
+          await navigator.clipboard.writeText(code);
+        } catch {
+          setCopyError('Clipboard access failed. Allow copying in your browser and try again.');
+          return;
+        }
+      }
+      const response = await fetch(`/api/message-statistics?view=${view}`, {
+        method: 'PATCH', keepalive: true,
+        headers: { Authorization: `Bearer studio-owner.${ownerToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'copy', code }),
+        signal: AbortSignal.timeout(15000),
+      });
+      if (response.status === 409) {
+        setCopyError('This voucher has already been used. Choose another code before sending.');
+      } else {
+        if (!response.ok) throw new Error();
+        const { copiedAt, alreadyCopied } = await response.json();
+        if (!copiedAt) throw new Error();
+        setRows(current => current?.map(item => item.code === code ? { ...item, copiedAt } : item));
+        if (alreadyCopied && !row.copiedAt && !needsSave) {
+          setCopyError('This code was already marked as copied. Check who it was sent to before sharing it again.');
+        } else {
+          setNotice(needsSave ? 'Copied tick saved.' : 'Voucher copied.');
+        }
+      }
+      setUnsaved(current => { const next = new Set(current); next.delete(code); return next; });
+      setRefresh(n => n + 1);
     } catch {
-      setCopyError('Please select the voucher code and copy it manually.');
+      setUnsaved(current => new Set(current).add(code));
+      setCopyError('The code is on your clipboard, but its tick could not be saved. Select Save tick before sending it.');
+    } finally {
+      setCopying('');
     }
   }
 
   return (
     <>
       {isDad ? (
-        <p>Each code unlocks one message at <a href="/dad-message-maker">Dad’s Message Maker</a>. Claiming a code adds a replacement to the pool of 15 active codes. Used codes appear here for five days.</p>
+        <p>Each code unlocks one message at <a href="/dad-message-maker">Dad’s Message Maker</a>. The dashboard keeps a pool of 15 codes.</p>
       ) : (
         <p>Each of the 20 single-use codes unlocks two premium messages for one child at <a href={STUDIO_PATH}>Santa’s Message Maker Studio</a>. Download the recordings and gifts before leaving the Studio.</p>
       )}
+      <p>A green tick means the code has been copied. When the recipient claims it, it shows as <strong>Used</strong> for 24 hours. A fresh code then takes its place.</p>
       <p>Recipients have 30 days from claiming a code to create their {isDad ? 'message' : 'messages'} in the same browser.</p>
       <button type="button" disabled={busy} onClick={() => setRefresh(n => n + 1)}>
         {busy ? 'Checking vouchers…' : 'Refresh vouchers'}
       </button>
       {loadError && <p role="alert">{loadError}</p>}
       {copyError && <p role="alert">{copyError}</p>}
-      {copied && <p role="status">Voucher copied.</p>}
+      {notice && <p role="status">{notice}</p>}
       {rows?.length === 0 && <p>No vouchers to show.</p>}
       {rows?.length > 0 && (
         <>
@@ -135,13 +174,15 @@ function VoucherList({ view, ownerToken }) {
                   <tr key={row.code}>
                     {!isDad && <td>{row.slot}</td>}
                     <td><code>{row.code}</code></td>
-                    <td><strong className={row.redeemedAt ? 'voucher-claimed' : 'voucher-available'}>
-                      {row.redeemedAt && !isDad ? 'REDEEMED' : row.status}
-                    </strong></td>
+                    <td>{row.redeemedAt ? <strong className="voucher-claimed">Used</strong>
+                      : row.copiedAt ? <strong className="voucher-copied"><span aria-hidden="true">✓ </span>Copied</strong>
+                      : unsaved.has(row.code) ? <strong>Tick unsaved</strong>
+                      : <strong className="voucher-available">Available</strong>}</td>
                     <td>{row.redeemedAt ? ukTime.format(new Date(row.redeemedAt)) : 'Unclaimed'}</td>
                     <td>{!row.redeemedAt && (
-                      <button type="button" onClick={() => copy(row.code)} aria-label={`Copy ${row.code}`}>
-                        {copied === row.code ? 'Copied!' : 'Copy'}
+                      <button type="button" onClick={() => copy(row)} disabled={Boolean(copying)}
+                        aria-label={`${unsaved.has(row.code) ? 'Save tick for' : row.copiedAt ? 'Copy again' : 'Copy'} ${row.code}`}>
+                        {copying === row.code ? 'Saving…' : unsaved.has(row.code) ? 'Save tick' : row.copiedAt ? 'Copy again' : 'Copy'}
                       </button>
                     )}</td>
                   </tr>

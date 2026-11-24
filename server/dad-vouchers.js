@@ -28,8 +28,9 @@ async function transaction(pool, work) {
   finally { client.release(); }
 }
 async function replenish(client) {
-  const { rows: [row] } = await client.query('SELECT count(*)::int AS active FROM public.santa_dad_vouchers WHERE redeemed_at IS NULL');
-  for (let i = row.active; i < 15; i++) {
+  const { rows: [row] } = await client.query(`SELECT count(*)::int AS visible FROM public.santa_dad_vouchers
+    WHERE redeemed_at IS NULL OR redeemed_at > now() - interval '24 hours'`);
+  for (let i = row.visible; i < 15; i++) {
     const code = randomBytes(10).toString('hex').toUpperCase();
     await client.query('INSERT INTO public.santa_dad_vouchers(id,code) VALUES($1,$2)', [randomUUID(), `DAD-${code.slice(0,10)}-${code.slice(10)}`]);
   }
@@ -37,10 +38,10 @@ async function replenish(client) {
 export async function listDadVouchers(pool = databasePool()) {
   return transaction(pool, async client => {
     await replenish(client);
-    const { rows } = await client.query(`SELECT id,code,redeemed_at AS "redeemedAt",
-      CASE WHEN redeemed_at IS NULL THEN 'ACTIVE' ELSE 'USED' END AS status
-      FROM public.santa_dad_vouchers WHERE redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '5 days'
-      ORDER BY redeemed_at IS NOT NULL,created_at,id`);
+    const { rows } = await client.query(`SELECT id,code,copied_at AS "copiedAt",redeemed_at AS "redeemedAt",
+      CASE WHEN redeemed_at IS NOT NULL THEN 'USED' WHEN copied_at IS NOT NULL THEN 'COPIED' ELSE 'AVAILABLE' END AS status
+      FROM public.santa_dad_vouchers WHERE redeemed_at IS NULL OR redeemed_at > now() - interval '24 hours'
+      ORDER BY created_at,id`);
     return { vouchers: rows };
   });
 }
@@ -53,7 +54,6 @@ export async function redeemDadVoucher(req, res, code, { pool = databasePool(), 
       SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()),claimant_sha256=COALESCE(claimant_sha256,$2)
       WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)
       AND (redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '30 days') RETURNING id,redeemed_at`, [code.trim().toUpperCase(),claim]);
-    if (row) await replenish(client);
     return row;
   });
   if (!row) return false;

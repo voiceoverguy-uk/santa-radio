@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS public.santa_dad_vouchers (
   CHECK (claimant_sha256 IS NULL OR claimant_sha256 ~ '^[a-f0-9]{64}$')
 );
 CREATE INDEX IF NOT EXISTS santa_dad_vouchers_redeemed_idx ON public.santa_dad_vouchers(redeemed_at);
+ALTER TABLE public.santa_dad_vouchers ADD COLUMN IF NOT EXISTS copied_at timestamptz;

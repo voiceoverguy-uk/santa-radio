@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { markVoucherCopied } from '../server/voucher-copy.js';
 import { studioTestDatabase } from './helpers/studio-live-postgres.mjs';
 import { friendSession, friendClaim, redeemFriendVoucher, listFriendVouchers, seedFriendVouchers,
   adminVoucherMatches, issueAdminVoucher } from '../server/friend-vouchers.js';
@@ -20,12 +21,18 @@ test.before(async () => {
     const { PGlite } = await import(process.env.PGLITE_TEST_MODULE);
     const db = new PGlite();
     let queue = Promise.resolve();
-    pool = { query: async (sql, args) => { const r=await db.query(sql,args); return {...r,rowCount:r.affectedRows ?? r.rows.length}; },
+    pool = { query: async (sql, args) => { const r=!args && sql.includes(';') ? (await db.exec(sql)).at(-1) : await db.query(sql,args); return {...r,rowCount:r.affectedRows ?? r.rows.length}; },
       connect: async () => { const previous=queue; let release; queue=new Promise(r=>{release=r;}); await previous; return {query:pool.query,release}; } };
     database = { close: () => db.close() };
   } else { database=await studioTestDatabase(); pool=database.pool; }
   const schema=await readFile(new URL('../database/santa-name-requests.sql',import.meta.url),'utf8');
   await pool.query(schema.match(/CREATE TABLE IF NOT EXISTS public\.santa_friend_vouchers[\s\S]*?\n\);/)[0]);
+  const migration=await readFile(new URL('../database/friend-voucher-issues.sql',import.meta.url),'utf8');
+  await seedFriendVouchers(pool);
+  const beforeUpgrade=(await pool.query('SELECT slot,code FROM public.santa_friend_vouchers ORDER BY slot')).rows;
+  await pool.query(migration); await pool.query(migration);
+  const afterUpgrade=(await pool.query('SELECT slot,code FROM public.santa_friend_vouchers ORDER BY slot')).rows;
+  assert.deepEqual(afterUpgrade,beforeUpgrade);
   const allowance=await readFile(new URL('../database/santa-studio-creation-allowance.sql',import.meta.url),'utf8');
   for (const sql of allowance.replace(/^--.*$/gm,'').split(';').filter(s=>s.trim())) await pool.query(sql);
 });
@@ -41,6 +48,12 @@ test('twenty unique vouchers are seeded once; repeated releases preserve codes a
 });
 test('one recipient wins concurrent redemption; original browser retries retain the same two-message allowance',async()=>{
   const code=(await listFriendVouchers(pool)).vouchers[0].code;
+  const second=(await listFriendVouchers(pool)).vouchers[1].code;
+  await markVoucherCopied('friends',code,pool);
+  await markVoucherCopied('friends',second,pool);
+  const marked=(await listFriendVouchers(pool)).vouchers.filter(v=>v.status==='COPIED');
+  assert.equal(marked.length,2);
+  assert.deepEqual((await markVoucherCopied('friends',code,pool)).copiedAt,marked[0].copiedAt);
   const visitors=[browser(),browser()];
   for(const b of visitors) friendClaim(b.req,b.res,key);
   const results=await Promise.all(visitors.map(b=>redeemFriendVoucher(b.req,b.res,code,{pool,key})));
@@ -61,9 +74,26 @@ test('one recipient wins concurrent redemption; original browser retries retain 
   assert.equal((await store.status(identity)).remaining,0);
   assert.equal(await redeemFriendVoucher(loser.req,loser.res,code,{pool,key}),false);
   const row=(await listFriendVouchers(pool)).vouchers[0];
-  assert.equal(row.status,'EXPIRED'); assert.ok(row.redeemedAt);
-  await seedFriendVouchers(pool);
-  assert.equal((await listFriendVouchers(pool)).vouchers[0].status,'EXPIRED');
+  assert.equal(row.status,'USED'); assert.ok(row.redeemedAt);
+  await pool.query("UPDATE public.santa_friend_vouchers SET redeemed_at=now()-interval '23 hours 59 minutes' WHERE code=$1",[code]);
+  assert.equal((await listFriendVouchers(pool)).vouchers[0].code,code);
+  await pool.query("UPDATE public.santa_friend_vouchers SET redeemed_at=now()-interval '24 hours' WHERE code=$1",[code]);
+  const [after,concurrent]=await Promise.all([listFriendVouchers(pool),listFriendVouchers(pool)]);
+  assert.deepEqual(after,concurrent); assert.equal(after.vouchers.length,20);
+  const replacement=after.vouchers[0];
+  assert.equal(replacement.slot,row.slot); assert.notEqual(replacement.code,code);
+  assert.equal(replacement.status,'AVAILABLE');assert.equal(replacement.copiedAt,null);
+  assert.equal(after.vouchers[1].status,'COPIED');
+  await seedFriendVouchers(pool); assert.deepEqual(await listFriendVouchers(pool),after);
+  assert.equal((await markVoucherCopied('friends',code,pool)).status,409);
+  assert.equal(await redeemFriendVoucher(loser.req,loser.res,code,{pool,key}),false);
+  assert.ok(await redeemFriendVoucher(winner.req,winner.res,code,{pool,key}));
+  assert.equal(friendSession(winner.req,key).generationKey,session.generationKey);
+  assert.ok(await redeemFriendVoucher(loser.req,loser.res,replacement.code,{pool,key}));
+  const fresh=friendSession(loser.req,key);
+  assert.notEqual(fresh.generationKey,session.generationKey);
+  assert.equal((await store.status({key:fresh.generationKey,expiresAt:new Date(fresh.expiresAt)})).remaining,2);
+  assert.equal((await store.status(identity)).remaining,0);
 });
 test('admin runs stop at two, then reset into a fresh bounded run; sessions reject tampering and expiry',async()=>{
   const b=browser(); issueAdminVoucher(b.req,b.res,{key});

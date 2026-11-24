@@ -31,8 +31,8 @@ export function friendSession(req, key = secret(), now = Date.now()) {
     return { codeId: 'admin', limited: true, admin: true, expiresAt: Number(parts[2]),
       generationKey: digest(`friend-admin:${parts[1]}`) };
   }
-  if (!parts || parts.length !== 3 || parts[0] !== 'access' || !/^[1-9][0-9]?$/.test(parts[1])
-    || Number(parts[1]) > 20 || !/^\d{13}$/.test(parts[2]) || Number(parts[2]) <= now) return null;
+  if (!parts || parts.length !== 3 || parts[0] !== 'access' || !/^[1-9]\d{0,9}$/.test(parts[1])
+    || Number(parts[1]) > 2147483647 || !/^\d{13}$/.test(parts[2]) || Number(parts[2]) <= now) return null;
   return { codeId: `friend-${parts[1]}`, limited: true, friend: true,
     expiresAt: Number(parts[2]), generationKey: digest(`friend-voucher:${parts[1]}`) };
 }
@@ -69,15 +69,39 @@ export async function redeemFriendVoucher(req, res, code, { pool = databasePool(
   setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, Math.max(0, expiresAt - Date.now()));
   return { authorized: true, expiresAt, voucher: { unlimited: false, friend: true } };
 }
-export async function listFriendVouchers(pool = databasePool()) {
-  const { rows } = await pool.query(`SELECT slot,code,redeemed_at AS "redeemedAt"
-    FROM public.santa_friend_vouchers ORDER BY slot`);
-  return { vouchers: rows.map(row => ({ ...row, status: row.redeemedAt ? 'EXPIRED' : 'AVAILABLE' })) };
+function newFriendCode() {
+  const random = randomBytes(10).toString('hex').toUpperCase();
+  return `FRIEND-${random.slice(0,10)}-${random.slice(10)}`;
 }
+
+async function latestIssues(pool) {
+  return (await pool.query(`SELECT DISTINCT ON ((slot - 1) % 20)
+    slot AS issue, (slot - 1) % 20 + 1 AS slot, code, copied_at AS "copiedAt",
+    redeemed_at AS "redeemedAt", redeemed_at <= now() - interval '24 hours' AS due
+    FROM public.santa_friend_vouchers ORDER BY (slot - 1) % 20, slot DESC`)).rows;
+}
+
+export async function listFriendVouchers(pool = databasePool()) {
+  let rows = await latestIssues(pool);
+  const due = rows.filter(row => row.due);
+  if (due.length) {
+    // The deterministic successor ID and primary key allow simultaneous refreshes
+    // to create exactly one new issue per expired position. Old IDs remain valid
+    // for the original child's signed 30-day session and its own allowance.
+    await pool.query(`INSERT INTO public.santa_friend_vouchers(slot, code)
+      SELECT * FROM unnest($1::integer[], $2::text[]) ON CONFLICT (slot) DO NOTHING`,
+      [due.map(row => row.issue + 20), due.map(newFriendCode)]);
+    rows = await latestIssues(pool);
+  }
+  return { vouchers: rows.map(({ slot, code, copiedAt, redeemedAt }) => ({
+    slot, code, copiedAt, redeemedAt,
+    status: redeemedAt ? 'USED' : copiedAt ? 'COPIED' : 'AVAILABLE',
+  })) };
+}
+
 export async function seedFriendVouchers(client) {
   for (let slot = 1; slot <= 20; slot++) {
-    const random = randomBytes(10).toString('hex').toUpperCase();
     await client.query(`INSERT INTO public.santa_friend_vouchers(slot,code) VALUES($1,$2)
-      ON CONFLICT(slot) DO NOTHING`, [slot, `FRIEND-${random.slice(0,10)}-${random.slice(10)}`]);
+      ON CONFLICT(slot) DO NOTHING`, [slot, newFriendCode()]);
   }
 }
