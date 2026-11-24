@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Pause, Play } from 'lucide-react';
+import { ArrowRight, Pause, Play, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import { sourceApprovedContenders } from '../lib/contenders.js';
@@ -47,16 +47,24 @@ export default function HomeContenders() {
     });
   }
 
-  return <section className="home-contenders" aria-label="Christmas Contenders">
+  return <section className="home-contenders" aria-labelledby="home-contenders-title">
+    <header className="christmas-pairs__heading home-contenders__heading">
+      <p className="christmas-pairs__eyebrow">The Future Stars of Santa Radio</p>
+      <div className="christmas-pairs__title-wrap">
+        <span className="christmas-pairs__title-star" aria-hidden="true"><Star size={17} fill="currentColor" /></span>
+        <h2 id="home-contenders-title">The Christmas Contenders</h2>
+      </div>
+      <p className="christmas-pairs__intro">Have your say to the music we play</p>
+    </header>
     <div className="home-contenders__brand">
       <img src="/contenders/christmas-contenders-logo.webp" alt="Santa Radio Christmas Contenders" width="760" height="422"/>
       <Link to="/christmas-contenders">{voting?'Vote for your favourite':'Visit Christmas Contenders'} <ArrowRight size={17}/></Link>
     </div>
     <div className="home-contenders__music">
-      <h2>Listen to the contenders</h2>
+      <h3>Listen to the contenders</h3>
       <ul aria-label="Contender songs" tabIndex={0}>{songs.map(song=><li key={song.id}>
         <button type="button" aria-label={`${playing===song.id?'Pause':'Play'} ${song.title} by ${song.artist}`} onClick={()=>toggle(song)}>
-          <img src={song.artwork} width="44" height="44" alt="" loading="lazy"/>
+          <img src={song.artwork} width="50" height="50" alt="" loading="lazy"/>
           <span><strong>{song.title}</strong><small>{song.artist}</small></span>
           <i aria-hidden="true">{playing===song.id?<Pause size={15}/>:<Play size={15}/>}</i>
         </button>
