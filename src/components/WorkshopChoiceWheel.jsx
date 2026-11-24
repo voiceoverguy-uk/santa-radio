@@ -17,6 +17,7 @@ export default function WorkshopChoiceWheel({
   onSoundInteraction = noop,
   showCount = true,
   currentSelectionLabel = '',
+  selectionStatusLabel,
   footer,
 }) {
   const choices = options;
@@ -285,8 +286,8 @@ export default function WorkshopChoiceWheel({
       <div className={footer ? 'smw-choice-wheel-footer-row' : undefined}>
       <p className="smw-choice-wheel-status" aria-live="polite" aria-atomic="true">
         {selectedIndex >= 0
-          ? `Selected: ${choices[selectedIndex].label}`
-          : currentSelectionLabel ? `Selected: ${currentSelectionLabel}`
+          ? `Selected: ${selectionStatusLabel || choices[selectedIndex].label}`
+          : currentSelectionLabel ? `Selected: ${selectionStatusLabel || currentSelectionLabel}`
             : hasInteracted ? 'Choose an option to continue.' : 'No option selected yet.'}
       </p>
       {footer}
