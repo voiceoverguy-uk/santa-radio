@@ -62,32 +62,42 @@ export function friendClaim(req, res, key = secret()) {
   setClaim(req, res, key, nonce, MONTH);
   return nonce;
 }
+// After an atomic claim, keep the same browser identity for the lifetime of
+// the voucher. Holding this nonce alone never grants a Studio session.
+async function claimForBrowser(req, res, key, update) {
+  const existing = savedClaim(req, key);
+  const nonce = existing ?? randomBytes(32).toString('base64url');
+  const { rows: [row] } = await update(digest(nonce));
+  if (!row) return null;
+  const expiresAt = new Date(row.expires_at).getTime();
+  setClaim(req, res, key, nonce, Math.max(MONTH, expiresAt - Date.now()));
+  return { id: row.issue, expiresAt };
+}
+
+export function claimFixedGift(req, res, normalized, pool, key) {
+  // The full code, including its Studio prefix, is part of the stored digest.
+  return claimForBrowser(req, res, key, claimant => pool.query(`UPDATE public.santa_fixed_gift_vouchers
+    SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
+    WHERE code_sha256=$1 AND valid_until > clock_timestamp()
+      AND (redeemed_at IS NULL OR claimant_sha256=$2)
+    RETURNING 'gift-' || code_sha256 AS issue, valid_until AS expires_at`, [digest(normalized), claimant]));
+}
+
 export async function redeemFriendVoucher(req, res, code, { pool = databasePool(), key = secret() } = {}) {
   const normalized = code.trim().toUpperCase();
   const fixedGift = /^FRIEND-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
   if (!fixedGift && !/^FRIEND-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
-  const existing = savedClaim(req, key);
-  const nonce = existing ?? randomBytes(32).toString('base64url');
-  const claimant = digest(nonce);
-  // Each update allows only the first claimant and that browser's retries.
-  const result = fixedGift
-    ? await pool.query(`UPDATE public.santa_fixed_gift_vouchers
-      SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
-      WHERE code_sha256=$1 AND valid_until > clock_timestamp()
-        AND (redeemed_at IS NULL OR claimant_sha256=$2)
-      RETURNING 'gift-' || code_sha256 AS issue, valid_until AS expires_at`, [digest(normalized), claimant])
-    : await pool.query(`UPDATE public.santa_friend_vouchers
+  const grant = fixedGift
+    ? await claimFixedGift(req, res, normalized, pool, key)
+    : await claimForBrowser(req, res, key, claimant => pool.query(`UPDATE public.santa_friend_vouchers
       SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
       WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)
         AND (redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '30 days')
-      RETURNING slot AS issue, redeemed_at + interval '720 hours' AS expires_at`, [normalized, claimant]);
-  const row = result.rows[0];
-  if (!row) return false;
-  const expiresAt = new Date(row.expires_at).getTime();
-  const duration = Math.max(0, expiresAt - Date.now());
-  if (!existing || fixedGift) setClaim(req, res, key, nonce, Math.max(MONTH, duration));
-  const payload = `access.${row.issue}.${expiresAt}`;
-  setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, duration);
+      RETURNING slot AS issue, redeemed_at + interval '720 hours' AS expires_at`, [normalized, claimant]));
+  if (!grant) return false;
+  const { id, expiresAt } = grant;
+  const payload = `access.${id}.${expiresAt}`;
+  setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, Math.max(0, expiresAt - Date.now()));
   return { authorized: true, expiresAt, voucher: { unlimited: false, friend: true } };
 }
 function newFriendCode() {
