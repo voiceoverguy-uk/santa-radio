@@ -17,9 +17,9 @@ test('lower lines never overlap and the name moves to a badge three seconds afte
  const lines=studioVideoTimeline(result);
  const incoming = lines.find(c => c.id === 'incoming');
  const name = lines.find(c => c.id === 'name');
- assert.equal(incoming.text,'Incoming message from Santa');
+ assert.equal(incoming.text,'Incoming message from Santa\nFor Harry');
  assert.equal(studioCaptionOpacity(incoming,0),1);
- assert.equal(studioCaptionOpacity(incoming,.8),0);
+ assert.equal(studioCaptionOpacity(incoming,.8),1);
  assert.equal(studioCaptionOpacity(incoming,3),0);
  assert.equal(studioCaptionOpacity(name,2.9),0);
  assert.equal(studioCaptionOpacity(name,11),1);
@@ -33,6 +33,7 @@ test('export bounds bitrate, preserves audio, and stops at recording duration',(
  const args=studioTimelineArguments(studioVideoTimeline(result).map(c=>({...c,y:540})),90);
  assert.ok(args.includes('128k'));assert.ok(args.includes('350k'));assert.equal(args[args.indexOf('-t')+1],'90');
  const filter=args[args.indexOf('-filter_complex')+1];assert.match(filter,/fade=t=in:st=18/);assert.match(filter,/fade=t=out:st=42/);assert.match(filter,/overlay=0:540/);
+ assert.ok(filter.includes("overlay=0:540:format=auto:enable='gte(t,0)*lt(t,3)'"));
 });
 
 test('treat and country captions follow each rendered clip, including longer choices', () => {

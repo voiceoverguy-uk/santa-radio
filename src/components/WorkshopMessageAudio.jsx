@@ -273,7 +273,7 @@ export default function WorkshopMessageAudio({
     onDeliveryStep('result');
   };
   const finalMessageAvailable = deliveryStep === 'result' && limited && status.remaining === 1;
-  const startAction = () => <button className={`smw-button ${finalMessageAvailable ? 'smw-button-next' : 'smw-button-back'}`} type="button"
+  const startAction = () => <button className={`smw-button ${finalMessageAvailable ? 'smw-button-next smw-button-final-message' : 'smw-button-back'}`} type="button"
     aria-disabled={exhausted || undefined}
     aria-haspopup={exhausted || url ? 'dialog' : undefined}
     disabled={busy || giftExportPending || !!status?.pending

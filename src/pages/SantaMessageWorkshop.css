@@ -829,3 +829,18 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   .kids-welcome-heading { margin-bottom: 24px; }
   .kids-welcome-return { margin-top: 26px; }
 }
+
+.smw-button.smw-button-final-message:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: 0 0 16px rgb(247 196 98 / 38%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .smw-button.smw-button-final-message:not(:disabled):not([aria-disabled="true"]) {
+    animation: smw-final-message-glow 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes smw-final-message-glow {
+  0%, 100% { box-shadow: 0 0 9px rgb(247 196 98 / 30%); }
+  50% { box-shadow: 0 0 23px 4px rgb(247 196 98 / 54%); }
+}
