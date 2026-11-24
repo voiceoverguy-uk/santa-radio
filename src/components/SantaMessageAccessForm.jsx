@@ -1,3 +1,4 @@
+import StoreReviewAccess from './StoreReviewAccess.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SantaMessageAccessCard from './SantaMessageAccessCard.jsx';
@@ -103,5 +104,5 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
     setVerification(null); setCode(''); setError(''); setErrors({});
     requestAnimationFrame(() => formRef.current?.elements.namedItem('EMAIL')?.focus());
   };
-  return <SantaMessageAccessCard verification={verification} code={code} onCodeChange={setCode} onRestart={restart} {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate, selectedChildName, pulseSubmit }} />;
+  return <><SantaMessageAccessCard verification={verification} code={code} onCodeChange={setCode} onRestart={restart} {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate, selectedChildName, pulseSubmit }} /><StoreReviewAccess onAccepted={onAccepted} /></>;
 }

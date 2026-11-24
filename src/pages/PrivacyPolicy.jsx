@@ -12,6 +12,7 @@ const privacySectionIds = [
   'shops-app-privacy',
   'naughty-or-nice-checker-privacy',
   'santa-tracker-ios-privacy',
+  'santa-tracker-android-privacy',
   'android-radio-privacy',
   'privacy-choices',
 ];
@@ -45,7 +46,7 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Updated <time dateTime="2026-11-18">18 November 2026</time></p>
+      <p className="privacy-date">Updated <time dateTime="2026-11-24">24 November 2026</time></p>
       <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, use our <a href="/submit-a-song">contact form</a>.</p>
       <p>This notice also covers Santa Radio 43.0 and Christmas Radio 38.0 for Android through the current recording and Android sections below. This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0; Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app) and Christmas Music for Shops for iPhone and iPad, version 1.0; Santa Radio for Android, version 35.0; and the upcoming Naughty or Nice List Checker for iOS (planned bundle identifier com.santaradio.nicelistchecker), which has not yet been built. The current app-specific sections below explain how each app handles information. The Checker section is interim and will be updated before release. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <section aria-labelledby="review-privacy"><h2 id="review-privacy">Santa message reviews</h2><p>If you submit a review, we use your verified adult email to prevent duplicate reward emails and send the discount you request on submission. We store your rating, comments, optional adult first name and publication permission. Your email is encrypted while the reward is pending and removed from the review record after successful sending; a keyed identifier remains to prevent repeat rewards. Review content remains for moderation and, only with permission, selected testimonials. Published incentivised testimonials are labelled. Every star rating qualifies for the requested reward email on submission. Publication is separately moderated. To request removal or withdraw publication permission, use our <a href="/submit-a-song">contact form</a>. Reward delivery uses Brevo and does not subscribe you to newsletters.</p></section>
@@ -57,6 +58,7 @@ export default function PrivacyPolicy() {
         <a href="#christmas-radio-privacy">iPhone/iPad app</a>
         <a href="#shops-app-privacy">Christmas Music for Shops</a>
         <a href="#naughty-or-nice-checker-privacy">Naughty or Nice List Checker</a>
+        <a href="#santa-tracker-android-privacy">Santa Tracker Android app</a>
         <a href="#santa-tracker-ios-privacy">The Santa Tracker iOS app</a>
         <a href="#android-radio-privacy">Android app</a>
         <a href="#privacy-choices">Choices &amp; rights</a>
@@ -148,6 +150,19 @@ export default function PrivacyPolicy() {
       <section aria-labelledby="naughty-or-nice-checker-privacy">
         <h2 id="naughty-or-nice-checker-privacy" tabIndex="-1">Naughty or Nice List Checker</h2>
         <p>Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is <code>com.santaradio.nicelistchecker</code>. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, use our <a href="/submit-a-song">contact form</a>.</p>
+      </section>
+
+      <section aria-labelledby="santa-tracker-android-privacy">
+        <h2 id="santa-tracker-android-privacy" tabIndex="-1">Santa Tracker by Santa Radio — Android version 2.0</h2>
+        <p>VoiceoverGuy Ltd operates Santa Tracker by Santa Radio for Android (uk.co.santaradio.santatracker). The app is free and intended for children and adults. Adults should handle the optional Santa Message form and any personal information submitted through it.</p>
+        <h3>Offline tracker and device storage</h3>
+        <p>The bundled tracker calculates Santa’s fictional journey, countdown and delivery estimates on your device. It does not track your location, require an account or send tracker activity or preview settings to Santa Radio. The native app contains no advertising or analytics SDK and requests no location, microphone, camera or contacts permission. Preview settings may be saved locally. Android app backup is disabled.</p>
+        <h3>Optional Santa Message studio</h3>
+        <p>Santa Message opens the Santa Radio website’s free message maker inside the app and requires an internet connection. An adult provides their first name, surname and email address, then confirms a code sent through Brevo. A selected child’s first name is sent to the generator to assemble prerecorded audio. No microphone recording is required. The Free Santa audio messages, Message usage statistics and Requests for missing Santa names sections below describe verification, generation, request records, service providers and retention. Normal HTTPS requests also provide IP addresses and technical request information to our hosting services.</p>
+        <p>The embedded studio rejects optional website analytics, marketing cookies and external media by default and blocks third-party cookies. Necessary cookies and local storage still support verified access and message limits. The app hides the website’s optional marketing signup and paid promotions. Message-generation and download statistics described below still apply; the offline tracker is separate.</p>
+        <h3>Downloads, sharing and deletion</h3>
+        <p>When you choose a gift download or share action, the app saves or temporarily caches the generated file and hands it to Android’s download or sharing controls. Files may contain the name you selected. Only share them with recipients you choose. Copies saved in Downloads or sent to another app remain under your control and are not removed by clearing this app’s storage. Clearing app storage removes its local settings and website session; this does not delete records held by service providers.</p>
+        <p>There is no tracker account to delete. To request deletion of information supplied to Santa Messages or ask a privacy question, use our <a href="/submit-a-song?mode=general">general enquiry form</a> and mention “Santa Tracker for Android”. The website sections below explain applicable retention and privacy rights. External links opened in your browser follow that website’s own privacy choices.</p>
       </section>
 
       <section aria-labelledby="santa-tracker-ios-privacy">
