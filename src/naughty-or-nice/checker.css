@@ -625,7 +625,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 
 .nn-certificate-download { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin: 14px auto 0; text-align: center; }
 .nn-certificate-download .message-share { display: contents; }
-.nn-certificate-download .message-retry {
+.nn-certificate-download .message-share .message-retry {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   width: auto; min-height: 44px; margin: 0; padding: 11px 18px;
   border-radius: 999px; border: 2px solid var(--nn-green);
