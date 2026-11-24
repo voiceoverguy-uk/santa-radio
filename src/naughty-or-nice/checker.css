@@ -623,7 +623,19 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 :where(.nn-scene, .nn-widget, .nn-office) .nn-certificate-enlarge:focus-visible { outline: 3px solid var(--nn-focus); outline-offset: 3px; box-shadow: 0 0 0 6px var(--nn-ink); }
 @media (max-width: 380px) { .nn-certificate-enlarge > span { margin: 0 5px 5px 0; padding: 4px 8px; font-size: .66rem; } }
 
-.nn-certificate-download { display: grid; justify-items: center; gap: 6px; margin: 14px auto 0; text-align: center; }
+.nn-certificate-download { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin: 14px auto 0; text-align: center; }
+.nn-certificate-download .message-share { display: contents; }
+.nn-certificate-download .message-retry {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: auto; min-height: 44px; margin: 0; padding: 11px 18px;
+  border-radius: 999px; border: 2px solid var(--nn-green);
+  font: 600 .95rem/1.2 'Inter', sans-serif;
+  background: #fffcf455; color: var(--nn-green-dark); cursor: pointer;
+}
+.nn-certificate-download .message-retry:hover:not(:disabled) { background: #1f5a3c14; }
+.nn-certificate-download .message-retry:disabled { cursor: wait; opacity: .55; }
+.nn-certificate-download > :is(p, .message-share-link), .nn-certificate-download .message-share > :is(p, .message-share-link) { flex: 1 0 100%; text-align: center; }
+.nn-certificate-download .message-share-link input { width: 100%; min-width: 0; box-sizing: border-box; }
 .nn-certificate-download > .nn-secondary { color: var(--nn-red-dark); border-color: var(--nn-red); background: #fffcf455; gap: 8px; }
 .nn-certificate-download > .nn-secondary::before { content: ""; width: 10px; height: 12px; flex: none; background: currentColor;
   clip-path: polygon(35% 0, 65% 0, 65% 45%, 100% 45%, 50% 85%, 0 45%, 35% 45%); box-shadow: none; }

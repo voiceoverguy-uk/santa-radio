@@ -1,7 +1,17 @@
 import { trackCheckerDownload } from '../lib/checkerDownloadStatistics.js';
 import { useEffect, useRef, useState } from 'react';
+import { Share } from 'lucide-react';
+import SantaMessageShare from '../components/SantaMessageShare.jsx';
+import { ORIGIN } from '../seo/catalogue.js';
+import { CHECKER_PATH } from './checkerLogic.js';
 import CertificateName from '../components/CertificateName.jsx';
 import '../components/SantaStudioGifts.css';
+
+const checkerShare = {
+  title: 'Naughty or Nice List Checker | Santa Radio',
+  text: 'Which list are you on? Ask Head Elf and get your own free Christmas certificate!',
+  url: `${ORIGIN}${CHECKER_PATH}`,
+};
 
 function CertificateArt({ name, naughty, days }) {
   const daysText = `${days} ${days === 1 ? 'DAY' : 'DAYS'} TO GO`;
@@ -84,6 +94,9 @@ export default function CheckerCertificate({ name, result, days, onDownload }) {
     <button type="button" className="nn-secondary" disabled={downloading} onClick={savePdf}>
       {downloading ? 'Creating PDF…' : `Download ${naughty ? 'Naughty' : 'Nice'} certificate PDF`}
     </button>
+    <SantaMessageShare data={checkerShare} label="Share the Naughty or Nice List checker">
+      <Share size={17} aria-hidden="true" /> Share
+    </SantaMessageShare>
     {downloading && <p role="status">Creating your PDF in this browser…</p>}
     {error && <p role="alert" className="nn-error">{error}</p>}
   </div>;
@@ -99,7 +112,7 @@ export default function CheckerCertificate({ name, result, days, onDownload }) {
       aria-label={`${naughty ? 'Naughty' : 'Nice'} List certificate preview`}
       onKeyDown={event => {
         if (event.key !== 'Tab') return;
-        const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled)')];
+        const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), input:not(:disabled)')];
         const first = controls[0], last = controls.at(-1);
         if (event.shiftKey && document.activeElement === first) {
           event.preventDefault(); last?.focus();
