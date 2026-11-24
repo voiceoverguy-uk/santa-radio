@@ -6,7 +6,7 @@ import { STUDIO_PATH as WORKSHOP_PATH } from '../lib/studioRoute.js';
 const ACCESS_URL = '/api/santa-workshop-access';
 const REQUEST_TIMEOUT = 15000;
 
-export function WorkshopPasswordForm({ onAuthorized, compact = false, active = true, requestControlRef, variant = 'gate' }) {
+export function WorkshopPasswordForm({ onAuthorized, compact = false, active = true, requestControlRef, variant = 'gate', friendGuest = false }) {
   const inputId = useId();
   const [code, setCode] = useState('');
   const [pending, setPending] = useState(false);
@@ -103,13 +103,14 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     onSubmit={submit}
     noValidate
   >
-    <label htmlFor={inputId}>{variant === 'promotion' ? 'Voucher code' : 'Voucher code (required)'}</label>
+    {!friendGuest && <label htmlFor={inputId}>{variant === 'promotion' ? 'Voucher code' : 'Voucher code (required)'}</label>}
     <input
       ref={inputRef}
       id={inputId}
       type="text"
       value={code}
-      placeholder="Voucher code"
+      placeholder={friendGuest ? "friend or guest code" : "Voucher code"}
+      aria-label={friendGuest ? "Friend or guest code" : undefined}
       onChange={event => { setCode(event.target.value.slice(0, 80)); setError(''); }}
       autoComplete="off"
       autoCapitalize="off"
