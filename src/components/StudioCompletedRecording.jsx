@@ -69,12 +69,12 @@ export default function StudioCompletedRecording({ result, keepsakes, footer, or
         resume.current = radio?.pauseForMessage?.() || null;
       }} onPause={finish} onEnded={finish} />
       <div className="smw-finished-tools"><div className="smw-download-actions">
-        <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
         <div className="smw-download-control">
           <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`} href={url} download={studioVideoFilename(result)}
             onClick={() => { setDownloaded(true); onDownloadRequested(); }}>Download your message <span aria-hidden="true">↓</span></a>
           {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
         </div>
+        <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
         <StudioBundleDownload showReminder={false} result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
       </div>
       {keepsakes && <div className="smw-finished-keepsakes" style={{ borderTop: 0, paddingTop: 0 }}>{keepsakes}</div>}

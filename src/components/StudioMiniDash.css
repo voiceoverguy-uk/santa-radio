@@ -77,3 +77,13 @@
 .studio-mini-dash__heading{flex-direction:column;align-items:flex-start;gap:4px}
 .studio-mini-dash__heading>span{color:#e6ce86;font-weight:700}
 .studio-mini-dash--finished .studio-mini-dash__collected{font-size:clamp(20px,2.5vw,24px);font-weight:600;line-height:1.4;margin:16px 0}
+
+.studio-mini-dash--instructions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+.studio-mini-dash--instructions p { margin: 6px 0 0; }
+.studio-mini-dash--instructions button { cursor: pointer; }

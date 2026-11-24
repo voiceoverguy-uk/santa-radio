@@ -26,3 +26,15 @@
   background: repeating-linear-gradient(120deg, #fff8ee 0 9px, #c92337 9px 18px);
   border-radius: 999px;
 }
+
+.santa-free-video__progress progress:indeterminate {
+  background: repeating-linear-gradient(135deg, #fff8ee 0 8px, #c92337 8px 16px) 0 0 / 23px 100%;
+}
+.santa-free-video__progress progress:indeterminate::-webkit-progress-bar { background: transparent; }
+.santa-free-video__progress progress:indeterminate::-moz-progress-bar { background: transparent; }
+@media (prefers-reduced-motion: no-preference) {
+  .santa-free-video__progress progress:indeterminate { animation: santa-candy-cane-travel 1s linear infinite; }
+}
+@keyframes santa-candy-cane-travel {
+  to { background-position-x: 23px; }
+}

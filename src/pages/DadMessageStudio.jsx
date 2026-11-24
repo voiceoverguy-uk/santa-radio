@@ -11,6 +11,7 @@ import WorkshopNamePicker from '../components/WorkshopNamePicker.jsx';
 import WorkshopAgeCarousel from '../components/WorkshopAgeCarousel.jsx';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import StudioMiniDash from '../components/StudioMiniDash.jsx';
+import '../components/SantaFreeVideo.css';
 import SantaVideoPlayer from '../components/SantaVideoPlayer.jsx';
 import {SantaGreetingShare} from '../components/SantaMessageShare.jsx';
 import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
@@ -253,7 +254,10 @@ export default function DadMessageStudio(){
  {step===5&&<>{audioState==='error'&&<div className="dad-audio-status"><p>The recording could not be prepared. Retry with your confirmed choices.</p><button className="dad-primary" onClick={prepareAudio}>Retry recording</button>{(recordingFailure?.failedAttempts || 0) >= 4 && <p>
   {recordingFailure.reference && <>Support reference: <code>{recordingFailure.reference}</code>. </>}
   <Link to={recordingFailure.reference ? `/submit-a-song?dadSupport=${encodeURIComponent(recordingFailure.reference)}` : '/submit-a-song'} target="_blank" rel="noopener">Contact Santa Radio</Link> for help. Keep this tab open to preserve your choices.
- </p>}</div>}{audioState==='preparing'&&<p role="status">Preparing your recording… You can choose your picture while you wait.</p>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
+ </p>}</div>}{audioState==='preparing'&&<div className="dad-scene-preparing">
+   <p role="status">Preparing your recording… You can choose your picture while you wait.</p>
+   <div className="santa-free-video__progress"><progress aria-label="Preparing Dad’s recording" max="1" /></div>
+  </div>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
  {step<4&&<div className="dad-actions dad-step-actions">{(step>0||editingReview)&&step<5&&<button onClick={()=>{setStep(editingReview?4:step-1);setEditingReview(false);}}>{editingReview?'Back to recap':'← Back'}</button>}{step<4?continueButton:step===4?<button className="dad-primary" onClick={confirm}>Confirm and choose a picture →</button>:<button className="dad-primary" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>{audioState==='preparing'?'Preparing your recording…':'Create my video →'}</button>}</div>}
 
  </>}

@@ -48,4 +48,6 @@
 
 /* Centre Dad's larger gold playhead on the wooden player's track. */
 .santa-video-player__skin--dad .santa-video-player__seek{top:52.5%}
-.santa-video-player__skin--dad .santa-video-player__seek img{width:clamp(17px,3.5vw,27px)}
+.santa-video-player__skin--dad .santa-video-player__seek img{width:clamp(23.8px,4.9vw,37.8px)}
+
+.santa-video-player__skin--kids .santa-video-player__time { bottom: 27%; }

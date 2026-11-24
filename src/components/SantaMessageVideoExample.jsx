@@ -29,7 +29,7 @@ export default function SantaMessageVideoExample() {
     return () => { resume.current?.(); resume.current = null; };
   }, []);
   return <figure className="fsm-video-preview">
-    <FoldingVideoPlayer key={example.src} preload="none"
+    <FoldingVideoPlayer key={example.src} preload="none" overlayLabel="Example"
       poster={example.poster} src={example.src}
       label={`Play an example Santa video message for ${example.name}`}
       onPlay={() => {

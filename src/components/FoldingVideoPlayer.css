@@ -9,3 +9,17 @@
 .folding-video.is-visible .folding-video__inner::after { animation: free-video-shimmer 5s ease-in-out infinite; }
 @keyframes free-video-shimmer { 0%,10% { opacity: 0; transform: translateX(-120%); } 20% { opacity: 1; } 55%,100% { opacity: 0; transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) { .folding-video.is-visible .folding-video__inner::after { animation: none; } }
+
+.folding-video__overlay-label {
+  position: absolute;
+  inset: 8px auto auto 8px;
+  z-index: 1;
+  padding: 3px 9px;
+  border: 1px solid #e7c36e;
+  border-radius: 6px;
+  background: #082c21f2;
+  color: #ffe6a2;
+  font-size: .8rem;
+  font-weight: 700;
+  pointer-events: none;
+}

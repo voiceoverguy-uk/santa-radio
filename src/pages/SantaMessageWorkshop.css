@@ -785,15 +785,63 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 
 /* Keep finished-message actions together, with full-width gifts when opened. */
 .smw-finished-tools {display:flow-root;min-width:0}
-.smw-finished-tools .smw-download-actions {float:right;margin:0 0 8px 16px;max-width:70%}
+.smw-finished-tools .smw-download-actions {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) 44px minmax(0, max-content);
+  grid-template-areas: "status status status" "video share bundle";
+  justify-content: end;
+  align-items: start;
+  column-gap: 10px;
+  float: right;
+  margin: 0 0 8px 16px;
+  max-width: 70%;
+}
+.smw-finished-tools .smw-download-actions > .smw-download-control { grid-area: video; }
+.smw-finished-tools .smw-download-actions .message-share-icon { grid-area: share; }
+.smw-finished-tools .smw-download-actions .message-share-status {
+  grid-area: status;
+  margin: 0 0 6px;
+  text-align: right;
+}
+.smw-finished-tools .smw-bundle-download > .smw-download-control { grid-area: bundle; }
+.smw-finished-tools .smw-bundle-download > p { grid-column: 1 / -1; margin-top: 6px; }
+.smw-finished-tools .smw-download-control .smw-button { white-space: normal; }
 .smw-finished-tools .smw-written-name,.smw-finished-tools .smw-gift-reveal {margin-top:0}
-.smw-finished-tools .smw-gift-reveal summary {display:list-item;max-width:fit-content;min-height:44px;box-sizing:border-box}
+.smw-finished-tools .smw-gift-reveal summary {
+  display: list-item;
+  max-width: fit-content;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-color: #ffe098;
+  background: linear-gradient(160deg, #ffe8a0, #dfad51);
+  color: #2b200e;
+  font-weight: 700;
+  box-shadow: 0 0 14px #edbb665c;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .smw-finished-tools .smw-gift-reveal:not([open]) > summary {
+    animation: smw-final-message-glow 2.8s ease-in-out infinite;
+  }
+}
 .smw-finished-tools .smw-studio-preview {clear:both;padding-top:12px}
 .smw-finished-bottom {display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;border-top:1px solid #d4af3748;padding-top:12px}
 .smw-finished-bottom .smw-finished-account {flex:1 1 280px;min-width:0}
 .smw-finished-bottom .smw-finished-footer {margin-left:auto}
 .smw-message-finished > .santa-video-player {margin-block:4px}
-@media(max-width:900px){.smw-finished-tools .smw-download-actions {float:none;max-width:none;margin:0 0 12px}.smw-finished-bottom {align-items:flex-start}}
+@media (max-width: 760px) {
+  .smw-finished-tools .smw-download-actions {
+    float: none;
+    max-width: none;
+    margin: 0 0 12px;
+    grid-template-columns: minmax(0, 1.3fr) 44px minmax(0, 1fr);
+    column-gap: 6px;
+  }
+  .smw-finished-tools .smw-download-control .smw-button {
+    min-height: 44px;
+    padding-inline: 7px;
+  }
+  .smw-finished-bottom { align-items: flex-start; }
+}
 .smw-finished-bottom .smw-finished-footer {min-width:0;max-width:100%}
 .smw-finished-bottom .smw-finished-footer .smw-button {white-space:normal;max-width:100%}
 @media(max-width:600px){.smw-finished-bottom .smw-finished-account{flex-basis:100%}.smw-finished-bottom .smw-finished-footer{width:100%}}
@@ -828,4 +876,19 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   .kids-studio-welcome .kids-welcome-art { width: min(100%, 460px); margin: 0 auto; }
   .kids-welcome-heading { margin-bottom: 24px; }
   .kids-welcome-return { margin-top: 26px; }
+}
+
+.smw-button.smw-button-final-message:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: 0 0 16px rgb(247 196 98 / 38%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .smw-button.smw-button-final-message:not(:disabled):not([aria-disabled="true"]) {
+    animation: smw-final-message-glow 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes smw-final-message-glow {
+  0%, 100% { box-shadow: 0 0 9px rgb(247 196 98 / 30%); }
+  50% { box-shadow: 0 0 23px 4px rgb(247 196 98 / 54%); }
 }
