@@ -12,7 +12,7 @@ export async function recordDadFailure(identity, reference, failure, pool = data
       last_failure_at = now(),
       recent_failures = (jsonb_build_array($3::jsonb) || santa_dad_recording_support.recent_failures) - 20
     RETURNING reference, failed_attempts
-  `, [identity.key, reference, JSON.stringify(failure), identity.expiresAt ?? null]);
+  `, [identity.key, reference, JSON.stringify(failure), identity.expiresAt == null ? null : new Date(identity.expiresAt)]);
   return { reference: row.reference, failedAttempts: row.failed_attempts };
 }
 
