@@ -164,6 +164,13 @@
 .free-message-invite .message-share .message-retry:hover { background: #ffe4aa; }
 .free-message-invite .message-share-status { margin: 8px 0 0; text-align: center; }
 
+.free-message-review-invite {
+  background:
+    linear-gradient(135deg, #163c2ed9, #0f2e24c7 50%, #0f2e24e6),
+    url('/images/north-pole-post-room.webp') center 56% / cover no-repeat,
+    #14382a;
+}
+
 .free-message-review-invite__link {
   display: inline-flex;
   align-items: center;

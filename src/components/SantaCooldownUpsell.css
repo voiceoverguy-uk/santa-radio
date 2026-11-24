@@ -5,6 +5,10 @@
   border: 1px solid #d4af3770;
   border-radius: 12px;
   background: #14382a;
+  background:
+    linear-gradient(90deg, #14382a 8%, #14382af2 42%, #0d2e23aa 100%),
+    url('/images/santa-studio-headphones.webp') right 38% / auto 145% no-repeat,
+    #14382a;
   color: #f6ecd8;
   text-align: left;
   overflow-wrap: anywhere;
