@@ -43,6 +43,14 @@ export async function manageContenders(body, pool=databasePool()) {
     }
     return {ok:true};
   }
+  if (action==='edit-song') {
+    const artist=readText(body.artist,120,true), title=readText(body.title,160,true);
+    const result=await pool.query(`UPDATE christmas_contenders_entries SET artist=$3,title=$4
+      WHERE ${live} AND id=$2 AND ((artist=$5 AND title=$6) OR (artist=$3 AND title=$4))`,
+      [COMPETITION,id,artist,title,body.previousArtist,body.previousTitle]);
+    if (!result.rowCount) fail('The song details have changed. Refresh and check them before saving.',409);
+    return {ok:true};
+  }
   if(action==='replace-audio') {
     if(!/^song-[a-f0-9-]{36}$/.test(body.key) || typeof body.previous!=='string') fail('Choose a replacement MP3.');
     const audio=await uploadedMedia(body.key,'mp3');

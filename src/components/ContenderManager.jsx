@@ -10,6 +10,8 @@ function Contact({entry,run,busy,replace}) {
   const [file,setFile]=useState(null), [status,setStatus]=useState('');
 
   const [name,setName]=useState(entry.name), [email,setEmail]=useState(entry.email);
+  const [artist,setArtist]=useState(entry.artist), [title,setTitle]=useState(entry.title);
+  const songChanged=artist.trim()!==entry.artist || title.trim()!==entry.title;
   const dirty=name!==entry.name || email!==entry.email;
   return <details><summary><span style={{display:'inline-grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',alignItems:'center',width:'calc(100% - 1.5em)',verticalAlign:'middle'}}>
       <span>{entry.artist} — {entry.title}</span>
@@ -17,11 +19,19 @@ function Contact({entry,run,busy,replace}) {
         {entry.state==='sent'?'✓':entry.state==='sending'?'Pending':'—'}
       </span>
     </span></summary>
+    <form onSubmit={event=>{
+      event.preventDefault();
+      run({action:'edit-song',id:entry.id,artist:artist.trim(),title:title.trim(),previousArtist:entry.artist,previousTitle:entry.title},'Artist name and song title saved.');
+    }}>
+      <label>Public artist name<input required maxLength={120} value={artist} onChange={event=>setArtist(event.target.value)}/></label>
+      <label>Song title<input required maxLength={160} value={title} onChange={event=>setTitle(event.target.value)}/></label>
+      <button disabled={busy || !songChanged || !artist.trim() || !title.trim()}>Save song details</button>
+    </form>
     <form onSubmit={e=>{e.preventDefault();run({action:'contact',id:entry.id,name,email},'Contact saved.');}}>
       <label>Contact name<input value={name} maxLength={120} onChange={e=>setName(e.target.value)}/></label>
       <label>Contact email<input type="email" value={email} maxLength={254} onChange={e=>setEmail(e.target.value)}/></label>
       <button disabled={busy || !dirty}>Save contact</button>
-      <button type="button" disabled={busy || dirty || !entry.email || entry.state!=='ready'}
+      <button type="button" disabled={busy || dirty || songChanged || !entry.email || entry.state!=='ready'}
         onClick={()=>run({action:'invite',id:entry.id,email:entry.email},'Brevo accepted the invitation.')}>Send invitation</button>
       {entry.state==='sent' && <span> Sent {formatUkDate(entry.sentAt)}</span>}
       {entry.state==='sending' && <span> Delivery pending confirmation. Check Brevo’s transactional log.</span>}
