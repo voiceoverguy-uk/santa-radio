@@ -35,6 +35,18 @@ function SantaDashGame({ onClose, finished }) {
   const [score, setScore] = useState(0), [muted, setMuted] = useState(false);
   const [notice, setNotice] = useState('Collect pies and jump over the obstacles!');
   const [paused, setPaused] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
+  const startButton = useRef(null), jumpButton = useRef(null);
+  useEffect(() => {
+    if (finished) return;
+    if (!showInstructions) {
+      jumpButton.current?.focus({ preventScroll: true });
+      return;
+    }
+    startButton.current?.focus({ preventScroll: true });
+    const timer = setTimeout(() => setShowInstructions(false), 4000);
+    return () => clearTimeout(timer);
+  }, [finished, showInstructions]);
   const enableSound = () => {
     const audio = sound.current;
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -93,7 +105,7 @@ function SantaDashGame({ onClose, finished }) {
     return () => { window.removeEventListener('blur', release); window.removeEventListener('pointerup', release); window.removeEventListener('keyup', release); };
   }, []);
   useEffect(() => {
-    if (paused || finished) return;
+    if (showInstructions || paused || finished) return;
     let frame, last = performance.now();
 
     let laneWidth = lane.current.clientWidth;
@@ -148,7 +160,7 @@ function SantaDashGame({ onClose, finished }) {
     document.addEventListener('visibilitychange', visibility);
     if (!document.hidden) frame = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(frame); resize.disconnect(); document.removeEventListener('visibilitychange', visibility); };
-  }, [paused, finished]);
+  }, [showInstructions, paused, finished]);
   if (finished) return <section className="studio-mini-dash studio-mini-dash--finished" role="status">
     <img className="studio-mini-dash__reward" src="/images/tracker/mince-pie.png" width="64" height="64" alt=""/>
     <strong>Congratulations!</strong>
@@ -157,6 +169,14 @@ function SantaDashGame({ onClose, finished }) {
     
     <a className="studio-mini-dash__download" href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397" target="_blank" rel="noopener noreferrer">Download the full game <span aria-hidden="true">↗</span></a>
     
+  </section>;
+  if (showInstructions) return <section className="studio-mini-dash studio-mini-dash--instructions" aria-label="How to play Santa Dash Mini">
+    <div>
+      <strong>How to play</strong>
+      <p id="studio-mini-dash-instructions">Press to jump and hold to jump higher. Collect mince pies and avoid obstacles. Your video keeps building.</p>
+    </div>
+    <button className="studio-mini-dash__teaser-play" ref={startButton} type="button"
+      aria-describedby="studio-mini-dash-instructions" onClick={() => setShowInstructions(false)}>Start now <span aria-hidden="true">→</span></button>
   </section>;
   return <section className="studio-mini-dash" aria-label="Mini Santa Dash while your video is prepared">
     <div className="studio-mini-dash__heading"><strong>Santa Dash Mini</strong><span>Score: {score}</span></div>
@@ -169,7 +189,7 @@ function SantaDashGame({ onClose, finished }) {
       </span>)}
     </div>
     <div className="studio-mini-dash__controls">
-      <button className="smw-button" type="button"  {...holdControls} onClick={accessibleClick}>{paused ? 'Play Santa Dash' : 'Jump ↑'}</button>
+      <button className="smw-button" type="button" ref={jumpButton} {...holdControls} onClick={accessibleClick}>{paused ? 'Play Santa Dash' : 'Jump ↑'}</button>
       {!paused && <button className="smw-change" type="button" onClick={() => { release(); setPaused(true); sound.current.context?.suspend().catch(() => {}); }}>Pause game</button>}
       <button className="smw-change" type="button" aria-pressed={muted} onClick={() => { enableSound(); sound.current.muted = !muted; setMuted(!muted); }}>{muted ? 'Sound on' : 'Mute sound'}</button>
       <button className="smw-change" type="button" onClick={onClose}>Close game</button>
