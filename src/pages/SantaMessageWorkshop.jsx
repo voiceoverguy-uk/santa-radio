@@ -1,4 +1,6 @@
 import StudioOpeningPicture from '../components/StudioOpeningPicture.jsx';
+import StudioPurchaseButton from '../components/StudioPurchaseButton.jsx';
+import StudioReturnAccess from '../components/StudioReturnAccess.jsx';
 import { groupWorkshopActivities, uniqueWorkshopActivities } from '../lib/workshopActivityGroups.js';
 import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { STUDIO_GIFT_PICTURE } from '../lib/santaPictureLayout.js';
@@ -596,6 +598,41 @@ export default function SantaMessageWorkshop() {
         />
       </details>}
   </>;
+
+  const allowance = generation.state;
+  const creationInProgress = audioPhase === 'preparing' || audioPhase === 'receiving';
+  const canKeepCurrentMessage = completedGift || retainedGifts.length > 0 || audioPhase === 'ready';
+  const exhausted = allowance?.limit === 2 && allowance.remaining === 0;
+  const checkingEntry = generation.checking && (!allowance || stageIndex === 0);
+  if (!creationInProgress && !canKeepCurrentMessage
+      && (checkingEntry || generation.error || exhausted || allowance?.pending || !allowance)) {
+    const heading = checkingEntry ? 'Checking your creations…'
+      : generation.accessExpired ? 'Your Studio access has expired'
+      : generation.error ? 'We couldn’t check your creations'
+      : exhausted ? 'Both creations have been used'
+      : 'A message is being prepared';
+    return <main className="smw-page">
+      <div className="smw-shell">
+        <section className="smw-builder" aria-labelledby="smw-entry-title">
+          <p className="smw-start-kicker">The North Pole Recording Studio</p>
+          <h1 id="smw-entry-title" role="status">{heading}</h1>
+          {generation.error && !checkingEntry && <p role="alert">{generation.error}</p>}
+          {exhausted && !checkingEntry && !generation.error && <>
+            <p>This access has no creations left. You can check a different purchase or buy more creations below.</p>
+            {allowance.admin ? <button type="button" className="smw-button"
+              onClick={async () => { if (await generation.startAnother()) window.location.reload(); }}>
+              ADMIN — Start a new test
+            </button> : <StudioPurchaseButton hideReturnLink />}
+            <StudioReturnAccess collapsible />
+            <p><Link to="/my-santa-messages">View saved messages</Link></p>
+          </>}
+          {generation.accessExpired && !checkingEntry && <StudioReturnAccess collapsible />}
+          {!checkingEntry && (generation.error || allowance?.pending) &&
+            <button type="button" className="smw-button" onClick={generation.refresh}>Check again</button>}
+        </section>
+      </div>
+    </main>;
+  }
 
   return (
     <main className="smw-page" ref={pageRef}

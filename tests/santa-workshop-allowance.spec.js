@@ -145,9 +145,9 @@ for (const width of [1365, 390]) {
       expect(fixture.state.remaining).toBe(0);
       expect(fixture.posts).toHaveLength(2);
       await page.reload();
-      await review(page);
-      await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
-      for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
+      await expect(page.getByRole('heading', { name: 'Both creations have been used' })).toBeVisible();
+      await expect(page.getByRole('combobox', { name: 'Search recorded names' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
       expect(fixture.posts).toHaveLength(2);
       if (paid) {
         expect(fixture.accessChecks.paid).toBeGreaterThanOrEqual(2);
