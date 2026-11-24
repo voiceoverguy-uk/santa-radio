@@ -275,7 +275,7 @@ export default function WorkshopAccessGate({ children }) {
           <p>Watch, download and share your personalised videos. Create both now or save one for later.</p>
           {accessFeedback}
           <StudioPurchaseButton label="Create their Santa magic — £6.50" hideReturnLink />
-          <div className="kids-welcome-return"><StudioReturnAccess /></div>
+          <div className="kids-welcome-return"><StudioReturnAccess collapsible /></div>
           <details className="kids-welcome-voucher">
             <summary>Friend or Guest?</summary>
             <p>Enter your access voucher below.<br />Discount codes are entered at Stripe checkout.</p>
