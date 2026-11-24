@@ -1,0 +1,9 @@
+.dashboard-links ul { list-style: none; margin: 0; padding: 0; }
+.dashboard-links li { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.dashboard-links li + li { border-top: 1px solid #536348; }
+.dashboard-links li div { min-width: 0; }
+.dashboard-links strong, .dashboard-links a { display: block; }
+.dashboard-links a { overflow-wrap: anywhere; }
+.dashboard-links button { flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; background: #204b3a; }
+.dashboard-links button:focus-visible { outline: 2px solid #efcf79; outline-offset: 2px; }
+.dashboard-links [role=status] { margin: 0; }

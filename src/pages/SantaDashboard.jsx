@@ -1,6 +1,7 @@
 import ContenderManager from '../components/ContenderManager.jsx';
 import WebsiteVisitors from '../components/WebsiteVisitors.jsx';
 import BigStitcher from '../components/BigStitcher.jsx';
+import DashboardUsefulLinks from '../components/DashboardUsefulLinks.jsx';
 import DashboardTodos from '../components/DashboardTodos.jsx';
 import ReviewInbox from '../components/ReviewInbox.jsx';
 import PaidRevenueChart from '../components/PaidRevenueChart.jsx';
@@ -76,6 +77,7 @@ export default function SantaDashboard() {
         {table(['Film','Wins'],data.christmasGame.titles.map(r=>[r.title,r.wins]))}
       </> : <p>Game figures are temporarily unavailable.</p>}</section>
       <BigStitcher />
+      <DashboardUsefulLinks />
       <DashboardTodos ownerToken={token.current} />
       <ReviewInbox ownerToken={token.current} />
       <FriendVouchers ownerToken={token.current} />
