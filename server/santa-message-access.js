@@ -1,6 +1,7 @@
 import { requestFreeMessageCode, confirmFreeMessageCode, sendFreeMessageCode, verificationBinding, VERIFICATION_COOKIE } from './free-message-verification.js';
 import { CONTACT_COOKIE, sealContact } from './name-request-contact.js';
 import express from 'express';
+import { validReviewCredentials } from './store-review-access.js';
 import { createHmac, timingSafeEqual, randomBytes } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { consumeNameAccess, privateResponse } from './santa-name-security.js';
@@ -101,6 +102,16 @@ export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNam
       }
       await limit(req, 'signup');
       const fields = req.body;
+      if (fields?.action === 'review-login') {
+        if (!validReviewCredentials(fields)) return res.status(400).json({ success: false, message: 'Review sign-in details were not accepted.' });
+        // A fresh isolated free-studio identity. No customer identity, contact
+        // cookie, marketing subscription, paid entitlement or staff access.
+        const grant = issue(`store-review-${randomBytes(16).toString('hex')}@review.invalid`);
+        res.clearCookie(CONTACT_COOKIE, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+        res.clearCookie(VERIFICATION_COOKIE, { httpOnly: true, secure: true, sameSite: 'strict', path: '/' });
+        res.cookie(FREE_ACCESS_COOKIE, grant, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: SESSION_MS });
+        return res.json({ success: true });
+      }
       if (fields?.action === 'confirm-code') {
         const confirmation = await confirmCode({ id: fields.verificationId, code: fields.code, binding: verificationBinding(req) });
         const email = typeof confirmation === 'string' ? confirmation : confirmation.email;
