@@ -51,9 +51,9 @@ export async function statisticsReport(pool = databasePool()) {
     pool.query(`SELECT name,sum(creations)::integer AS creations,sum(download_clicks)::integer AS downloads,sum(listens)::integer AS listens,sum(shares)::integer AS shares
       FROM santa_message_daily WHERE day >= (now() AT TIME ZONE 'Europe/London')::date-29
       GROUP BY name ORDER BY creations DESC,name LIMIT 30`),
-    pool.query(`SELECT e.artist,e.title,count(b.id)::integer AS votes FROM christmas_contenders_entries e
+    pool.query(`SELECT e.artist,e.title,e.invitation_state,count(b.id)::integer AS votes FROM christmas_contenders_entries e
       LEFT JOIN christmas_contenders_ballots b ON b.competition=e.competition AND b.entry_id=e.id AND b.mode=e.mode AND b.state='confirmed'
-      WHERE e.mode='live' AND e.approved GROUP BY e.competition,e.id,e.artist,e.title ORDER BY votes DESC,e.artist`),
+      WHERE e.mode='live' AND e.approved GROUP BY e.competition,e.id,e.artist,e.title,e.invitation_state ORDER BY votes DESC,e.artist`),
     pool.query('SELECT min(day)::text AS since FROM santa_message_daily'),
     pool.query('SELECT COALESCE(sum(creations),0)::integer AS creations, COALESCE(sum(download_clicks),0)::integer AS downloads, COALESCE(sum(mp4_download_clicks),0)::integer AS "mp4Downloads", COALESCE(sum(listens),0)::integer AS listens, COALESCE(sum(shares),0)::integer AS shares FROM santa_message_daily'),
   ]);

@@ -37,7 +37,7 @@ function Contact({entry,run,busy,replace}) {
     </form><ReviewLink id={entry.id}/></details>;
 }
 export default function ContenderManager({ownerToken,onPublish}) {
-  const [tab,setTab]=useState('songs');
+  const [tab,setTab]=useState(null);
   const [entries,setEntries]=useState(null), [busy,setBusy]=useState(false), [notice,setNotice]=useState('');
   const [files,setFiles]=useState({}), [job,setJob]=useState(null);
   const [published,setPublished]=useState(null);
@@ -61,7 +61,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
         await uploadFile(key, 'png', picture, () => {});
         body = { ...body, poster: key };
       }
-      if(body) await request(body); await refresh();setNotice(message); }
+      if(body) await request(body); await refresh();setNotice(message);if(body)onPublish(); }
     catch(error){setNotice(error.message);if(body) await refresh().catch(()=>{});}
     finally{setBusy(false);}
   }
@@ -111,20 +111,16 @@ export default function ContenderManager({ownerToken,onPublish}) {
     finally{setBusy(false);}
   }
   return <div className="contender-manager">
-    <div role="tablist" aria-label="Christmas Contenders management" style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-      {['songs','artists'].map(key=><button key={key} type="button" role="tab"
-        id={'contender-tab-'+key} aria-controls={'contender-panel-'+key} aria-selected={tab===key}
-        tabIndex={tab===key?0:-1} disabled={busy}
+    <div role="group" aria-label="Christmas Contenders management" style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+      {['songs','artists'].map(key=><button key={key} type="button"
+        id={'contender-tab-'+key} aria-controls={'contender-panel-'+key} aria-expanded={tab===key}
+        disabled={busy}
         style={{borderBottom:tab===key?'3px solid #f5d58e':undefined}}
-        onKeyDown={event=>{
-          const target={ArrowRight:tab==='songs'?'artists':'songs',ArrowLeft:tab==='songs'?'artists':'songs',Home:'songs',End:'artists'}[event.key];
-          if(target){event.preventDefault();const button=document.getElementById('contender-tab-'+target);button.focus();button.click();}
-        }}
-        onClick={()=>{setTab(key);if(key==='artists' && !entries)run(null,'');else if(key!==tab)setNotice('');}}>
-        {key==='songs'?'Add new songs':'Artists and Invites'}
+        onClick={()=>{if(tab===key){setTab(null);return;}setTab(key);if(key==='artists' && !entries)run(null,'');else if(key!==tab)setNotice('');}}>
+        <span aria-hidden="true">{tab===key?'▾':'▸'}</span> {key==='songs'?'Add new songs':'Artists and Invites'}
       </button>)}
     </div>
-    <div role="tabpanel" id="contender-panel-songs" aria-labelledby="contender-tab-songs" hidden={tab!=='songs'}><form onSubmit={publish}><fieldset disabled={busy}>
+    <div role="region" id="contender-panel-songs" aria-labelledby="contender-tab-songs" hidden={tab!=='songs'}><form onSubmit={publish}><fieldset disabled={busy}>
       {[['artist','Artist',120],['title','Song title',160],['name','Private contact name',120],['email','Private contact email',254]].map(([key,label,max])=><label key={key}>{label}
         <input name={key} type={key==='email'?'email':'text'} maxLength={max} required={key==='artist'||key==='title'}/></label>)}
       {['audio','artwork'].map(key=><label key={key} className="contender-drop" onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();if(!busy){setFiles({...files,[key]:e.dataTransfer.files[0]});setJob(null);}}}>
@@ -132,7 +128,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
         <input type="file" accept={key==='audio'?'.mp3':'.jpeg,.jpg,.png,.webp'} onChange={e=>{setFiles({...files,[key]:e.target.files[0]});setJob(null);}}/>
         {files[key]?.name}</label>)}
       <button>{busy ? 'Please wait…' : 'Publish song'}</button><p role="status" aria-live="polite">{notice}</p>{published && <div role="status"><strong>✓ “{published.title}” is published.</strong><p>No email has been sent. Check the artwork and recording, then choose Send invitation when you’re ready.</p><ReviewLink id={published.id}/></div>}</fieldset></form></div>
-    <div role="tabpanel" id="contender-panel-artists" aria-labelledby="contender-tab-artists" hidden={tab!=='artists'}>
+    <div role="region" id="contender-panel-artists" aria-labelledby="contender-tab-artists" hidden={tab!=='artists'}>
       <p role="status">{notice || (busy && !entries ? 'Loading artists…' : entries?.length===0 ? 'No artists yet.' : '')}</p>
       {!entries && !busy && notice && <button type="button" onClick={()=>run(null,'')}>Try again</button>}
       {entries?.length>0 && <div style={{display:'grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',paddingLeft:'1.5em',fontWeight:700}}><span>Artist and song</span><span style={{textAlign:'center'}}>Invited</span></div>}
