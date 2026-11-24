@@ -1,3 +1,4 @@
+import { manageContenders } from './contender-management.js';
 import { visitorReport } from './google-analytics-statistics.js';
 import { listDadVouchers } from './dad-vouchers.js';
 import { gameReport, recordGameRound } from './christmas-game-statistics.js';
@@ -53,6 +54,10 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
+      if(req.query?.view==='contenders') {
+        try { return res.json(await manageContenders(req.method==='PATCH' ? req.body : undefined)); }
+        catch(error) { if([400,409,502,503].includes(error.status)) return res.status(error.status).json({error:error.message}); throw error; }
+      }
       if(req.method==='GET' && req.query?.view==='visitors') return res.json(await visitorReport());
       if(req.query?.view==='todos') {
         try { return res.json(await todos(req.method==='PATCH'?req.body:undefined)); }

@@ -21,3 +21,12 @@
 .santa-dashboard > header > p:last-child { margin: 0; }
 .santa-dashboard > .santa-dashboard__actions { margin: 0 0 20px; flex-wrap: wrap; }
 .santa-dashboard > .santa-dashboard__actions + p { margin: 0 0 22px; max-width: 900px; line-height: 1.7; }
+
+.contender-manager { padding: 0 1.5rem 1rem; }
+.contender-manager label { display:grid; gap:.35rem; margin:.65rem 0; }
+.contender-manager input { min-width:0; padding:.55rem; }
+.contender-manager fieldset { border:0; padding:0; }
+.contender-manager .contender-drop { border:1px dashed currentColor; padding:.8rem; border-radius:.5rem; }
+.contender-manager details { border-top:1px solid #52685e; padding:.75rem 0; }
+.contender-manager summary { cursor:pointer; }
+.contender-manager button { margin:.4rem .5rem .4rem 0; }

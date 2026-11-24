@@ -1,3 +1,4 @@
+import { contenderMedia } from './contender-management.js';
 import { liveVotingConfigured, requestVotingCode, confirmVotingCode, rememberedLiveVote } from './contenders-live.js';
 import express from 'express';
 import { trustedAddress, privateResponse } from './santa-name-security.js';
@@ -56,6 +57,10 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
   return async (req, res) => {
     res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex');
     const staff = req.method === 'PATCH' || req.query?.staff === '1';
+    if(req.method==='GET' && req.query?.media!==undefined) {
+      try { return res.redirect(302,await contenderMedia(req.query.media)); }
+      catch(error) { return res.status(error.status===404?404:503).end(); }
+    }
     let stage = 'request_setup';
     try {
       if (!['GET','POST','PATCH'].includes(req.method)) return res.status(405).json({error:'Method not allowed.'});

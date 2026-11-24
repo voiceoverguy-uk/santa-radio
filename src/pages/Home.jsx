@@ -1,3 +1,4 @@
+import HomeContenders from '../components/HomeContenders.jsx';
 import { useEffect, useState } from 'react';
 import { Sparkles, Download, Headphones } from 'lucide-react';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -66,6 +67,7 @@ export default function Home() {
       <ChristmasStudyPromo />
       <NaughtyNiceWidget key={checkerEntry.id} initialName={checkerEntry.name} />
       <ChristmasPairs />
+      <HomeContenders />
       <NameChart />
       <Soundboard />
       <MugshotsPreview />
