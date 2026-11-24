@@ -15,7 +15,7 @@ export default function SubmitASong() {
   const isSong = mode === 'song';
   const isSponsorship = mode === 'sponsorship';
   const [fields, setFields] = useState(() => {
-    const initial = emptySongFields();
+    const initial = emptySongFields;
     const reference = searchParams.get('dadSupport');
     return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(reference || '')
       ? { ...initial, SONG_REQUEST: `Dad’s Message Maker recording support. Reference ${reference}.\n\n` }
