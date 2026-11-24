@@ -58,7 +58,7 @@ export default function SantaVideoPlayer({ label, onPlay, onPause, onEnded, onPl
         <button type="button" className="santa-video-player__bar-play" onClick={toggle}
           aria-label={`${playing ? 'Pause' : 'Play'} ${label}`} />
         <div className="santa-video-player__seek">
-          <img src={`/images/${skin}-player-knob-v1.png`} alt="" style={{ left: `${duration ? Math.min(100, position / duration * 100) : 0}%` }} />
+          <img src={`/images/${skin}-player-knob-${skin === 'dad' ? 'v2' : 'v1'}.png`} alt="" style={{ left: `${duration ? Math.min(100, position / duration * 100) : 0}%` }} />
           <input type="range" aria-label="Seek video" aria-valuetext={clockTime(position)}
             min="0" max={duration || 1} step="0.1" value={Math.min(duration, position)} disabled={!duration}
             onChange={event => {

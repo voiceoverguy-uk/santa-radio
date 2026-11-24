@@ -101,7 +101,7 @@ export default function WorkshopDestinationPicker({
             frameAction={regionalView ? (
               <button type="button" onClick={() => switchView(null)}>‹ {country.label}</button>
             ) : canChooseRegion && (
-              <button type="button" onClick={() => switchView(groupKey)}>
+              <button className={selectedRegion ? undefined : "smw-destination-picker__choose-region"} type="button" onClick={() => switchView(groupKey)}>
                 {selectedRegion ? 'Change' : 'Choose a'} {regionKind} <span aria-hidden="true">›</span>
               </button>
             )}
