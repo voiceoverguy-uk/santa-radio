@@ -10,7 +10,12 @@ function Contact({entry,run,busy,replace}) {
 
   const [name,setName]=useState(entry.name), [email,setEmail]=useState(entry.email);
   const dirty=name!==entry.name || email!==entry.email;
-  return <details><summary>{entry.artist} — {entry.title}</summary>
+  return <details><summary><span style={{display:'inline-grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',alignItems:'center',width:'calc(100% - 1.5em)',verticalAlign:'middle'}}>
+      <span>{entry.artist} — {entry.title}</span>
+      <span style={{textAlign:'center',color:entry.state==='sent'?'#94ebae':undefined}} aria-label={entry.state==='sent'?'Invitation sent':entry.state==='sending'?'Invitation pending':'Not invited'} role="img">
+        {entry.state==='sent'?'✓':entry.state==='sending'?'Pending':'—'}
+      </span>
+    </span></summary>
     <form onSubmit={e=>{e.preventDefault();run({action:'contact',id:entry.id,name,email},'Contact saved.');}}>
       <label>Contact name<input value={name} maxLength={120} onChange={e=>setName(e.target.value)}/></label>
       <label>Contact email<input type="email" value={email} maxLength={254} onChange={e=>setEmail(e.target.value)}/></label>
@@ -129,6 +134,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
     <div role="tabpanel" id="contender-panel-artists" aria-labelledby="contender-tab-artists" hidden={tab!=='artists'}>
       <p role="status">{notice || (busy && !entries ? 'Loading artists…' : entries?.length===0 ? 'No artists yet.' : '')}</p>
       {!entries && !busy && notice && <button type="button" onClick={()=>run(null,'')}>Try again</button>}
+      {entries?.length>0 && <div style={{display:'grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',paddingLeft:'1.5em',fontWeight:700}}><span>Artist and song</span><span style={{textAlign:'center'}}>Invited</span></div>}
       {entries?.map(entry=><Contact key={[entry.id,entry.name,entry.email].join('|')} entry={entry} run={run} busy={busy} replace={replace}/>)}</div>
   </div>;
 }
