@@ -1,3 +1,4 @@
+import { androidInstallReport } from './android-install-statistics.js';
 import { manageContenders, signContenderUpload } from './contender-management.js';
 import { visitorReport } from './google-analytics-statistics.js';
 import { markVoucherCopied } from './voucher-copy.js';
@@ -20,7 +21,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboardTodos, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
-  appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
+  androidInstalls=androidInstallReport, appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
   requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers, dadVouchers=listDadVouchers, copyVoucher=markVoucherCopied }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
@@ -63,6 +64,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         try { return res.json(await manageContenders(req.method==='PATCH' ? req.body : undefined)); }
         catch(error) { if([400,409,502,503].includes(error.status)) return res.status(error.status).json({error:error.message}); throw error; }
       }
+      if(req.method==='GET' && req.query?.view==='android-installs') return res.json(await androidInstalls());
       if(req.method==='GET' && req.query?.view==='visitors') return res.json(await visitorReport());
       if(req.query?.view==='todos') {
         try { return res.json(await todos(req.method==='PATCH'?req.body:undefined)); }
