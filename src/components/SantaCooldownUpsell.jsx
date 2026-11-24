@@ -1,5 +1,4 @@
 import React from 'react';
-import { STUDIO_PATH } from '../lib/studioRoute.js';
 import './SantaCooldownUpsell.css';
 
 function SantaCooldownUpsell({
@@ -33,7 +32,7 @@ function SantaCooldownUpsell({
       <p className="message-cooldown-upsell__copy">{copy}</p>
       <a
         className={`message-cooldown-upsell__link${highlight ? ' message-cooldown-upsell__link--highlight' : ''}`}
-        href={STUDIO_PATH}
+        href="/#bespoke-santa-messages"
         onClick={onExplore}
         onAuxClick={event => { if (event.button === 1) onExplore?.(event); }}
       >
