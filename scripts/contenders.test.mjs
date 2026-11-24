@@ -74,7 +74,7 @@ test('provider fields and General/Sponsorship destination split stay unchanged (
     assert.equal(captured[2].url,`${GENERAL_FORM_URL}?isAjax=1`);
     assert.equal(captured[0].body.SONG_REQUEST,buildSongMessage(fields));
     assert.equal(captured[1].body.SONG_REQUEST,fields.SONG_REQUEST);
-    assert.ok(captured[2].body.SONG_REQUEST.includes('Preferred launch: 2026-11-01'));
+    assert.ok(captured[2].body.SONG_REQUEST.includes('Preferred launch: 01/11/2026'));
     assert.deepEqual(Object.keys(captured[0].body),['FIRSTNAME','LASTNAME','EMAIL','SONG_REQUEST','email_address_check','locale']);
   } finally {global.fetch=previous;}
 });

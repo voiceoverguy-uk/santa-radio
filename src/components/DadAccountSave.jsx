@@ -1,3 +1,4 @@
+import { formatUkDate } from '../lib/ukDates.js';
 import {useState,useRef} from 'react';
 import {Link} from 'react-router-dom';
 export default function DadAccountSave({result,certificate}) {
@@ -17,7 +18,7 @@ export default function DadAccountSave({result,certificate}) {
     await uploadPresigned(`santa-messages/${data.id}/${kind}.${kind==='video'?'mp4':'png'}`,blob,{access:'private',handleUploadUrl:'/api/my-santa-messages?action=upload',clientPayload:JSON.stringify({id:data.id,kind}),contentType:kind==='video'?'video/mp4':'image/png'});
     if(!await check())throw Error('Saving could not be confirmed. Please retry.');
    }
-   setState('saved');setMessage(`Your video and certificate are saved until ${new Date(new Date(data.expiresAt)-1).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}.`);
+   setState('saved');setMessage(`Your video and certificate are saved until ${formatUkDate(Date.parse(data.expiresAt) - 1)}.`);
   }catch(e){setState('error');setMessage(`${e.message} Download your files before leaving this page.`);}
   finally{flight.current=false;}
  }

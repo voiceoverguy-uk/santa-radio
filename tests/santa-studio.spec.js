@@ -43,7 +43,7 @@ test.beforeEach(async ({ page }) => {
 
 test('Studio launch countdown sits below the red button and ends on 6 November UK time', async ({ page }) => {
   const initialHtml = await (await page.request.get('/free-santa-message')).text();
-  expect(initialHtml).toContain('Santa’s Message Maker Studio opens 6 November.');
+  expect(initialHtml).toContain('Santa’s Message Maker Studio opens 06/11/2026.');
   await page.clock.install({ time: new Date('2026-10-29T23:59:59Z') });
   await page.clock.pauseAt(new Date('2026-10-30T00:00:00Z'));
   await page.route('**/api/santa-name-count', route => route.fulfill({
@@ -56,7 +56,7 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
   await expect(countdown).not.toContainText(/seconds?/i);
   await expect(promotion.locator('.workshop-password-form--promotion + .santa-studio-promotion__launch-countdown')).toHaveCount(1);
   await expect(countdown).toHaveAttribute('aria-live', 'off');
-  await expect(countdown).toHaveAttribute('title', 'Opens 6 November 2026 at midnight UK time');
+  await expect(countdown).toHaveAttribute('title', 'Opens 06/11/2026 at midnight UK time');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const size of ['100%', '200%']) {

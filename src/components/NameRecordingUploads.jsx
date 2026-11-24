@@ -1,3 +1,4 @@
+import { formatUkDate } from '../lib/ukDates.js';
 import { recordingUploadName } from '../lib/recordingUploadName.js';
 import { uploadNameRecording } from '../lib/uploadNameRecording.js';
 import { useEffect, useRef, useState } from 'react';
@@ -93,7 +94,7 @@ export default function NameRecordingUploads({ownerToken}) {
     {pageInfo&&!saved.length&&<p>No recordings found{appliedSearch?` for “${appliedSearch}”`:''}.</p>}
     <p>{pageInfo?.mode==='live'?'Verified Blob recordings. Original server files are retained as a backup.':'Earlier test uploads are kept here separately. New uploads go directly to the live library.'}</p>
     {removed&&<p role="status">{removed.name} removed from the live list. <button disabled={busy} onClick={()=>changeVisibility(removed,true)}>Undo removal</button></p>}
-    {saved.map(row=><div className="name-uploads__saved" key={row.path}><span><strong>{row.name}</strong><small>{(row.size/1024).toFixed(0)} KB · {new Date(row.uploadedAt).toLocaleDateString('en-GB')}</small></span><button onClick={()=>listen(row)}>Listen to {row.name}</button>{pageInfo?.mode==='live'&&<button disabled={busy} onClick={()=>changeVisibility(row)}>Remove from live list</button>}</div>)}
+    {saved.map(row=><div className="name-uploads__saved" key={row.path}><span><strong>{row.name}</strong><small>{(row.size/1024).toFixed(0)} KB · {formatUkDate(row.uploadedAt)}</small></span><button onClick={()=>listen(row)}>Listen to {row.name}</button>{pageInfo?.mode==='live'&&<button disabled={busy} onClick={()=>changeVisibility(row)}>Remove from live list</button>}</div>)}
     {pageInfo&&pageInfo.totalPages>1&&<nav className="name-uploads__pages" aria-label="Recording pages"><button disabled={loading||pageInfo.page===1} onClick={()=>load(pageInfo.page-1)}>Previous</button><span>Page {pageInfo.page} of {pageInfo.totalPages}</span><button disabled={loading||pageInfo.page===pageInfo.totalPages} onClick={()=>load(pageInfo.page+1)}>Next</button></nav>}
     {preview&&<div className="name-uploads__player"><p>{preview.name} · saved copy</p><audio key={preview.url} controls autoPlay src={preview.url}/></div>}
   </section>;

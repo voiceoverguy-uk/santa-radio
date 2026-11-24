@@ -1,7 +1,7 @@
+import { formatUkDate } from '../lib/ukDates.js';
 import { useEffect, useState } from 'react';
 import './WebsiteVisitors.css';
 const number = value => value.toLocaleString('en-GB');
-const label = date => new Date(date + 'T12:00:00Z').toLocaleDateString('en-GB', { day:'numeric', month:'short' });
 function Movement({ value, previous }) {
   if (previous == null) return <span className="website-visitors__movement" title="No previous day in this report">— <small>No comparison</small></span>;
   const change = value - previous;
@@ -37,11 +37,11 @@ export default function WebsiteVisitors({ ownerToken }) {
         {[0, .5, 1].map(t => <g key={t}><line x1="48" x2="892" y1={210 - t * 170} y2={210 - t * 170} stroke="currentColor" opacity=".18"/><text x="40" y={215 - t * 170} textAnchor="end">{number(Math.round(max * t))}</text></g>)}
         <polygon points={`48,210 ${points} 892,210`} fill="currentColor" opacity=".1"/>
         <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3"/>
-        {days.map((day, i) => <circle key={day.date} cx={48 + i * 844 / 29} cy={210 - day.visitors / max * 170} r="4" fill="currentColor"><title>{label(day.date)}: {number(day.visitors)} visitors</title></circle>)}
-        {[0, 7, 14, 21, 29].map(i => <text key={i} x={48 + i * 844 / 29} y="242" textAnchor="middle">{label(days[i].date)}</text>)}
+        {days.map((day, i) => <circle key={day.date} cx={48 + i * 844 / 29} cy={210 - day.visitors / max * 170} r="4" fill="currentColor"><title>{formatUkDate(day.date)}: {number(day.visitors)} visitors</title></circle>)}
+        {[0, 7, 14, 21, 29].map(i => <text key={i} x={48 + i * 844 / 29} y="242" textAnchor={i === 0 ? "start" : i === 29 ? "end" : "middle"}>{formatUkDate(days[i]?.date)}</text>)}
       </svg>
       <p className="website-visitors__note">Visitors means Google Analytics active users. A returning visitor can count on multiple days. Figures may be delayed and exclude visits Google cannot measure. Reporting timezone: {data.timeZone}.</p>
-      <details><summary>View daily figures</summary><div className="santa-dashboard__table"><table><thead><tr><th>Date</th><th>Visitors</th><th>Daily change</th><th>Page views</th></tr></thead><tbody>{[...days].reverse().slice(0, visibleDays).map((day, index) => <tr key={day.date}><td>{label(day.date)}</td><td>{number(day.visitors)}</td><td><Movement value={day.visitors} previous={days[days.length - index - 2]?.visitors} /></td><td>{number(day.views)}</td></tr>)}</tbody></table></div>{visibleDays < days.length && <button type="button" onClick={() => setVisibleDays(count => count + 10)}>Load more</button>}</details>
+      <details><summary>View daily figures</summary><div className="santa-dashboard__table"><table><thead><tr><th>Date</th><th>Visitors</th><th>Daily change</th><th>Page views</th></tr></thead><tbody>{[...days].reverse().slice(0, visibleDays).map((day, index) => <tr key={day.date}><td>{formatUkDate(day.date)}</td><td>{number(day.visitors)}</td><td><Movement value={day.visitors} previous={days[days.length - index - 2]?.visitors} /></td><td>{number(day.views)}</td></tr>)}</tbody></table></div>{visibleDays < days.length && <button type="button" onClick={() => setVisibleDays(count => count + 10)}>Load more</button>}</details>
       <div className="website-visitors__breakdowns">
         <div className="website-visitors__tabs" role="group" aria-label="Visitor breakdown">
           {Object.entries({countries:'Top countries', sources:'Traffic sources', pages:'Popular pages'}).map(([key, title]) => <button type="button" key={key} aria-pressed={breakdown === key} onClick={() => setBreakdown(key)}>{title}</button>)}

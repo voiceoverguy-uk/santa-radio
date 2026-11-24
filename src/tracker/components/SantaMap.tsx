@@ -1,5 +1,7 @@
 "use client";
 
+import { formatUtcDateTime } from '../../lib/ukDates.js';
+
 import { useId, useMemo, useState, useRef, useEffect } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
@@ -282,12 +284,12 @@ export default function SantaMap({ christmasPreviewSpeed, chimeSpeed = 1, chimeR
           <desc id={descriptionId}>
             {christmasPreviewSpeed ? `Christmas Eve preview at ${christmasPreviewSpeed} times normal speed. ` : ""}
             {researchDestination
-              ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
+              ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${formatUtcDateTime(effectiveTime)} UTC.`
               : northPoleVisitMessage
-              ? `${northPoleVisitMessage} The Santa marker shows his position at the North Pole. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
+              ? `${northPoleVisitMessage} The Santa marker shows his position at the North Pole. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${formatUtcDateTime(effectiveTime)} UTC.`
               : onHoliday
-              ? `The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
-              : `The Santa marker shows his estimated position on the world map. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
+              ? `The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${formatUtcDateTime(effectiveTime)} UTC.`
+              : `The Santa marker shows his estimated position on the world map. Subtle shading marks the night side of Earth at ${formatUtcDateTime(effectiveTime)} UTC. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
           </desc>
           <defs>
             <radialGradient id="glow" cx="50%" cy="50%" r="50%">

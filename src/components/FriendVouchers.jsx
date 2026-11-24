@@ -1,3 +1,4 @@
+import { formatUkDateTime } from '../lib/ukDates.js';
 import { useEffect, useState } from 'react';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 import './FriendVouchers.css';
@@ -7,10 +8,6 @@ const tabs = [
   { label: 'Dads', view: 'dad-vouchers' },
   { label: 'Kids', view: 'friends' },
 ];
-const ukTime = new Intl.DateTimeFormat('en-GB', {
-  dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London',
-});
-
 export default function FriendVouchers({ ownerToken }) {
   const [selected, setSelected] = useState(0);
 
@@ -178,7 +175,7 @@ function VoucherList({ view, ownerToken }) {
                       : row.copiedAt ? <strong className="voucher-copied"><span aria-hidden="true">✓ </span>Copied</strong>
                       : unsaved.has(row.code) ? <strong>Tick unsaved</strong>
                       : <strong className="voucher-available">Available</strong>}</td>
-                    <td>{row.redeemedAt ? ukTime.format(new Date(row.redeemedAt)) : 'Unclaimed'}</td>
+                    <td>{row.redeemedAt ? formatUkDateTime(row.redeemedAt) : 'Unclaimed'}</td>
                     <td>{!row.redeemedAt && (
                       <button type="button" onClick={() => copy(row)} disabled={Boolean(copying)}
                         aria-label={`${unsaved.has(row.code) ? 'Save tick for' : row.copiedAt ? 'Copy again' : 'Copy'} ${row.code}`}>

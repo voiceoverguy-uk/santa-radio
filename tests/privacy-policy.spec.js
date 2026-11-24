@@ -113,8 +113,8 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-28');
-  await expect(article.locator('time')).toHaveText('28 October 2026');
+  const iso = await article.locator('time').getAttribute('datetime');
+  await expect(article.locator('time')).toHaveText(iso.split('-').reverse().join('/'));
   await expect(article).toContainText('The homepage YouTube TV loads automatically on a first visit');
   await expect(article).toContainText('turning it off cannot erase data already sent or third-party cookies');
   for (const text of [

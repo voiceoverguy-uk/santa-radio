@@ -1,14 +1,9 @@
+import { formatUkDateTime } from '../lib/ukDates.js';
 import DashboardBackButton from './DashboardBackButton.jsx';
 import CopyRequestedName from './CopyRequestedName.jsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../pages/SantaStaffBrowser.css';
-
-function formatDate(value) {
-  return new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London',
-    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-  }).format(new Date(value));
-}
 
 async function checkResponse(response) {
   if (response.ok) return;
@@ -207,8 +202,8 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
             )}
           </td>
             <td className="staff-count">{item.count.toLocaleString('en-GB')}</td>
-            <td>{formatDate(item.firstRequestedAt)}</td><td>{formatDate(item.lastRequestedAt)}</td>
-            <td>{status === 'completed' ? <div>{formatDate(item.recordedAt)} <button type="button" className="staff-button" disabled={tidying} onClick={()=>tidy(item)}>Delete from history</button></div> : <button className="staff-button" type="button"
+            <td>{formatUkDateTime(item.firstRequestedAt)}</td><td>{formatUkDateTime(item.lastRequestedAt)}</td>
+            <td>{status === 'completed' ? <div>{formatUkDateTime(item.recordedAt)} <button type="button" className="staff-button" disabled={tidying} onClick={()=>tidy(item)}>Delete from history</button></div> : <button className="staff-button" type="button"
               aria-label={`Mark ${item.name} recorded`} disabled={pending.includes(item.name)} onClick={() => record(item.name)}>
               {pending.includes(item.name) ? 'Saving…' : 'Send email'}</button>}</td></tr>)}</tbody>
         </table></div>

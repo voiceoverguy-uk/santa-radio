@@ -1,5 +1,7 @@
 "use client";
 
+import { formatUtcDateTime } from '../../lib/ukDates.js';
+
 import { useState, useCallback, useId } from "react";
 import { Play, Pause, SkipForward, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { santaStops } from "@/data/santaRouteStops";
@@ -79,7 +81,7 @@ export default function SantaPreviewPanel({
     onPreviewChange(deactivatePreview());
   }, [onPreviewChange]);
 
-  const simTime = effectiveTime.toISOString().replace("T", " ").substring(0, 19) + " UTC";
+  const simTime = formatUtcDateTime(effectiveTime) + " UTC";
 
   const speeds = [0, 1, 10, 60, 300];
 
