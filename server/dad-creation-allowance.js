@@ -41,11 +41,12 @@ export function createStudioAllowanceStore(pool = databasePool()) {
       return allowanceStatus(result.rows[0]);
     },
     async reserve(identity, operation) {
+      const expiresAt = identity.expiresAt == null ? null : new Date(identity.expiresAt);
       return transaction(async client => {
         await client.query(`DELETE FROM public.santa_dad_creation_allowances WHERE expires_at <= clock_timestamp()`);
-        if (identity.expiresAt && +identity.expiresAt <= Date.now()) throw problem('This Studio visit has expired.');
+        if (expiresAt && +expiresAt <= Date.now()) throw problem('This Studio visit has expired.');
         await client.query(`INSERT INTO public.santa_dad_creation_allowances(access_key,expires_at)
-          VALUES($1,$2) ON CONFLICT DO NOTHING`, [identity.key, identity.expiresAt]);
+          VALUES($1,$2) ON CONFLICT DO NOTHING`, [identity.key, expiresAt]);
         const { rows: [row] } = await client.query(`SELECT *, reserved_until > clock_timestamp() AS pending
           FROM public.santa_dad_creation_allowances WHERE access_key=$1 FOR UPDATE`, [identity.key]);
         // Replays are NOT re-rendered. With no archive a committed operation
