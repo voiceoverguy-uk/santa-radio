@@ -5,25 +5,30 @@ import SantaOfferHolly from './SantaOfferHolly.jsx';
 import './SantaMessageOffer.css';
 
 const SESSION_KEY = 'santa-bespoke-download-offer-shown';
-let shownThisVisit = false;
-function alreadyShown() {
-  try { return shownThisVisit || sessionStorage.getItem(SESSION_KEY) === 'yes'; }
-  catch { return shownThisVisit; }
+const MAX_INVITATIONS = 3;
+let shownThisVisit = 0;
+
+function invitationsShown() {
+  try {
+    const recorded = sessionStorage.getItem(SESSION_KEY);
+    const count = recorded === 'yes' ? 1 : Number(recorded) || 0;
+    return Math.max(shownThisVisit, count);
+  } catch { return shownThisVisit; }
 }
 
 export default function SantaBespokeDownloadOffer({ download }) {
   const [recipient, setRecipient] = useState(null);
   useEffect(() => {
-    if (!download || alreadyShown()) return;
+    if (!download || invitationsShown() >= MAX_INVITATIONS) return;
     let timer;
     const show = () => {
-      if (alreadyShown()) return;
+      if (invitationsShown() >= MAX_INVITATIONS) return;
       if (document.visibilityState !== 'visible' || document.querySelector('dialog[open]')) {
         timer = window.setTimeout(show, 1000);
         return;
       }
-      shownThisVisit = true;
-      try { sessionStorage.setItem(SESSION_KEY, 'yes'); sessionStorage.setItem('santa-review-receipt', download.receipt || ''); } catch { /* In-memory fallback. */ }
+      shownThisVisit = invitationsShown() + 1;
+      try { sessionStorage.setItem(SESSION_KEY, String(shownThisVisit)); } catch { /* In-memory fallback. */ }
       setRecipient(download.name || 'your little one');
     };
     timer = window.setTimeout(show, 2000);

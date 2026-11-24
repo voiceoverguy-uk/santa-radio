@@ -40,13 +40,3 @@ export function drawStitcherImage(canvas, image, name, branded = false, captionS
 
 export const stitcherArguments = ['-loop', '1', '-framerate', '2', '-i', 'image.png', '-i', 'audio.mp3', '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', 'output.mp4'];
 
-// Full-frame reveals keep the same artwork and text positions throughout playback.
-export const freeMessageVideoArguments = [
-  '-loop', '1', '-framerate', '2', '-i', 'blank.png',
-  '-loop', '1', '-framerate', '2', '-i', 'intro.png',
-  '-loop', '1', '-framerate', '2', '-i', 'complete.png', '-i', 'audio.mp3',
-  '-filter_complex', "[0:v][1:v]overlay=enable='gte(t,3)'[intro];[intro][2:v]overlay=enable='gte(t,10)',format=yuv420p[video]",
-  '-map', '[video]', '-map', '3:a:0', '-c:v', 'libx264', '-preset', 'ultrafast',
-  '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k',
-  '-shortest', '-movflags', '+faststart', 'output.mp4',
-];

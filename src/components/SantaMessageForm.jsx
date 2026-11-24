@@ -12,6 +12,7 @@ import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
 import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { Share } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
@@ -43,6 +44,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const nativeTracker = useTrackerNative();
   const requestsOpen = useNameRequestSeason();
   const [bespokeDownload, setBespokeDownload] = useState(null);
+  const [reviewReceipt, setReviewReceipt] = useState('');
+  useEffect(() => {
+    try { setReviewReceipt(sessionStorage.getItem('santa-review-receipt') || ''); } catch {}
+  }, []);
   const [videoPreviewTarget, setVideoPreviewTarget] = useState(null);
   const [readyVideoKey, setReadyVideoKey] = useState(null);
   const makerPanelRef = useInlineMakerRadioVisibility();
@@ -339,13 +344,19 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     resumeRadioRef.current = null;
     resume?.();
   };
+  const handleDownload = message => {
+    setClickedDownloads(previous => new Set([...previous, message.key]));
+    if (!studioPrelaunch && message.statisticsReceipt) {
+      const receipt = message.statisticsReceipt;
+      setReviewReceipt(receipt);
+      try { sessionStorage.setItem('santa-review-receipt', receipt); } catch {}
+      setBespokeDownload({ name: message.name, key: message.key, receipt });
+    }
+  };
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
     <h4>To {message.name} from Santa</h4>
-    <SantaFreeVideo message={message} previewTarget={dedicatedLayout && index === messages.length - 1 ? videoPreviewTarget : null} onReady={() => setReadyVideoKey(message.key)} onPlay={pauseRadio} onEnded={finishMessage} onDownload={() => {
-      setClickedDownloads(previous => new Set([...previous, message.key]));
-      if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
-    }} />
+    <SantaFreeVideo message={message} previewTarget={dedicatedLayout && index === messages.length - 1 ? videoPreviewTarget : null} onReady={() => setReadyVideoKey(message.key)} onPlay={pauseRadio} onEnded={finishMessage} onDownload={() => handleDownload(message)} />
     {/* Retained for a future audio-only delivery option. */}
     {AUDIO_ONLY_DELIVERY_ENABLED && <>
     <p>Audio-only version</p>
@@ -369,9 +380,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <a className={`message-download${clickedDownloads.has(message.key) ? '' : ' message-download--pending'}`}
           href={message.url} download={santaMessageDownloadName(message.name)}
           onClick={() => {
-            setClickedDownloads(previous => new Set([...previous, message.key]));
             trackMessageAction(message.statisticsReceipt, 'download');
-            if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
+            handleDownload(message);
           }}>
           Download your audio <span aria-hidden="true">↓</span>
         </a>
@@ -436,8 +446,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {messages.some(message => readyVideoKey === message.key || clickedDownloads.has(message.key)) && <aside className="free-message-invite" aria-label="Share the free Message Maker">
           <h4>Enjoyed the magic? Tell your friends!</h4>
           <p>Spread a little Christmas joy. Your friends can create their own free message from Santa.</p>
-          <SantaMessageShare label="Share the free Santa Message Maker">
-            <Share size={17} aria-hidden="true" /> Share the magic
+          <SantaMessageShare>
+            <Share size={17} aria-hidden="true" /> Share with friends
           </SantaMessageShare>
         </aside>}
         {showCooldown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
@@ -549,6 +559,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         {coolingDown && !nativeTracker && <SantaCooldownUpsell name={freeRecipient}
           prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
+        {!nativeTracker && !studioPrelaunch && reviewReceipt && <aside className="free-message-invite free-message-review-invite" aria-label="Review your free Santa message">
+          <h4>Leave a review for 20% off</h4>
+          <p>Tell us what you thought of your free message and receive a discount on the bespoke Santa message. All star ratings qualify.</p>
+          <Link className="free-message-review-invite__link" to="/leave-a-review">Write a review →</Link>
+        </aside>}
         </>}
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}

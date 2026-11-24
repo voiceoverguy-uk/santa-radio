@@ -1,5 +1,5 @@
 import { audioDuration, encodingProgress } from './videoProgress.js';
-import { drawStitcherImage, freeMessageVideoArguments } from './bigStitcher.js';
+import { drawStitcherImage, stitcherArguments } from './bigStitcher.js';
 export const SANTA_VIDEO_ARTWORK = '/images/big-stitcher-christmas-v3.png';
 // Keep memory bounded when several completed greetings are shown together.
 let queue = Promise.resolve();
@@ -19,15 +19,12 @@ export function createSantaVideo({ audio, name, prepareFrames, artwork = SANTA_V
       let prepared;
       if (prepareFrames) prepared = await prepareFrames(image, duration);
       else {
-        const files = [];
-        for (const stage of ['blank', 'intro', 'complete']) {
-          const canvas = document.createElement('canvas');
-          drawStitcherImage(canvas, image, name, true, stage);
-          const png = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-          if (!png) throw new Error('The Christmas image could not be prepared. Please try again.');
-          files.push({ name: `${stage}.png`, blob: png });
-        }
-        prepared = { files, args: freeMessageVideoArguments };
+        // Messaging apps may sample the very first frame for their preview.
+        const canvas = document.createElement('canvas');
+        drawStitcherImage(canvas, image, name, true, 'complete');
+        const png = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!png) throw new Error('The Christmas image could not be prepared. Please try again.');
+        prepared = { files: [{ name: 'image.png', blob: png }], args: stitcherArguments };
       }
       const [{ FFmpeg }, { default: coreURL }, { default: wasmURL }] = await Promise.all([
         import('@ffmpeg/ffmpeg'), import('@ffmpeg/core?url'), import('@ffmpeg/core/wasm?url'),
