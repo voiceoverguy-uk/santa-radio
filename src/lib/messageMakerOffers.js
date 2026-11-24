@@ -10,7 +10,15 @@ export const dadOffer = {
   description: 'Give Dad a laugh with a £5 personalised Christmas video from Santa, featuring his name, favourite TV and questionable habits. Includes a certificate for Dad.',
   image: '/images/message-maker-dad-share.jpg',
 };
+export const freeOffer = {
+  id: 'free-santa-message',
+  title: 'Free Message from Santa',
+  description: 'Create a free personalised Christmas video from Santa with your child’s name. Discover even more Christmas magic at Santa Radio.',
+  image: '/images/message-maker-free-share.jpg',
+};
+
 export const messageMakerOffers = [
+  freeOffer,
   {
     id: 'bespoke-santa-messages',
     title: 'Personalised Santa Messages for Kids and Dads',

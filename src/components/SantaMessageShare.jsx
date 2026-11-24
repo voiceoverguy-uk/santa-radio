@@ -1,12 +1,13 @@
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import { useRef, useState, useEffect } from 'react';
 import { ORIGIN } from '../seo/catalogue.js';
+import { freeOffer, messageOfferPath } from '../lib/messageMakerOffers.js';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 
 const freeMessageShare = {
-  title: 'Free personalised Santa message | Santa Radio',
-  text: 'Create a free personalised Santa audio message and enjoy Christmas music on Santa Radio.',
-  url: `${ORIGIN}/free-santa-message`,
+  title: `${freeOffer.title} | Santa Radio`,
+  text: 'Create a free personalised Christmas video from Santa. Share a little Christmas magic!',
+  url: `${ORIGIN}${messageOfferPath(freeOffer)}`,
 };
 
 // File sharing is deliberately separate from the public-maker invitation.

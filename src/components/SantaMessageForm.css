@@ -129,3 +129,37 @@
 /* Centre the free-message logo beside the greeting form. */
 .message-layout--dedicated > .message-intro.message-intro--logo-only { align-self: center; padding-top: 0; }
 .message-intro--logo-only .message-free-logo-wrap { margin: 0 auto; }
+
+.free-message-invite {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #d4af3780;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #244c39, #123327);
+  color: #f6ecd8;
+  text-align: center;
+}
+.free-message-invite h4 {
+  color: #ffe1a0;
+  font: 700 1.1rem/1.35 'Cinzel', serif;
+  margin: 0 0 8px;
+}
+.free-message-invite p { font-size: .9rem; line-height: 1.5; margin: 0 0 12px; }
+.free-message-invite .message-share .message-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #eed398;
+  color: #12392b;
+  border: 1px solid #eed398;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 700;
+}
+.free-message-invite .message-share .message-retry:hover { background: #ffe4aa; }
+.free-message-invite .message-share-status { margin: 8px 0 0; text-align: center; }

@@ -10,7 +10,8 @@ import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
-import { SantaGreetingShare } from './SantaMessageShare.jsx';
+import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
+import { Share } from 'lucide-react';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
@@ -432,6 +433,13 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
+        {messages.some(message => clickedDownloads.has(message.key)) && <aside className="free-message-invite" aria-label="Share the free Message Maker">
+          <h4>Enjoyed the magic? Tell your friends!</h4>
+          <p>Spread a little Christmas joy. Your friends can create their own free message from Santa.</p>
+          <SantaMessageShare label="Share the free Santa Message Maker">
+            <Share size={17} aria-hidden="true" /> Share the magic
+          </SantaMessageShare>
+        </aside>}
         {showCooldown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
         {showCooldown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
