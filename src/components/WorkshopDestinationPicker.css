@@ -222,3 +222,16 @@
     box-shadow: 0 0 10px #d4af3730;
   }
 }
+
+
+/* Optional regional choices appear immediately below the country wheel. */
+.smw-destination-picker__regional { min-width: 0; margin-top: 18px; padding-top: 16px; border-top: 1px solid #d4af3760; }
+.smw-destination-picker__regional .smw-destination-picker__heading { color: var(--smw-gold-light); margin-bottom: 5px; font-family: inherit; font-weight: 700; font-size: 1.05rem; }
+.smw-destination-picker__regional .smw-destination-picker__heading span { font-size: .85em; font-weight: 400; color: #c4d0c3; }
+.smw-destination-picker__regional-note { margin: 0 0 13px; font-size: .85rem; line-height: 1.5; color: #c4d0c3; }
+.smw-destination-picker__regional .smw-activity-preview-layout.smw-searchable-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "search" "wheel"; grid-template-rows: auto auto; gap: 12px; }
+.smw-destination-picker__regional .smw-choice-wheel-footer-row { justify-content: space-between; }
+.smw-destination-picker__regional .smw-choice-wheel-status { overflow-wrap: anywhere; }
+@media (min-width: 901px) {
+  .smw-destination-picker__country > .smw-destination-picker__searchable > .smw-searchable-layout { grid-template-rows: min-content 1fr; }
+}
