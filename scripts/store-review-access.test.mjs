@@ -16,11 +16,11 @@ test('review access fails closed for absent config, invalid password, extra fiel
   for (const config of ['', 'bad', '0'.repeat(64)]) assert.equal(validReviewCredentials(fields, config), false);
 });
 test('review login is same-origin, rate-limited, isolated, reusable and sends no email', async () => {
-  let limited = 0, block = false, mail = 0;
+  let limited = 0, block = false, mail = 0, received;
   const server = createServer(createMessageAccessHandler({
     limit: async () => { limited++; if (block) throw Object.assign(new Error('Try later'), {status:429,retryAfter:60}); },
     readAllowance: async () => 0,
-    requestCode: async () => { mail++; return { id: '00000000-0000-4000-8000-000000000001', binding:'test-binding' }; },
+    requestCode: async value => { received = value; mail++; return { id: '00000000-0000-4000-8000-000000000001', binding:'test-binding' }; },
     confirmCode: async () => { throw new Error('Reviewer must not use email verification'); },
   }));
   await new Promise(resolve => server.listen(0,'127.0.0.1',resolve));
@@ -45,6 +45,8 @@ test('review login is same-origin, rate-limited, isolated, reusable and sends no
     const normal=await post({action:'request-code',FIRSTNAME:'Test',LASTNAME:'Adult',EMAIL:'test@example.test'});
     assert.equal((await normal.json()).state,'verification');assert.equal(mail,1);
     assert.ok(!normal.headers.getSetCookie().some(c=>c.startsWith('santa-free-message=')));
+    const native = await fetch(base,{method:'POST',headers:{origin:base,'Content-Type':'application/json','User-Agent':'Mozilla/5.0 SantaTrackerNative'},body:JSON.stringify({action:'request-code',FIRSTNAME:'Test',LASTNAME:'Adult',EMAIL:'test@example.test',marketingOptIn:true})});
+    assert.equal(native.status,200); assert.equal(received.marketingOptIn,false);
     block=true;assert.equal((await post(fields)).status,429);
   } finally { await new Promise(resolve=>server.close(resolve)); }
 });

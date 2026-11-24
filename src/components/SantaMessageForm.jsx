@@ -1,3 +1,4 @@
+import useTrackerNative from '../hooks/useTrackerNative.js';
 import SantaFreeVideo from './SantaFreeVideo.jsx';
 import SantaMessageVideoExample from './SantaMessageVideoExample.jsx';
 import SantaBespokeDownloadOffer from './SantaBespokeDownloadOffer.jsx';
@@ -38,6 +39,7 @@ import { useInlineMakerRadioVisibility } from './RadioDockVisibility.jsx';
 const AUDIO_ONLY_DELIVERY_ENABLED = false;
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
+  const nativeTracker = useTrackerNative();
   const requestsOpen = useNameRequestSeason();
   const [bespokeDownload, setBespokeDownload] = useState(null);
   const [videoPreviewTarget, setVideoPreviewTarget] = useState(null);
@@ -378,7 +380,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">
-    <SantaBespokeDownloadOffer download={bespokeDownload} />
+    {!nativeTracker && <SantaBespokeDownloadOffer download={bespokeDownload} />}
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className={`message-intro${dedicatedLayout && hasAccess ? ' message-intro--logo-only' : dedicatedLayout ? ' message-intro--signup' : ''}`}>
         {dedicatedLayout ? <>
@@ -537,15 +539,15 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </>}
         {!messages.length && !coolingDown && <p className="service-notice">Free to create and download. (not sent by email)</p>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
-        {coolingDown && <SantaCooldownUpsell name={freeRecipient}
+        {coolingDown && !nativeTracker && <SantaCooldownUpsell name={freeRecipient}
           prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
         </>}
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
-      {!dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
+      {!nativeTracker && !dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />}
-      {dedicatedLayout && <a className="free-bespoke-banner" href="/#bespoke-santa-messages">
+      {!nativeTracker && dedicatedLayout && <a className="free-bespoke-banner" href="/#bespoke-santa-messages">
         <img src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1680" height="945" loading="lazy" />
         <span className="free-bespoke-banner__copy"><span className="free-bespoke-banner__eyebrow">Our bespoke Santa messages</span><strong>More Christmas magic for your little ones… and Dad!</strong><span>Two personalised Kids’ messages with digital gifts, or a NEW message for Dad the whole family can smile at.</span><span className="free-bespoke-banner__cta">Explore the bespoke experience →</span></span>
         <img src="/images/dad-message-logo-v4.webp" alt="NEW Dad’s Message from Santa" width="1680" height="945" loading="lazy" />

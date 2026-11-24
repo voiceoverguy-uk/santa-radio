@@ -1,3 +1,4 @@
+import { isTrackerNative } from '../lib/trackerNative.js';
 import StoreReviewAccess from './StoreReviewAccess.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -43,7 +44,7 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
     // autofill, and snapshot every actual value (including the trap) on submit.
     const data = new FormData(event.currentTarget);
     const submitted = Object.fromEntries(Object.keys(emptyFields).map(name => [name, data.get(name) ?? '']));
-    submitted.marketingOptIn = data.get('marketingOptIn') === 'on';
+    submitted.marketingOptIn = !isTrackerNative(navigator.userAgent) && data.get('marketingOptIn') === 'on';
     setFields(submitted);
     const validation = verification ? (/^\d{6}$/.test(code) ? {} : { code: 'Enter the six-digit code from your email.' }) : validateAccessFields(submitted);
     setErrors(validation);

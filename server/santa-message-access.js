@@ -1,3 +1,4 @@
+import { isTrackerNative } from '../src/lib/trackerNative.js';
 import { requestFreeMessageCode, confirmFreeMessageCode, sendFreeMessageCode, verificationBinding, VERIFICATION_COOKIE } from './free-message-verification.js';
 import { CONTACT_COOKIE, sealContact } from './name-request-contact.js';
 import express from 'express';
@@ -134,7 +135,8 @@ export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNam
           Object.keys(validateAccessFields(fields)).length) {
         return res.status(400).json({ success: false, message: 'Please check your adult contact details.' });
       }
-      const challenge = await requestCode(fields, { send: args => sendFreeMessageCode(args, fetcher) });
+      const accessFields = isTrackerNative(req.headers['user-agent']) ? { ...fields, marketingOptIn: false } : fields;
+      const challenge = await requestCode(accessFields, { send: args => sendFreeMessageCode(args, fetcher) });
       res.cookie(VERIFICATION_COOKIE, challenge.binding,
         { httpOnly: true, secure: true, sameSite: 'strict', path: '/', maxAge: 15 * 60000 });
       return res.json({ state: 'verification', verificationId: challenge.id });
