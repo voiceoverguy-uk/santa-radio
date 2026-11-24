@@ -1,5 +1,6 @@
 import { manageContenders, signContenderUpload } from './contender-management.js';
 import { visitorReport } from './google-analytics-statistics.js';
+import { markVoucherCopied } from './voucher-copy.js';
 import { listDadVouchers } from './dad-vouchers.js';
 import { gameReport, recordGameRound } from './christmas-game-statistics.js';
 import { dashboardTodos } from './dashboard-todos.js';
@@ -20,7 +21,7 @@ import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboardTodos, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
   appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers, dadVouchers=listDadVouchers }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers, dadVouchers=listDadVouchers, copyVoucher=markVoucherCopied }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -66,6 +67,12 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
       if(req.query?.view==='todos') {
         try { return res.json(await todos(req.method==='PATCH'?req.body:undefined)); }
         catch(error) { if([400,404].includes(error.status))return res.status(error.status).json({error:error.message}); throw error; }
+      }
+      if (req.method === 'PATCH' && ['friends','dad-vouchers'].includes(req.query?.view)) {
+        if (req.body?.action !== 'copy') return res.status(400).json({error:'Choose a voucher action.'});
+        const result = await copyVoucher(req.query.view, req.body.code);
+        if (result.error) return res.status(result.status).json({error:result.error});
+        return res.json(result);
       }
       if(req.method==='GET' && req.query?.view==='dad-vouchers') return res.json(await dadVouchers());
       if(req.method==='GET' && req.query?.view==='friends') return res.json(await friends());
