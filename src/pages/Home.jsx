@@ -2,7 +2,8 @@ import HomeContenders from '../components/HomeContenders.jsx';
 import { useEffect, useState } from 'react';
 import { Sparkles, Download, Headphones } from 'lucide-react';
 import PageSeo from '../seo/PageSeo.jsx';
-import { homeMetadata } from '../seo/catalogue.js';
+import { messageOfferPath } from '../lib/messageMakerOffers.js';
+import { homeMetadata, pageMetadata } from '../seo/catalogue.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HomeHero from '../components/HomeHero.jsx';
@@ -20,12 +21,13 @@ import MugshotsPreview from '../components/MugshotsPreview.jsx';
 import ContactSection from '../components/ContactSection.jsx';
 import './Home.css';
 
-export default function Home() {
+export default function Home({ shareOffer }) {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    if (!location.hash) return;
-    const target = document.getElementById(location.hash.slice(1));
+    const id = location.hash.slice(1) || shareOffer?.id;
+    if (!id) return;
+    const target = document.getElementById(id);
     if (!target?.matches('#bespoke-santa-messages, .bespoke-offer')) return;
 
     let cancelled = false;
@@ -37,7 +39,7 @@ export default function Home() {
       cancelled = true;
       cancelAnimationFrame(frame);
     };
-  }, [location.key, location.hash]);
+  }, [location.key, location.hash, shareOffer]);
 
   const [checkerEntry, setCheckerEntry] = useState({ name: '', id: 0 });
   const checkNaughtyNice = name => {
@@ -58,7 +60,11 @@ export default function Home() {
 
   return (
     <main id="main-content" className="home-page hero-name-preview">
-      <PageSeo metadata={homeMetadata()} />
+      <PageSeo metadata={shareOffer ? pageMetadata({
+        path: messageOfferPath(shareOffer), title: `${shareOffer.title} | Santa Radio`,
+        description: shareOffer.description, image: shareOffer.image, imageAlt: shareOffer.title,
+        imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg', noindex: true,
+      }) : homeMetadata()} />
       <HomeHero onContinue={continueWithName} onCheckNaughtyNice={checkNaughtyNice} />
         <div id="santa-radio-milestones" className="container homepage-lifetime-stats" aria-label="Santa Radio over 11 years" style={{ scrollMarginTop: '110px' }}>
           <p><Sparkles aria-hidden="true" /><strong>11 years</strong><span>of Christmas magic</span></p>

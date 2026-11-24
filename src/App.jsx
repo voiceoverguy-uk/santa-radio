@@ -1,6 +1,7 @@
 import SantaReview from './pages/SantaReview.jsx';
 import MySantaMessages from './pages/MySantaMessages.jsx';
 import SantaDashboard from './pages/SantaDashboard.jsx';
+import { messageMakerOffers, messageOfferPath } from './lib/messageMakerOffers.js';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
@@ -66,6 +67,7 @@ function WebsiteLayout() {
       {!capture && <Snowfall />}
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
+        {messageMakerOffers.map(offer => <Route key={offer.id} path={messageOfferPath(offer)} element={<Home shareOffer={offer} />} />)}
         <Route path="/leave-a-review" element={<SantaReview />} />
         <Route path="/preview/hero-name-checker" element={<HeroNamePreview />} />
         <Route path="/apps" element={<Apps />} />

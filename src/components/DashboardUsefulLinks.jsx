@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { ORIGIN } from '../seo/catalogue.js';
+import { messageMakerOffers, messageOfferPath } from '../lib/messageMakerOffers.js';
 import './DashboardUsefulLinks.css';
 
-const links = [
-  ['Both Message Maker offers', 'bespoke-santa-messages'],
-  ['Kids’ Message from Santa', 'kids-santa-message'],
-  ['Dad’s Message from Santa', 'dad-santa-message'],
-];
 
 export default function DashboardUsefulLinks() {
   const [copied, setCopied] = useState('');
@@ -28,8 +24,9 @@ export default function DashboardUsefulLinks() {
     <section className="dashboard-links" aria-labelledby="dashboard-links-title">
       <h2 id="dashboard-links-title">Useful links</h2>
       <ul>
-        {links.map(([label, id]) => {
-          const url = `${ORIGIN}/#${id}`;
+        {messageMakerOffers.map(offer => {
+          const { id, label = offer.title } = offer;
+          const url = `${ORIGIN}${messageOfferPath(offer)}`;
           const Icon = copied === url ? Check : Copy;
           return (
             <li key={id}>

@@ -1,3 +1,4 @@
+import { messageMakerOffers, messageOfferPath } from '../lib/messageMakerOffers.js';
 import { songs, mugs, songPath, mugPath, songRedirects, mugAliases, mugPhotoTermsPath } from './catalogue.js';
 import legacySongs from '../data/legacy-songs.js';
 import { santaMessageRequestedName } from './santaMessageLinks.js';
@@ -121,13 +122,15 @@ for (const [old, target] of reportedMissingAliases) {
   if (!paths.has(target)) throw new Error(`Missing reviewed redirect destination: ${target}`);
   aliases.set(old, target);
 }
+const messageOfferPaths = new Set(messageMakerOffers.map(messageOfferPath));
+
 export function resolvePublicRequest(raw) {
   const url = publicRequestUrl(raw);
   let path;
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path === '//' ? path : path.length > 1 ? path.replace(/\/+$/, '') : path;
-  if (normalized === '/dad-message-maker' || normalized === '/message-maker-checkout') return path === normalized ? {status:200,noindex:true} : {status:308,location:normalized+url.search};
+  if (messageOfferPaths.has(normalized) || normalized === '/dad-message-maker' || normalized === '/message-maker-checkout') return path === normalized ? {status:200,noindex:true} : {status:308,location:normalized+url.search};
   if (isStudioPath(normalized)) {
     // No fragment in Location: browsers inherit their original fragment.
     if (STUDIO_ALIASES.includes(normalized) || path !== STUDIO_PATH) {

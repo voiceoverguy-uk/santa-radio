@@ -10,16 +10,15 @@ import DadCertificate from './DadCertificate.jsx';
 import BespokeExamplePlayer from './BespokeExamplePlayer.jsx';
 import { Share } from 'lucide-react';
 import { ORIGIN } from '../seo/catalogue.js';
+import { kidsOffer, dadOffer, messageOfferPath } from '../lib/messageMakerOffers.js';
 import SantaMessageShare from './SantaMessageShare.jsx';
 import './BespokeMessageOffers.css';
 
-const kidsOffer = { id: 'kids-santa-message', title: 'Kids’ Message from Santa' };
-const dadOffer = { id: 'dad-santa-message', title: 'Dad’s Message from Santa' };
 
 function OfferShare({ offer }) {
   return (
     <div className="bespoke-offer__share">
-      <SantaMessageShare data={{ title: offer.title, url: `${ORIGIN}/#${offer.id}` }} label={`Share ${offer.title}`}>
+      <SantaMessageShare data={{ title: offer.title, url: `${ORIGIN}${messageOfferPath(offer)}` }} label={`Share ${offer.title}`}>
         <Share size={17} aria-hidden="true" /> Share
       </SantaMessageShare>
     </div>

@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile, copyFile, stat } from 'node:fs/promises';
+import { messageMakerOffers, messageOfferPath } from '../src/lib/messageMakerOffers.js';
 import { render } from '../dist/server/entry-server.js';
 import { publicPageHtml, sitemap, robots } from '../server/public-html.js';
 import { canonicalPaths, legacyMatches, staffEntryPaths } from '../src/seo/routes.js';
@@ -7,7 +8,7 @@ import { mugThumbnail } from '../src/seo/mugImages.js';
 import { thumbnailFile } from '../server/mug-thumbnails.js';
 import { STUDIO_CHECKOUT_PATH, STUDIO_PATH } from '../src/lib/studioRoute.js';
 const template = await readFile('dist/index.html', 'utf8');
-for (const path of [...canonicalPaths, ...staffEntryPaths, '/preview/hero-name-checker', '/santa-tracker/preview', '/styt', '/etsy', '/dad-message-maker', STUDIO_PATH, STUDIO_CHECKOUT_PATH, '/404']) {
+for (const path of [...canonicalPaths, ...staffEntryPaths, ...messageMakerOffers.map(messageOfferPath), '/preview/hero-name-checker', '/santa-tracker/preview', '/styt', '/etsy', '/dad-message-maker', STUDIO_PATH, STUDIO_CHECKOUT_PATH, '/404']) {
   const result = render(path);
   if (result.status !== 200 && path !== '/404') throw new Error(`Cannot pre-render ${path}: ${result.status}`);
   const directory = path === '/' ? 'dist' : `dist${path}`;
