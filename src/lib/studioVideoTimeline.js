@@ -228,10 +228,10 @@ export function studioTimelineArguments(layers, duration) {
   return [...args, 'output.mp4'];
 }
 export async function prepareNiceListReveal(result, start) {
-  const [{ exportStudioPicture }, { STUDIO_GIFT_PICTURE }] = await Promise.all([
+  const [{ exportStudioPicture }, { STUDIO_VIDEO_NICE_LIST_PICTURE }] = await Promise.all([
     import('./studioGiftExports.js'), import('./santaPictureLayout.js'),
   ]);
-  const blob = await exportStudioPicture(result.gift?.writtenName || result.writtenName, STUDIO_GIFT_PICTURE);
+  const blob = await exportStudioPicture(result.gift?.writtenName || result.writtenName, STUDIO_VIDEO_NICE_LIST_PICTURE);
   const url = URL.createObjectURL(blob);
   const picture = new Image();
   try {
@@ -240,12 +240,8 @@ export async function prepareNiceListReveal(result, start) {
     const scene = STUDIO_SCENE_INSET;
     const canvas = makeCanvas(STUDIO_VIDEO_WIDTH, scene.height);
     const context = canvas.getContext('2d');
-    // Cover the old scene and contain the entire gift image without cropping.
-    context.fillStyle = '#10382a';
-    context.fillRect(scene.x, 0, scene.width, scene.height);
-    const scale = Math.min(scene.width / picture.naturalWidth, scene.height / picture.naturalHeight);
-    const width = picture.naturalWidth * scale, height = picture.naturalHeight * scale;
-    context.drawImage(picture, scene.x + (scene.width - width) / 2, (scene.height - height) / 2, width, height);
+    // The video-only panorama matches the inset ratio, filling it on all sides.
+    context.drawImage(picture, scene.x, 0, scene.width, scene.height);
     return { id: 'nice-list-picture', start, canvas, y: scene.y };
   } finally { URL.revokeObjectURL(url); }
 }
