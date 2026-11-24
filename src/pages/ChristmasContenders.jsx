@@ -229,9 +229,9 @@ export default function ChristmasContenders() {
     hashTimer.current = setTimeout(() => {
       const card = document.getElementById(id);
       if (!card || !card.classList.contains('contender-card')) return;
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
       card.classList.add('contender-card--highlight');
-      window.setTimeout(() => card.classList.remove('contender-card--highlight'), 2200);
+      window.setTimeout(() => card.classList.remove('contender-card--highlight'), 3000);
     }, 80);
   }, []);
 

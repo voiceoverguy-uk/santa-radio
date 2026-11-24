@@ -147,7 +147,16 @@
 
 .contender-card--highlight {
   border-color: var(--cc-bright);
-  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px #efd083, 0 0 14px 3px #ffd77866;
+  animation: contender-share-glow 1s ease-in-out 3;
+}
+
+@keyframes contender-share-glow {
+  50% { box-shadow: 0 0 0 5px #ffe39c, 0 0 24px 6px #ffd77899; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contender-card--highlight { animation: none; }
 }
 
 .contender-card__art-wrap {
