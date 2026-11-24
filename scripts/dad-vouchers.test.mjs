@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {dadTestDatabase} from './helpers/dad-test-database.mjs';
 import {listDadVouchers,redeemDadVoucher,dadVoucherSession} from '../server/dad-vouchers.js';
 import {markVoucherCopied} from '../server/voucher-copy.js';
-import {friendClaim,friendSession} from '../server/friend-vouchers.js';
+import {friendClaim,friendSession,redeemFriendVoucher} from '../server/friend-vouchers.js';
 import {createStudioAllowanceStore} from '../server/dad-creation-allowance.js';
 import {createStatisticsHandler} from '../server/message-statistics.js';
 const key='test-key-'.repeat(8);
@@ -61,4 +61,44 @@ test('only the same-origin owner can save a copied tick',async()=>{
  const handler=createStatisticsHandler({allowed:()=>true,copyVoucher});
  await handler({...req,headers:{...req.headers,origin:'https://other.test'}},res);assert.equal(res.code,403);assert.equal(calls,0);
  await handler(req,res);assert.equal(calls,1);assert.equal(res.data.copiedAt,'saved');
+});
+
+test('separate Dad gifts grant exactly one creation until their fixed deadline',async()=>{
+  const db=await dadTestDatabase(),pool=db.pool;
+  try {
+    const schema=async name=>readFile(new URL(`../database/${name}.sql`,import.meta.url),'utf8');
+    await pool.query((await schema('santa-name-requests')).match(/CREATE TABLE IF NOT EXISTS public\.santa_friend_vouchers[\s\S]*?\n\);/)[0]);
+    await pool.query(await schema('friend-voucher-issues'));
+    await pool.query(await schema('dad-vouchers'));
+    await pool.query(await schema('dad-studio'));
+    const before=await listDadVouchers(pool);
+    const cutoff=new Date(Date.now()+35*86400000);
+    const codes=Array.from({length:2},()=> 'DAD-GIFT-'+randomBytes(10).toString('hex').toUpperCase().match(/.{5}/g).join('-'));
+    const hashes=codes.map(code=>createHash('sha256').update(code).digest('hex'));
+    for(const hash of hashes) await pool.query('INSERT INTO public.santa_fixed_gift_vouchers(code_sha256,valid_until) VALUES($1,$2)',[hash,cutoff]);
+    const visitors=[browser(),browser()];
+    const claims=await Promise.all(visitors.map(b=>redeemDadVoucher(b.req,b.res,codes[0].toLowerCase(),{pool,key})));
+    assert.equal(claims.filter(Boolean).length,1);
+    const first=visitors[claims.findIndex(Boolean)],other=visitors[claims.findIndex(x=>!x)];
+    const identity=dadVoucherSession(first.req,key);
+    assert.equal(identity.expiresAt,cutoff.getTime());
+    assert.ok(dadVoucherSession(first.req,key,cutoff.getTime()-1));
+    assert.equal(dadVoucherSession(first.req,key,cutoff.getTime()),null);
+    assert.equal(friendSession(first.req,key),null);
+    assert.equal(await redeemFriendVoucher(other.req,other.res,codes[0],{pool,key}),false);
+    assert.equal(await redeemFriendVoucher(other.req,other.res,codes[0].replace('DAD-','FRIEND-'),{pool,key}),false);
+    const allowance=createStudioAllowanceStore(pool);
+    assert.equal((await allowance.status(identity)).remaining,1);
+    await allowance.succeed(identity,await allowance.reserve(identity,randomUUID()));
+    assert.ok(await redeemDadVoucher(first.req,first.res,codes[0],{pool,key}));
+    assert.deepEqual(dadVoucherSession(first.req,key),identity);
+    await assert.rejects(allowance.reserve(identity,randomUUID()),/used/);
+    assert.ok(await redeemDadVoucher(other.req,other.res,codes[1],{pool,key}));
+    const second=dadVoucherSession(other.req,key);
+    assert.notEqual(second.key,identity.key);
+    assert.equal((await allowance.status(second)).remaining,1);
+    await pool.query('UPDATE public.santa_fixed_gift_vouchers SET valid_until=now() WHERE code_sha256=$1',[hashes[1]]);
+    assert.equal(await redeemDadVoucher(other.req,other.res,codes[1],{pool,key}),false);
+    assert.deepEqual(await listDadVouchers(pool),before);
+  } finally { await db.close(); }
 });
