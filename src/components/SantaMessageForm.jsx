@@ -433,7 +433,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
-        {messages.some(message => clickedDownloads.has(message.key)) && <aside className="free-message-invite" aria-label="Share the free Message Maker">
+        {messages.some(message => readyVideoKey === message.key || clickedDownloads.has(message.key)) && <aside className="free-message-invite" aria-label="Share the free Message Maker">
           <h4>Enjoyed the magic? Tell your friends!</h4>
           <p>Spread a little Christmas joy. Your friends can create their own free message from Santa.</p>
           <SantaMessageShare label="Share the free Santa Message Maker">
