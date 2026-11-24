@@ -44,7 +44,16 @@ export default function ContenderManager({ownerToken,onPublish}) {
   async function refresh(){setEntries((await request()).entries);}
   async function run(body,message) {
     setBusy(true);setNotice('');
-    try { if(body) await request(body); await refresh();setNotice(message); }
+    try {
+      if (body?.action === 'invite') {
+        const entry = entries.find(item => item.id === body.id);
+        const { votingPicture } = await import(/* @vite-ignore */ '/contenders/render-picture.js');
+        const picture = await votingPicture(entry);
+        const key = 'poster-' + crypto.randomUUID();
+        await uploadFile(key, 'png', picture, () => {});
+        body = { ...body, poster: key };
+      }
+      if(body) await request(body); await refresh();setNotice(message); }
     catch(error){setNotice(error.message);if(body) await refresh().catch(()=>{});}
     finally{setBusy(false);}
   }

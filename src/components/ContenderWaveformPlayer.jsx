@@ -27,6 +27,31 @@ function getWaveform(url) {
   return waveformCache.get(url);
 }
 
+async function recordingWaveform(src) {
+  if (!src) throw new Error('Missing recording');
+  if (!waveformCache.has(src)) {
+    const request = (async () => {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error('Recording unavailable');
+      const decoder = new OfflineAudioContext(1, 1, 8000);
+      const audio = await decoder.decodeAudioData(await response.arrayBuffer());
+      const peaks = Array(360).fill(0);
+      for (let channel = 0; channel < audio.numberOfChannels; channel++) {
+        const samples = audio.getChannelData(channel);
+        for (let i = 0; i < samples.length; i++) {
+          const bin = Math.floor(i * peaks.length / samples.length);
+          peaks[bin] = Math.max(peaks[bin], Math.abs(samples[i]));
+        }
+      }
+      const maximum = Math.max(...peaks) || 1;
+      return { duration: audio.duration, peaks: peaks.map(peak => peak / maximum) };
+    })();
+    waveformCache.set(src, request);
+    request.catch(() => waveformCache.delete(src));
+  }
+  return waveformCache.get(src);
+}
+
 function formatTime(value) {
   if (!Number.isFinite(value) || value < 0) return '0:00';
   const seconds = Math.floor(value);
@@ -62,17 +87,16 @@ export default function ContenderWaveformPlayer({
     let mounted = true;
     setPeaks(null);
     setWaveformFailed(false);
-    if (!waveform?.url) {
-      setWaveformFailed(true);
-      return () => { mounted = false; };
-    }
-    getWaveform(waveform.url).then(result => {
-      if (mounted) setPeaks(result.peaks);
+    getWaveform(waveform?.url).catch(() => recordingWaveform(src)).then(result => {
+      if (mounted) {
+        setPeaks(result.peaks);
+        setMediaDuration(result.duration);
+      }
     }).catch(() => {
       if (mounted) setWaveformFailed(true);
     });
     return () => { mounted = false; };
-  }, [waveform?.url]);
+  }, [waveform?.url, src]);
 
   useEffect(() => {
     const audio = elementRef.current;

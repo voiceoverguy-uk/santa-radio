@@ -508,6 +508,7 @@ export default function ChristmasContenders() {
                     <strong>{Number.isFinite(entry.total) ? entry.total.toLocaleString('en-GB') : '—'}</strong>
                   </div>
                   <button className="contender-share" type="button" onClick={() => shareEntry(entry)}>Share</button>
+                  {!demo && <a className="contender-share" href={`/contenders/voting-picture.html?song=${encodeURIComponent(entry.id)}`}>Download voting image</a>}
                   <label className={`contender-select${!selectable ? ' contender-select--disabled' : ''}`}>
                     <input
                       type="checkbox" name="contender-selection"
