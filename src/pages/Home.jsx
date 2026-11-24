@@ -24,14 +24,19 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    if (location.hash !== '#bespoke-santa-messages') return;
+    if (!location.hash) return;
+    const target = document.getElementById(location.hash.slice(1));
+    if (!target?.matches('#bespoke-santa-messages, .bespoke-offer')) return;
+
     let cancelled = false;
     let frame;
     document.fonts.ready.then(() => {
-      if (cancelled) return;
-      frame = requestAnimationFrame(() => document.getElementById('bespoke-santa-messages')?.scrollIntoView({ behavior: 'instant', block: 'start' }));
+      if (!cancelled) frame = requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant', block: 'start' }));
     });
-    return () => { cancelled = true; cancelAnimationFrame(frame); };
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
   }, [location.key, location.hash]);
 
   const [checkerEntry, setCheckerEntry] = useState({ name: '', id: 0 });

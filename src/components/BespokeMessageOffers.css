@@ -26,3 +26,21 @@
 .bespoke-player.is-open .bespoke-player__stage{transform:translateY(0)}
 .bespoke-player__skin{z-index:2}
 @media(prefers-reduced-motion:reduce){.bespoke-player__reveal,.bespoke-player__stage{transition:none}}
+
+.bespoke-offer:target { border-color: #e2bf72; }
+.bespoke-offer__share { display: grid; justify-items: end; gap: 6px; }
+.bespoke-offer__share .message-share .message-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 22px;
+  color: #f3d58b;
+}
+.bespoke-offer__share .message-retry:hover { background: #d4af3712; }
+.bespoke-offer__share .message-retry:focus-visible { outline: 2px solid #f3d58b; outline-offset: 3px; }
+.bespoke-offer__share .message-share-link { justify-self: stretch; }

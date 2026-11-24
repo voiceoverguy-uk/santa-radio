@@ -3,11 +3,10 @@ import { useRef, useState, useEffect } from 'react';
 import { ORIGIN } from '../seo/catalogue.js';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 
-const shareUrl = `${ORIGIN}/free-santa-message`;
-const shareData = {
+const freeMessageShare = {
   title: 'Free personalised Santa message | Santa Radio',
   text: 'Create a free personalised Santa audio message and enjoy Christmas music on Santa Radio.',
-  url: shareUrl,
+  url: `${ORIGIN}/free-santa-message`,
 };
 
 // File sharing is deliberately separate from the public-maker invitation.
@@ -58,7 +57,7 @@ export function SantaGreetingShare({ message, filename }) {
   </div>;
 }
 
-export default function SantaMessageShare() {
+export default function SantaMessageShare({ data = freeMessageShare, label, children }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
   const [manual, setManual] = useState(false);
@@ -72,7 +71,7 @@ export default function SantaMessageShare() {
     try {
       if (typeof navigator.share === 'function') {
         try {
-          await navigator.share(shareData);
+          await navigator.share(data);
           setStatus('Sharing options opened.');
           return;
         } catch (error) {
@@ -81,7 +80,7 @@ export default function SantaMessageShare() {
         }
       }
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(data.url);
       setStatus('Link copied. Paste it into a message to tell your friends.');
     } catch {
       setManual(true);
@@ -92,14 +91,13 @@ export default function SantaMessageShare() {
   };
 
   return <div className="message-share">
-    <button className="message-retry" type="button" onClick={share} disabled={busy}>
-      {busy ? 'Opening share options…' : 'Share with friends'}
+    <button className="message-retry" type="button" onClick={share} disabled={busy} aria-label={label}>
+      {busy ? 'Opening share options…' : children || 'Share with friends'}
     </button>
     {status && <p className="message-share-status" role="status">{status}</p>}
     {manual && <label className="message-share-link">
       Link to share
-      <input ref={input} type="text" readOnly value={shareUrl} onFocus={event => event.target.select()} />
+      <input ref={input} type="text" readOnly value={data.url} onFocus={event => event.target.select()} />
     </label>}
   </div>;
 }
-
