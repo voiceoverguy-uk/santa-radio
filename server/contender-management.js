@@ -13,8 +13,13 @@ const readText = (value, max, required=false) => {
   if (typeof value !== 'string' || value.trim().length > max || /[\x00-\x1f]/.test(value) || (required && !value.trim())) fail('Check the song and contact details.');
   return value.trim();
 };
+async function uploadedMedia(key,ext) {
+  const blob=await head(pathFor(key,ext));
+  if(blob.contentType!==types[ext] || !blob.size || blob.size>limit(ext)) fail('The uploaded file could not be verified.');
+  return new URL(blob.url).hostname.endsWith('.private.blob.vercel-storage.com') ? mediaRoute(key,ext) : blob.url;
+}
 export async function manageContenders(body, pool=databasePool()) {
-  if (!body) return {entries:(await pool.query(`SELECT id,artist,title,contact_name AS name,contact_email AS email,
+  if (!body) return {entries:(await pool.query(`SELECT id,artist,title,audio,contact_name AS name,contact_email AS email,
     invitation_state AS state, invitation_sent_at AS "sentAt" FROM christmas_contenders_entries WHERE ${live} ORDER BY artist,title`,[COMPETITION])).rows};
   const {action,id,ext} = body;
   if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id || '')) fail('Select a valid song.');
@@ -32,15 +37,18 @@ export async function manageContenders(body, pool=databasePool()) {
     } else {
       const artist=readText(body.artist,120,true), title=readText(body.title,160,true);
       if(ext==='mp3') fail('Choose artwork.');
-      const media=await Promise.all(['mp3',ext].map(async suffix=>{
-        const blob=await head(pathFor(id,suffix),{token:process.env.BLOB_READ_WRITE_TOKEN});
-        if(blob.contentType!==types[suffix] || !blob.size || blob.size>limit(suffix)) fail('Check the uploaded files and public storage settings.');
-        return new URL(blob.url).hostname.endsWith('.private.blob.vercel-storage.com') ? mediaRoute(id,suffix) : blob.url;
-      }));
+      const media=await Promise.all(['mp3',ext].map(suffix=>uploadedMedia(id,suffix)));
       await pool.query(`INSERT INTO christmas_contenders_entries(competition,id,mode,approved,artist,title,audio,artwork,contact_name,contact_email)
         VALUES($1,$2,'live',true,$3,$4,$5,$6,$7,$8) ON CONFLICT(competition,id) DO NOTHING`,[COMPETITION,id,artist,title,...media,name,email]);
     }
     return {ok:true};
+  }
+  if(action==='replace-audio') {
+    if(!/^song-[a-f0-9-]{36}$/.test(body.key) || typeof body.previous!=='string') fail('Choose a replacement MP3.');
+    const audio=await uploadedMedia(body.key,'mp3');
+    const result=await pool.query(`UPDATE christmas_contenders_entries SET audio=$3 WHERE ${live} AND id=$2 AND audio IN ($3,$4)`,[COMPETITION,id,audio,body.previous]);
+    if(!result.rowCount) fail('The recording has changed. Refresh the list before replacing it.',409);
+    return {ok:true,audio};
   }
   if(action!=='invite') fail('Unknown contender action.');
   if(!process.env.BREVO_API_KEY) fail('Brevo is not configured.',503);
@@ -67,13 +75,12 @@ export async function contenderMedia(file) {
   const match=typeof file==='string' && /^(song-[a-f0-9-]{36})\.(mp3|jpg|png|webp)$/.exec(file);
   if(!match) fail('Unknown media.',404);
   const [,id,ext]=match;
-  const published=await databasePool().query(`SELECT 1 FROM christmas_contenders_entries WHERE ${live} AND id=$2 AND $3 IN (audio,artwork)`,[COMPETITION,id,mediaRoute(id,ext)]);
+  const published=await databasePool().query(`SELECT 1 FROM christmas_contenders_entries WHERE ${live} AND $2 IN (audio,artwork)`,[COMPETITION,mediaRoute(id,ext)]);
   if(!published.rowCount) fail('Unknown media.',404);
   const pathname=pathFor(id,ext);
   const signed=await issueSignedToken({pathname,operations:['get'],validUntil:Date.now()+3600000,token:process.env.BLOB_READ_WRITE_TOKEN});
   return (await presignUrl(signed,{pathname,operation:'get',access:'private'})).presignedUrl;
 }
-
 
 export function signContenderUpload(req) {
   if(req.body?.type!=='blob.generate-presigned-url') fail('Invalid upload request.');
