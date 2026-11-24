@@ -443,15 +443,15 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
-        {messages.some(message => readyVideoKey === message.key || clickedDownloads.has(message.key)) && <aside className="free-message-invite" aria-label="Share the free Message Maker">
+        {coolingDown && !nativeTracker && <SantaCooldownUpsell name={freeRecipient}
+          prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
+        {messages.some(message => readyVideoKey === message.key || clickedDownloads.has(message.key)) && <aside className="free-message-invite free-message-share-invite" aria-label="Share the free Message Maker">
           <h4>Enjoyed the magic? Tell your friends!</h4>
           <p>Spread a little Christmas joy. Your friends can create their own free message from Santa.</p>
           <SantaMessageShare>
             <Share size={17} aria-hidden="true" /> Share with friends
           </SantaMessageShare>
         </aside>}
-        {showCooldown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
-        {showCooldown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
           ? 'check the name and create message.'
@@ -557,13 +557,13 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </>}
         {!messages.length && !coolingDown && <p className="service-notice">Free to create and download. (not sent by email)</p>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
-        {coolingDown && !nativeTracker && <SantaCooldownUpsell name={freeRecipient}
-          prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
         {!nativeTracker && !studioPrelaunch && reviewReceipt && <aside className="free-message-invite free-message-review-invite" aria-label="Review your free Santa message">
           <h4>Leave a review for 20% off</h4>
           <p>Tell us what you thought of your free message and receive a discount on the bespoke Santa message. All star ratings qualify.</p>
           <Link className="free-message-review-invite__link" to="/leave-a-review">Write a review →</Link>
         </aside>}
+        {showCooldown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
+        {showCooldown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         </>}
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}

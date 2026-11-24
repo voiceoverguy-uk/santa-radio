@@ -1,7 +1,6 @@
 @import "./CandyCaneProgress.css";
 .santa-free-video { margin: 1rem 0 1.5rem; }
 .santa-free-video video { display: block; width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 0 0 1rem; background: #082a1e; }
-.santa-free-video__note { font-size: .9rem; line-height: 1.5; }
 .santa-free-video button { padding: .7rem 1rem; margin: .5rem 0; border-radius: 8px; cursor: pointer; }
 
 .santa-free-video__progress { display: flex; gap: 1rem; align-items: center; }
