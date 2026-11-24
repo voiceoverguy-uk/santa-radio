@@ -1,3 +1,4 @@
+import ContenderPictureDownload from '../components/ContenderPictureDownload.jsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRadio } from '../components/RadioProvider.jsx';
@@ -508,7 +509,7 @@ export default function ChristmasContenders() {
                     <strong>{Number.isFinite(entry.total) ? entry.total.toLocaleString('en-GB') : '—'}</strong>
                   </div>
                   <button className="contender-share" type="button" onClick={() => shareEntry(entry)}>Share</button>
-                  {!demo && <a className="contender-share" href={`/contenders/voting-picture.html?song=${encodeURIComponent(entry.id)}`}>Download voting image</a>}
+                  {!demo && <ContenderPictureDownload entry={entry} />}
                   <label className={`contender-select${!selectable ? ' contender-select--disabled' : ''}`}>
                     <input
                       type="checkbox" name="contender-selection"
