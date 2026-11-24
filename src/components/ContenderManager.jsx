@@ -1,3 +1,4 @@
+import { formatUkDate } from '../lib/ukDates.js';
 import { useState } from 'react';
 import { uploadPresigned } from '@vercel/blob/client';
 
@@ -17,7 +18,7 @@ function Contact({entry,run,busy,replace}) {
       <button disabled={busy || !dirty}>Save contact</button>
       <button type="button" disabled={busy || dirty || !entry.email || entry.state!=='ready'}
         onClick={()=>run({action:'invite',id:entry.id,email:entry.email},'Brevo accepted the invitation.')}>Send invitation</button>
-      {entry.state==='sent' && <span> Sent {new Date(entry.sentAt).toLocaleDateString('en-GB')}</span>}
+      {entry.state==='sent' && <span> Sent {formatUkDate(entry.sentAt)}</span>}
       {entry.state==='sending' && <span> Delivery pending confirmation. Check Brevo’s transactional log.</span>}
     </form>
     <form onSubmit={async event=>{

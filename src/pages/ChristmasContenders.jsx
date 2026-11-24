@@ -1,3 +1,4 @@
+import { formatUkDate, ukDateFields } from '../lib/ukDates.js';
 import ContenderPictureDownload from '../components/ContenderPictureDownload.jsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -17,7 +18,7 @@ function dateLabel(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return 'Date to be confirmed';
   return new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London', day: 'numeric', month: 'long', year: 'numeric',
+    timeZone: 'Europe/London', ...ukDateFields,
     hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short',
   }).format(date);
 }
@@ -39,14 +40,12 @@ function makeAttemptId() {
 function votingCloseLabel(value) {
   if (!value || Number.isNaN(Date.parse(value))) return 'Date to be confirmed';
   const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London', weekday: 'long', day: 'numeric', month: 'long',
+    timeZone: 'Europe/London', weekday: 'long',
     hour: 'numeric', minute: '2-digit', hour12: true,
   }).formatToParts(new Date(value));
   const part = type => parts.find(item => item.type === type)?.value || '';
-  const day = Number(part('day'));
-  const ordinal = day >= 11 && day <= 13 ? 'th' : ({1:'st',2:'nd',3:'rd'}[day % 10] || 'th');
   const minutes = part('minute') === '00' ? '' : ':' + part('minute');
-  return `${part('weekday')} ${day}${ordinal} ${part('month')} at ${part('hour')}${minutes}${part('dayPeriod').toLowerCase()} UK time`;
+  return `${part('weekday')} ${formatUkDate(value)} at ${part('hour')}${minutes}${part('dayPeriod').toLowerCase()} UK time`;
 }
 
 async function fetchJson(url, options = {}) {

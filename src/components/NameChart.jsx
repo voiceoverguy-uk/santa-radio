@@ -1,3 +1,4 @@
+import { formatUkDateTime } from '../lib/ukDates.js';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './NameChart.css';
@@ -96,6 +97,6 @@ export default function NameChart() {
       {rows.length > 10 && <button type="button" aria-expanded={expanded} aria-controls="name-chart-more" onClick={() => setExpanded(value => !value)}>{expanded ? 'BACK TO TOP 10 ↑' : 'VIEW THE TOP 25 ↗'}</button>}
     </footer>
     <div id="name-chart-more" hidden={!expanded}><div className="nc-columns">{list(rows.slice(10,18))}{list(rows.slice(18,25))}</div></div>
-    {chart && <p className="nc-chart-updated">Updated {new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(chart.updatedAt))} UK time{error ? ' · Refresh delayed; showing the last chart.' : ''}</p>}
+    {chart && <p className="nc-chart-updated">Updated {formatUkDateTime(chart.updatedAt)} UK time{error ? ' · Refresh delayed; showing the last chart.' : ''}</p>}
   </div></section>;
 }

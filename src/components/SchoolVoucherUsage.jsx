@@ -1,3 +1,4 @@
+import { ukDateFields } from '../lib/ukDates.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SchoolVoucherUsage.css';
 import StudioStorageDiagnostic from './StudioStorageDiagnostic.jsx';
@@ -10,9 +11,7 @@ function formatUKDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
   return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    ...ukDateFields,
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'Europe/London',

@@ -528,3 +528,10 @@
     transition: none;
   }
 }
+
+.song-date-field { display: flex; align-items: center; gap: .5rem; }
+.song-date-field > input { min-width: 0; flex: 1; }
+.song-date-field .song-date-picker { position: relative; display: grid; place-items: center; width: 44px; height: 44px; margin: 0; border: 1px solid currentColor; border-radius: .5rem; }
+.song-date-picker input[type=date] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.song-date-picker input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; }
+.song-date-picker:focus-within { outline: 2px solid currentColor; outline-offset: 2px; }

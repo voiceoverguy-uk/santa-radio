@@ -1,3 +1,4 @@
+import { formatUkDate } from './ukDates.js';
 // Separate owner-supplied public destinations; neither is the Santa access form.
 export const GENERAL_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4mJ0tp-P1-PI-OWQj9209ioBc9iOd-ae3zbwsfaG67xp9R4DlwMgef_Yrr_6g63CPf0CZwITEPVEiaplfqCoR1vb0rEY3jp6ILn1smesmu6rFzGW7ujefLd6MWuIaFyLkoCrl9qNjsEE54J0rYAvUqyNt6NIlWxNcK1b-e3RWmCwY79SD66R2zFRxj-Ff4vyhA5';
 export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAHo-_p9zX-veVdI1MT61eYw_K65GmtGftzIcBNHGcQyO9QCBsXr-YNr6tWl-SueYKR588f8AspMGUl4lTvpufjdHRN6C8kb89x3McgboZ6nmADwHcrwf89iFCD_t1VrttitnnHxzAajCyvnNyFGk5Rvhs1faF4qyNWmTXbip8CJl_Wd7BdB_vc00tfH2EMPYVbpqI3xC53vh';
@@ -74,7 +75,7 @@ export function validateSongFields(fields, mode = 'song') {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
         errors.sponsorLaunchDate = 'Please choose a valid preferred launch date.';
       } else if (value < '2026-11-01' || value > '2026-12-31') {
-        errors.sponsorLaunchDate = 'Please choose a launch date between 1 November and 31 December 2026.';
+        errors.sponsorLaunchDate = 'Please choose a launch date between 01/11/2026 and 31/12/2026.';
       }
     }
     if (!Object.keys(errors).length && buildSponsorshipMessage(fields).length > 500) {
@@ -87,11 +88,11 @@ export function validateSongFields(fields, mode = 'song') {
 export function buildSponsorshipMessage(fields) {
   const contact = [fields.FIRSTNAME, fields.LASTNAME].map(value => value?.trim()).filter(Boolean).join(' ');
   return [
-    '2026 Christmas sponsorship enquiry: £2,500, 1 November–31 December 2026',
+    '2026 Christmas sponsorship enquiry: £2,500, 01/11/2026–31/12/2026',
     `Brand: ${fields.sponsorBrand?.trim() || ''}`,
     `Contact: ${contact}`,
     `Website: ${fields.sponsorWebsite?.trim() || ''}`,
-    `Preferred launch: ${fields.sponsorLaunchDate?.trim() || ''}`,
+    `Preferred launch: ${formatUkDate(fields.sponsorLaunchDate)}`,
     `Campaign: ${fields.sponsorCampaign?.trim() || ''}`,
   ].join('\n');
 }

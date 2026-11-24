@@ -5,7 +5,7 @@ import { GENERAL_FORM_URL } from '../src/lib/songSubmission.js';
 const details = {
   FIRSTNAME: 'Ruth', LASTNAME: 'Example', EMAIL: 'ruth@example.test',
   sponsorBrand: 'North Pole Treats', sponsorWebsite: 'https://example.test',
-  sponsorCampaign: 'Christmas hampers for families.', sponsorLaunchDate: '2026-11-01',
+  sponsorCampaign: 'Christmas hampers for families.', sponsorLaunchDate: '01/11/2026',
 };
 
 test.beforeEach(async ({ page }) => {
@@ -38,10 +38,10 @@ test('sponsorship validation, pending controls and provider message errors remai
     await page.locator(`[name="${name}"]`).fill(details[name]);
   }
   await page.locator('[name="sponsorWebsite"]').fill('invalid');
-  await page.locator('[name="sponsorLaunchDate"]').fill('2027-01-01');
+  await page.locator('[name="sponsorLaunchDate"]').fill('01/01/2027');
   await send.click();
   await expect(page.locator('#song-sponsorWebsite-error')).toContainText('https://');
-  await expect(page.locator('#song-sponsorLaunchDate-error')).toContainText('31 December 2026');
+  await expect(page.locator('#song-sponsorLaunchDate-error')).toContainText('31/12/2026');
   expect(requests).toBe(0);
   await page.locator('[name="sponsorWebsite"]').fill(details.sponsorWebsite);
   await page.locator('[name="sponsorLaunchDate"]').fill(details.sponsorLaunchDate);

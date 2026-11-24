@@ -109,17 +109,17 @@ test('validation rejects over-limit values even if browser limits are bypassed',
 test('sponsorship validation builds a bounded, correctly dated general-enquiry message', () => {
   expect(validateSongFields(sponsorshipDetails, 'sponsorship')).toEqual({});
   const message = buildSponsorshipMessage(sponsorshipDetails);
-  expect(message).toContain('2026 Christmas sponsorship enquiry: £2,500, 1 November–31 December 2026');
+  expect(message).toContain('2026 Christmas sponsorship enquiry: £2,500, 01/11/2026–31/12/2026');
   expect(message).toContain('Brand: North Pole Treats');
   expect(message).toContain('Contact: Ruth Example');
-  expect(message).toContain('Preferred launch: 2026-11-01');
+  expect(message).toContain('Preferred launch: 01/11/2026');
   expect(message.length).toBeLessThanOrEqual(500);
   expect(validateSongFields({ ...sponsorshipDetails, sponsorWebsite: 'not-a-url' }, 'sponsorship'))
     .toMatchObject({ sponsorWebsite: expect.stringContaining('https://') });
   expect(validateSongFields({ ...sponsorshipDetails, sponsorLaunchDate: '2026-02-30' }, 'sponsorship'))
     .toMatchObject({ sponsorLaunchDate: expect.stringContaining('valid') });
   expect(validateSongFields({ ...sponsorshipDetails, sponsorLaunchDate: '2027-01-01' }, 'sponsorship'))
-    .toMatchObject({ sponsorLaunchDate: expect.stringContaining('between 1 November') });
+    .toMatchObject({ sponsorLaunchDate: expect.stringContaining('between 01/11/2026') });
   expect(validateSongFields({
     ...sponsorshipDetails, sponsorBrand: 'B'.repeat(80), FIRSTNAME: 'R'.repeat(200),
     LASTNAME: 'E'.repeat(200), sponsorWebsite: 'https://example.com',
@@ -251,7 +251,7 @@ test('sponsorship enquiry uses the general form, preserves entries on rejection 
   await openForm(page, 'sponsorship');
   await expect(page.getByRole('radio', { name: 'Christmas sponsorship', exact: true })).toBeChecked();
   await expect(page.getByRole('heading', { name: 'Christmas sponsorship enquiry', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '£2,500 · 1 November–31 December 2026' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '£2,500 · 01/11/2026–31/12/2026' })).toBeVisible();
   await expect(page.locator('.sponsorship-offer')).toContainText('2,928 on-air broadcasts');
   await expect(page.locator('.sponsorship-evidence')).toContainText('not deduplicated people or current or active listeners');
   await expect(page.getByRole('button', { name: 'Send sponsorship enquiry', exact: true })).toBeVisible();
@@ -263,12 +263,12 @@ test('sponsorship enquiry uses the general form, preserves entries on rejection 
   await page.getByLabel('Email address').fill(sponsorshipDetails.EMAIL);
   await page.getByLabel('Brand website').fill(sponsorshipDetails.sponsorWebsite);
   await page.getByLabel('Product or campaign description').fill(sponsorshipDetails.sponsorCampaign);
-  await page.getByLabel('Preferred launch date').fill(sponsorshipDetails.sponsorLaunchDate);
+  await page.getByLabel('Preferred launch date').fill('01/11/2026');
   const send = page.getByRole('button', { name: 'Send sponsorship enquiry', exact: true });
   await send.click();
   await expect(page.getByRole('alert')).toHaveText('Temporary test rejection.');
   await expect(page.getByLabel('Company or brand')).toHaveValue(sponsorshipDetails.sponsorBrand);
-  await expect(page.getByLabel('Preferred launch date')).toHaveValue(sponsorshipDetails.sponsorLaunchDate);
+  await expect(page.getByLabel('Preferred launch date')).toHaveValue('01/11/2026');
 
   await send.click();
   await expect(page.getByRole('heading', { name: 'Thank you for your sponsorship enquiry' })).toBeVisible();

@@ -1,3 +1,4 @@
+import { formatUtcDateTime } from '../../lib/ukDates.js';
 import itinerary from "./santaItinerary.json";
 
 export interface SantaStop {
@@ -137,7 +138,7 @@ export function formatStopOffset(stop: SantaStop, year: number): string {
 }
 export function formatStopArrival(stop: SantaStop, year: number): string {
   const date = getStopArrivalDate(stop, year);
-  return `${date.getUTCDate()} Dec · ${date.toISOString().slice(11, 19)} UTC`;
+  return `${formatUtcDateTime(date)} UTC`;
 }
 for (const stop of santaStops) stop.utcOffset = getStopUtcOffset(stop);
 // Preserve a stable public route order and make completion resolve to Honolulu.

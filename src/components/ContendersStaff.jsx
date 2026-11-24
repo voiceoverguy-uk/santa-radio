@@ -1,6 +1,34 @@
 import { useEffect, useState } from 'react';
 import './ContendersStaff.css';
 
+const scheduleKeys = ['opensAt', 'closesAt', 'submissionCutoff'];
+
+function editableSettings(settings) {
+  const result = { ...settings };
+  for (const key of scheduleKeys) {
+    const iso = settings[key] ? new Date(settings[key]).toISOString() : '';
+    result[key] = iso.replace(/^(\d{4})-(\d{2})-(\d{2})T(.*)Z$/, '$3/$2/$1 $4').replace(/\.000$/, '');
+  }
+  return result;
+}
+
+function scheduleForApi(settings) {
+  const result = { ...settings };
+  for (const key of scheduleKeys) {
+    const value = settings[key]?.trim() || '';
+    if (!value && key === 'submissionCutoff') { result[key] = null; continue; }
+    const match = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}:\d{2})(:\d{2}(?:\.\d{1,3})?)?$/.exec(value);
+    const day = match && `${match[3]}-${match[2]}-${match[1]}`;
+    const iso = match && `${day}T${match[4]}${match[5] || ':00'}Z`;
+    const date = iso && new Date(iso);
+    if (!date || !Number.isFinite(date.getTime()) || !date.toISOString().startsWith(day + 'T')) {
+      throw new Error('Enter a valid UTC date and time as DD/MM/YYYY HH:mm, for example 24/11/2026 17:30.');
+    }
+    result[key] = iso;
+  }
+  return result;
+}
+
 const blankEntry = {id:'',mode:'live',artist:'',title:'',artwork:'',audio:'',approved:false};
 export default function ContendersStaff() {
   const [data,setData] = useState(null);
@@ -21,14 +49,14 @@ export default function ContendersStaff() {
   };
   useEffect(() => {
     let active = true;
-    request().then(next => {if(active){setData(next);setSettings(next.settings);}})
+    request().then(next => {if(active){setData(next);setSettings(editableSettings(next.settings));}})
       .catch(error => {if(active)setMessage(error.message);});
     return () => {active=false;};
   },[]);
   const save = async body => {
     if(pending)return;
     setPending(true);setMessage('');
-    try { const next=await request(body);setData(next);setSettings(next.settings);setMessage(body ? 'Saved. Real voting and real forwarding remain disabled in this preview.' : 'Results refreshed.'); }
+    try { const next=await request(body?.action === 'settings' ? { ...body, settings: scheduleForApi(body.settings) } : body);setData(next);setSettings(editableSettings(next.settings));setMessage(body ? 'Saved. Real voting and real forwarding remain disabled in this preview.' : 'Results refreshed.'); }
     catch(error){setMessage(error.message);}
     finally{setPending(false);}
   };
@@ -40,8 +68,8 @@ export default function ContendersStaff() {
       <p>Voting status: <strong>{data.status}</strong> · Demo: <strong>{data.demoStatus}</strong></p>
       <form onSubmit={event => {event.preventDefault();save({action:'settings',settings});}}>
         <fieldset disabled={pending}><legend>Voting settings</legend>
-          {['opensAt','closesAt','submissionCutoff'].map(key => <label key={key}>{({opensAt:'Voting opens (ISO date with timezone)',closesAt:'Voting closes (ISO date with timezone)',submissionCutoff:'Submission cutoff (optional; blank means unset)'})[key]}
-            <input value={settings[key] || ''} required={key!=='submissionCutoff'} maxLength={40}
+          {scheduleKeys.map(key => <label key={key}>{({opensAt:'Voting opens (UTC)',closesAt:'Voting closes (UTC)',submissionCutoff:'Submission cutoff (UTC, optional)'})[key]}
+            <input value={settings[key] || ''} required={key!=='submissionCutoff'} maxLength={40} placeholder="DD/MM/YYYY HH:mm"
               onChange={event => setSettings({...settings,[key]:event.target.value || null})} /></label>)}
           <label>Live availability<select value={settings.availability} onChange={event=>setSettings({...settings,availability:event.target.value})}>
             <option value="scheduled">Use voting dates</option><option value="closed">Closed</option><option value="unavailable">Unavailable</option>

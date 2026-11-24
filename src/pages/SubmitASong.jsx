@@ -4,6 +4,7 @@ import {
   buildSponsorshipMessage, buildSongMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
   SongSubmissionError, submitSong, validateSongFields,
 } from '../lib/songSubmission.js';
+import { formatUkDate } from '../lib/ukDates.js';
 import './SubmitASong.css';
 
 export default function SubmitASong() {
@@ -154,7 +155,16 @@ export default function SubmitASong() {
     };
     return <div className="song-field">
       <label htmlFor={id}>{label}{!options.optional && <span aria-hidden="true"> *</span>}</label>
-      {options.textarea ? <textarea {...props} rows={5} /> : <input {...props} type={options.type || 'text'} />}
+      {options.type === 'date' ? <div className="song-date-field">
+        <input {...props} type="text" placeholder="DD/MM/YYYY"
+          value={/^\d{4}-\d{2}-\d{2}$/.test(fields[name]) ? formatUkDate(fields[name]) : fields[name]}
+          onChange={event => onChange(name, event.target.value.replace(/^(\d{2})\/(\d{2})\/(\d{4})$/, '$3-$2-$1'))} />
+        <label className="song-date-picker"><span aria-hidden="true">📅</span>
+          <input type="date" lang="en-GB" aria-label="Choose from calendar" disabled={pending}
+            min={options.min} max={options.max} value={/^\d{4}-\d{2}-\d{2}$/.test(fields[name]) ? fields[name] : ''}
+            onChange={event => onChange(name, event.target.value)} />
+        </label>
+      </div> : options.textarea ? <textarea {...props} rows={5} /> : <input {...props} type={options.type || 'text'} />}
       {errors[name] && <p className="song-field-error" id={`${id}-error`}>{errors[name]}</p>}
     </div>;
   };
@@ -196,9 +206,9 @@ export default function SubmitASong() {
               <p>For Christmas-related brands—including gifts, decorations, festive food and attractions—ask about joining Santa Radio’s Christmas 2026 campaign.</p>
               <section className="sponsorship-offer" aria-labelledby="sponsorship-offer-title">
                 <p className="sponsorship-offer__eyebrow">The 2026 Christmas package</p>
-                <h2 id="sponsorship-offer-title">£2,500 · 1 November–31 December 2026</h2>
+                <h2 id="sponsorship-offer-title">£2,500 · 01/11/2026–31/12/2026</h2>
                 <ul>
-                  <li>Two recorded sponsor mentions each hour, 24/7 through 31 December.</li>
+                  <li>Two recorded sponsor mentions each hour, 24/7 through 31/12/2026.</li>
                   <li>A linked sponsor banner on every Santa Radio website page.</li>
                   <li>Branding on participating apps’ launch or splash screens.</li>
                 </ul>
@@ -207,7 +217,7 @@ export default function SubmitASong() {
               <aside className="sponsorship-evidence" aria-labelledby="sponsorship-evidence-title">
                 <h2 id="sponsorship-evidence-title">Historical figures</h2>
                 <p>Google Analytics recorded approximately 65,000 active website users in 2025.</p>
-                <p>Apple’s Lifetime Units report, viewed 28 October 2026, showed approximately 247,000 combined lifetime units across Santa Radio iOS/tvOS/watchOS (~59,400), Santa Radio macOS (~5,070), Christmas Radio UK (~142,000) and Fireplace Christmas Radio (~40,000). These are cumulative app acquisitions, not deduplicated people or current or active listeners.</p>
+                <p>Apple’s Lifetime Units report, viewed 28/10/2026, showed approximately 247,000 combined lifetime units across Santa Radio iOS/tvOS/watchOS (~59,400), Santa Radio macOS (~5,070), Christmas Radio UK (~142,000) and Fireplace Christmas Radio (~40,000). These are cumulative app acquisitions, not deduplicated people or current or active listeners.</p>
               </aside>
               <p>Share your brand, website, campaign and preferred launch date below. Sending an enquiry does not confirm a booking.</p>
             </> : <p>For press and corporate enquiries, feedback or suggestions, send us your details and message below.</p>}
