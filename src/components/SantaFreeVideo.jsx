@@ -57,6 +57,5 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
     {!url && !error && !cancelled && <button type="button" onClick={() => setCancelled(true)}>Cancel video preparation</button>}
     {error && <p role="alert">{error}</p>}
     {(error || cancelled) && <button type="button" onClick={() => { setCancelled(false); setAttempt(value => value + 1); }}>Prepare video again</button>}
-    <p className="santa-free-video__note">Your name and Santa’s voice are included in the video. Save it to your device to keep and share.</p>
   </div>;
 }

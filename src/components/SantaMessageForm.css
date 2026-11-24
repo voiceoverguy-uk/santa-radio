@@ -164,6 +164,13 @@
 .free-message-invite .message-share .message-retry:hover { background: #ffe4aa; }
 .free-message-invite .message-share-status { margin: 8px 0 0; text-align: center; }
 
+.free-message-share-invite {
+  background:
+    linear-gradient(135deg, #173e2de0, #0f2e24cf 54%, #0f2e24ed),
+    url('/images/workshop-background-festive.webp') center top / cover no-repeat,
+    #14382a;
+}
+
 .free-message-review-invite {
   background:
     linear-gradient(135deg, #163c2ed9, #0f2e24c7 50%, #0f2e24e6),
