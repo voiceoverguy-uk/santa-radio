@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS christmas_contenders_notifications (
   CHECK (marketing_opt_in = (consented_at IS NOT NULL))
 );
 INSERT INTO christmas_contenders_settings VALUES ('christmas-contenders-2026',
-  '{"opensAt":"2026-11-01T00:00:00.000Z","closesAt":"2026-11-30T23:59:59.999Z","availability":"scheduled","demoAvailability":"open","submissionCutoff":null}')
+  '{"opensAt":"2026-11-01T00:00:00.000Z","closesAt":"2026-12-13T20:00:00.000Z","availability":"scheduled","demoAvailability":"open","submissionCutoff":null}')
 ON CONFLICT DO NOTHING;
 INSERT INTO christmas_contenders_entries(competition,id,mode,artist,title,artwork,audio,approved,description) VALUES
  ('christmas-contenders-2026','bob-the-elf','demo','Bob the Elf','We Wish You a Merry Christmas',

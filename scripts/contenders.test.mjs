@@ -12,11 +12,11 @@ import { normalizeVotingEmail, MARKETING_CONSENT_TEXT } from '../server/contende
 import { buildSongVotePayload, sendSongVoteNotification, EMAIL_ONLY_BREVO_ROUTING_READY } from '../server/contender-song-notification.js';
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 
-test('UK November voting boundaries and explicit availability', () => {
+test('UK voting boundaries and explicit availability', () => {
   assert.equal(votingStatus(defaultSettings, Date.parse('2026-10-31T23:59:59Z')), 'upcoming');
   assert.equal(votingStatus(defaultSettings, Date.parse('2026-11-01T00:00:00Z')), 'open');
-  assert.equal(votingStatus(defaultSettings, Date.parse('2026-11-30T23:59:59.999Z')), 'open');
-  assert.equal(votingStatus(defaultSettings, Date.parse('2026-12-01T00:00:00Z')), 'closed');
+  assert.equal(votingStatus(defaultSettings, Date.parse('2026-12-13T19:59:59.999Z')), 'open');
+  assert.equal(votingStatus(defaultSettings, Date.parse('2026-12-13T20:00:00Z')), 'closed');
   assert.equal(votingStatus({...defaultSettings,availability:'closed'}, 0), 'closed');
   assert.equal(votingStatus({...defaultSettings,availability:'unavailable'}), 'unavailable');
   assert.equal(defaultSettings.submissionCutoff,null);

@@ -39,11 +39,14 @@ function makeAttemptId() {
 function votingCloseLabel(value) {
   if (!value || Number.isNaN(Date.parse(value))) return 'Date to be confirmed';
   const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London', day: 'numeric', month: 'long',
+    timeZone: 'Europe/London', weekday: 'long', day: 'numeric', month: 'long',
     hour: 'numeric', minute: '2-digit', hour12: true,
   }).formatToParts(new Date(value));
   const part = type => parts.find(item => item.type === type)?.value || '';
-  return `${part('day')} ${part('month')} · ${part('hour')}:${part('minute')}${part('dayPeriod').toLowerCase()} UK time`;
+  const day = Number(part('day'));
+  const ordinal = day >= 11 && day <= 13 ? 'th' : ({1:'st',2:'nd',3:'rd'}[day % 10] || 'th');
+  const minutes = part('minute') === '00' ? '' : ':' + part('minute');
+  return `${part('weekday')} ${day}${ordinal} ${part('month')} at ${part('hour')}${minutes}${part('dayPeriod').toLowerCase()} UK time`;
 }
 
 async function fetchJson(url, options = {}) {

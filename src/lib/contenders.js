@@ -1,7 +1,7 @@
 export const COMPETITION = 'christmas-contenders-2026';
 export const defaultSettings = {
   opensAt: '2026-11-01T00:00:00.000Z',
-  closesAt: '2026-11-30T23:59:59.999Z',
+  closesAt: '2026-12-13T20:00:00.000Z',
   availability: 'scheduled', demoAvailability: 'open', submissionCutoff: null,
   repeatDemo: false,
 };
@@ -92,7 +92,7 @@ export function votingStatus(settings, now = Date.now()) {
   if (settings.availability === 'unavailable') return 'unavailable';
   if (settings.availability === 'closed') return 'closed';
   if (now < Date.parse(settings.opensAt)) return 'upcoming';
-  return now > Date.parse(settings.closesAt) ? 'closed' : 'open';
+  return now >= Date.parse(settings.closesAt) ? 'closed' : 'open';
 }
 export function secureMediaLink(value) {
   if (typeof value !== 'string' || value.length > 400) return false;
