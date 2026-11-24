@@ -1,4 +1,4 @@
-import { manageContenders } from './contender-management.js';
+import { manageContenders, signContenderUpload } from './contender-management.js';
 import { visitorReport } from './google-analytics-statistics.js';
 import { listDadVouchers } from './dad-vouchers.js';
 import { gameReport, recordGameRound } from './christmas-game-statistics.js';
@@ -28,6 +28,10 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
       if (req.method !== 'GET') {
         let origin; try { origin=new URL(req.headers.origin); } catch { /* rejected below */ }
         if (!origin || origin.host !== getClerkProxyHost(req) || req.headers['sec-fetch-site']==='cross-site') return res.status(403).json({error:'Please use the Santa Radio website.'});
+      }
+      if(req.method==='POST' && req.query?.view==='contender-upload') {
+        if(!allowed(req)) return res.status(401).json({error:'Unlock the dashboard to upload a song.'});
+        return res.json(await signContenderUpload(req));
       }
       if(req.method==='POST') {
         if (['game-start','game-reveal'].includes(req.body?.action)) {

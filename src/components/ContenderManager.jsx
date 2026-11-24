@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { put } from '@vercel/blob/client';
+import { uploadPresigned } from '@vercel/blob/client';
 
 const formats = {mp3:'audio/mpeg',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
 function Contact({entry,run,busy}) {
@@ -46,12 +46,17 @@ export default function ContenderManager({ownerToken,onPublish}) {
           throw new Error(key==='audio'?'Choose an MP3 up to 40 MB.':'Choose a JPG, PNG or WebP up to 10 MB.');
         if(upload.done[key]!==file) {
           setNotice(`Uploading ${file.name}…`);
-          const {pathname,token,access}=await request({action:'upload',id:upload.id,ext});
-          await put(pathname,file,{access,token,contentType:formats[ext]});
+          await uploadPresigned(`christmas-contenders/${upload.id}.${ext}`,file,{
+            access:'private',contentType:formats[ext],
+            handleUploadUrl:'/api/message-statistics?view=contender-upload',
+            headers:{Authorization:`Bearer studio-owner.${ownerToken}`},
+            onUploadProgress:({percentage})=>setNotice(`Uploading ${file.name} — ${Math.round(percentage)}%`)
+          });
           upload.done[key]=file;
         }
         if(key==='artwork') upload.ext=ext;
       }
+      setNotice('Publishing your song…');
       await request({...fields,action:'publish',id:upload.id,ext:upload.ext});
       form.reset();setFiles({});setJob(null);setNotice('Song published to Christmas Contenders.');await refresh();onPublish();
     }catch(error){setNotice(error.message);}
@@ -59,7 +64,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
   }
   return <div className="contender-manager">
     <button type="button" disabled={busy} onClick={()=>entries ? setEntries(null) : run(null,'')}>{entries?'Close song management':'Manage songs and invitations'}</button>
-    <p role="status">{notice}</p>
+    {!entries && <p role="status">{notice}</p>}
     {entries && <><h3>Add a contender</h3><form onSubmit={publish}><fieldset disabled={busy}>
       {[['artist','Artist',120],['title','Song title',160],['name','Private contact name',120],['email','Private contact email',254]].map(([key,label,max])=><label key={key}>{label}
         <input name={key} type={key==='email'?'email':'text'} maxLength={max} required={key==='artist'||key==='title'}/></label>)}
@@ -67,7 +72,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
         {key==='audio'?'Drop or choose MP3 (40 MB max)':'Drop or choose artwork (JPG, PNG or WebP, 10 MB max)'}
         <input type="file" accept={key==='audio'?'.mp3':'.jpeg,.jpg,.png,.webp'} onChange={e=>{setFiles({...files,[key]:e.target.files[0]});setJob(null);}}/>
         {files[key]?.name}</label>)}
-      <button>Publish song</button></fieldset></form><h3>Artist contacts and invitations</h3>
+      <button>{busy ? 'Please wait…' : 'Publish song'}</button><p role="status" aria-live="polite">{notice}</p></fieldset></form><h3>Artist contacts and invitations</h3>
       {entries.map(entry=><Contact key={[entry.id,entry.name,entry.email].join('|')} entry={entry} run={run} busy={busy}/>)}</>}
   </div>;
 }

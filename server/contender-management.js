@@ -1,4 +1,4 @@
-import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
+import { handleUploadPresigned } from '@vercel/blob/client';
 import { head, issueSignedToken, presignUrl } from '@vercel/blob';
 import { databasePool } from './contenders-database.js';
 import { COMPETITION } from '../src/lib/contenders.js';
@@ -18,15 +18,7 @@ export async function manageContenders(body, pool=databasePool()) {
     invitation_state AS state, invitation_sent_at AS "sentAt" FROM christmas_contenders_entries WHERE ${live} ORDER BY artist,title`,[COMPETITION])).rows};
   const {action,id,ext} = body;
   if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id || '')) fail('Select a valid song.');
-  if (action === 'upload' || action === 'publish') {
-    const token = process.env.CONTENDERS_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
-    if (!token) fail('Connect a public Blob store for contender uploads.',503);
-    if (!/^song-[a-f0-9-]{36}$/.test(id) || !Object.hasOwn(types,ext)) fail('Choose a supported file.');
-    if (action==='upload') {
-      const pathname=pathFor(id,ext);
-      return {pathname,access:process.env.CONTENDERS_BLOB_READ_WRITE_TOKEN ? 'public' : 'private',token:await generateClientTokenFromReadWriteToken({token,pathname,allowedContentTypes:[types[ext]],maximumSizeInBytes:limit(ext),validUntil:Date.now()+900000})};
-    }
-  }
+  if(action==='publish' && (!/^song-[a-f0-9-]{36}$/.test(id) || !Object.hasOwn(types,ext))) fail('Choose a supported file.');
   if (action==='contact' || action==='publish') {
     const name=readText(body.name,120), raw=readText(body.email,254);
     const email=raw ? normalizeVotingEmail(raw) : '';
@@ -41,7 +33,7 @@ export async function manageContenders(body, pool=databasePool()) {
       const artist=readText(body.artist,120,true), title=readText(body.title,160,true);
       if(ext==='mp3') fail('Choose artwork.');
       const media=await Promise.all(['mp3',ext].map(async suffix=>{
-        const blob=await head(pathFor(id,suffix),{token:process.env.CONTENDERS_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN});
+        const blob=await head(pathFor(id,suffix),{token:process.env.BLOB_READ_WRITE_TOKEN});
         if(blob.contentType!==types[suffix] || !blob.size || blob.size>limit(suffix)) fail('Check the uploaded files and public storage settings.');
         return new URL(blob.url).hostname.endsWith('.private.blob.vercel-storage.com') ? mediaRoute(id,suffix) : blob.url;
       }));
@@ -80,4 +72,16 @@ export async function contenderMedia(file) {
   const pathname=pathFor(id,ext);
   const signed=await issueSignedToken({pathname,operations:['get'],validUntil:Date.now()+3600000,token:process.env.BLOB_READ_WRITE_TOKEN});
   return (await presignUrl(signed,{pathname,operation:'get',access:'private'})).presignedUrl;
+}
+
+
+export function signContenderUpload(req) {
+  if(req.body?.type!=='blob.generate-presigned-url') fail('Invalid upload request.');
+  return handleUploadPresigned({request:req,body:req.body,getSignedToken:async pathname=>{
+    const match=/^christmas-contenders\/song-[a-f0-9-]{36}\.(mp3|jpg|png|webp)$/.exec(pathname);
+    if(!match) fail('Choose a supported contender file.');
+    const ext=match[1];
+    const constraints={pathname,operations:['put'],allowedContentTypes:[types[ext]],maximumSizeInBytes:limit(ext),validUntil:Date.now()+900000};
+    return {token:await issueSignedToken(constraints),urlOptions:{allowOverwrite:false,addRandomSuffix:false}};
+  }});
 }
