@@ -18,7 +18,18 @@ import {DAD_ARTWORK,createDadVideo,dadPoster,dadVideoFilename} from '../lib/dadV
 import './SantaMessageWorkshop.css';
 import './DadMessageStudio.css';
 const capitalise=value=>value.trim().replace(/(^|[\s'-])\p{L}/gu,c=>c.toLocaleUpperCase('en-GB'));
-async function request(path,body){const r=await fetch(path,{method:body?'POST':'GET',credentials:'same-origin',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{})});const data=await r.json();if(!r.ok)throw Error(data.error||'Please try again.');return data;}
+async function request(path, body) {
+ const response = await fetch(path, {
+  method: body ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
+  signal: AbortSignal.timeout(15000),
+  ...(body ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
+ });
+ const data = await response.json().catch(() => null);
+ if (!response.ok || !data) {
+  throw Object.assign(new Error(data?.error || 'Please try again.'), { status: response.status });
+ }
+ return data;
+}
 function FittedArtCaption({children, className = "dad-art-caption"}) {
  const container=useRef(null),text=useRef(null);
  useLayoutEffect(()=>{
@@ -69,8 +80,64 @@ export default function DadMessageStudio(){
  },[step]);
  const [audioState,setAudioState]=useState('idle'),[editingReview,setEditingReview]=useState(false),[sceneChosen,setSceneChosen]=useState(false);
 
- const load=async()=>{try{await request('/api/dad-studio-access');}catch{}try{const data=await request('/api/dad-studio-message');setAccess({...data,categories:data.categories?dadDisplayCategories(data.categories):data.categories});}catch(e){setAccess({authorized:false});}};
- useEffect(()=>{const boot=async()=>{const token=new URLSearchParams(location.hash.slice(1)).get('studio-return');if(token){history.replaceState(null,'',location.pathname);try{await request('/api/dad-studio-return',{token});}catch(e){setError(e.message);}}await load();};boot();return()=>{job.current?.abort();clearTimeout(hideTimer.current);if(videoURL.current)URL.revokeObjectURL(videoURL.current);};},[]);
+ const accessCheck = useRef(0);
+ const [recordingFailure, setRecordingFailure] = useState(null);
+ const load = async (reconcilePayment = true) => {
+  const check = ++accessCheck.current;
+  let paymentCheckFailed = false;
+  try {
+   if (reconcilePayment) {
+    await request('/api/dad-studio-access').catch(() => { paymentCheckFailed = true; });
+   }
+   const data = await request('/api/dad-studio-message');
+   if (check !== accessCheck.current || confirmed.current) return;
+   if (data.authorized !== true || ![0, 1].includes(data.remaining)) throw new Error('Invalid access response');
+   if (data.support) {
+    setRecordingFailure(current => ({
+     failedAttempts: Math.max(current?.failedAttempts || 0, data.support.failedAttempts),
+     reference: data.support.reference,
+    }));
+   }
+   setAccess({ ...data, categories: data.categories ? dadDisplayCategories(data.categories) : data.categories });
+  } catch (failure) {
+   if (check !== accessCheck.current || confirmed.current) return;
+   setAccess(!paymentCheckFailed && [401, 403, 410].includes(failure.status) ? { authorized: false } : { checkFailed: true });
+  }
+ };
+ useEffect(() => {
+  let readyToRecheck = false;
+  let disposed = false;
+  const boot = async () => {
+   const token = new URLSearchParams(location.hash.slice(1)).get('studio-return');
+   if (token) {
+    history.replaceState(null, '', location.pathname);
+    try { await request('/api/dad-studio-return', { token }); }
+    catch (failure) { setError(failure.message); }
+   }
+   if (disposed) return;
+   await load();
+   readyToRecheck = true;
+  };
+  const recheck = () => {
+   if (readyToRecheck && !document.hidden && !confirmed.current) {
+    setAccess(null);
+    load(false);
+   }
+  };
+  const restore = event => { if (event.persisted) recheck(); };
+  boot();
+  document.addEventListener('visibilitychange', recheck);
+  window.addEventListener('pageshow', restore);
+  return () => {
+   disposed = true;
+   accessCheck.current++;
+   document.removeEventListener('visibilitychange', recheck);
+   window.removeEventListener('pageshow', restore);
+   job.current?.abort();
+   clearTimeout(hideTimer.current);
+   if (videoURL.current) URL.revokeObjectURL(videoURL.current);
+  };
+ }, []);
  useEffect(()=>{
   let cancelled=false,timer;const controller=new AbortController();
   const refresh=async()=>{try{
@@ -92,12 +159,29 @@ export default function DadMessageStudio(){
   const audioTimeout=setTimeout(()=>controller.abort(new Error('Recording preparation took too long. Please retry.')),120000);
   try{
    const r=await fetch('/api/dad-studio-message',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':selection.operation},body:JSON.stringify(selection.request),signal:controller.signal});
-   if(!r.ok){const data=await r.json();throw Error(data.error||'Please try again.');}
+   if (!r.ok) {
+    const data = await r.json().catch(() => null);
+    const message = data?.error || 'Your recording could not be prepared. Please try again.';
+    throw Object.assign(new Error(message), {
+     reference: data?.reference,
+     failedAttempts: data?.failedAttempts,
+     status: r.status,
+    });
+   }
    const metadata=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(r.headers.get('X-Studio-Selection')),c=>c.charCodeAt(0))));
    const audioBlob=await r.blob();controller.signal.throwIfAborted();
    saved.current={operation:selection.operation,...metadata,...selection.details,writtenName:capitalise(metadata.record.name),audioBlob};
    setAccess(a=>({...a,remaining:a.admin?1:0}));setAudioState('ready');
-  }catch(e){setError(controller.signal.aborted?(controller.signal.reason?.message||'Recording preparation was interrupted. Please retry.'):e.message);setAudioState('error');}
+  } catch (failure) {
+   setError(controller.signal.aborted
+    ? (controller.signal.reason?.message || 'Recording preparation was interrupted. Please retry.')
+    : failure.message);
+   setRecordingFailure(previous => ({
+    failedAttempts: Math.max((previous?.failedAttempts || 0) + 1, failure.failedAttempts || 0),
+    reference: failure.reference || previous?.reference,
+   }));
+   setAudioState('error');
+  }
   finally{clearTimeout(audioTimeout);audioFlight.current=false;if(job.current===controller)job.current=null;}
  };
  const confirm=()=>{
@@ -138,7 +222,10 @@ export default function DadMessageStudio(){
  <div className={`dad-layout${step===0&&!result?" dad-layout-opening":" dad-layout-focused"}`}>{step===0&&!result&&<div className="dad-intro-art"><img className="dad-intro-logo" src="/images/dad-message-logo-v4.webp" alt="Dad’s Message from Santa"/><section className="dad-art"><img src={DAD_ARTWORK[art].src} alt={DAD_ARTWORK[art].label}/><FittedArtCaption>{name.record ? `A message for ${name.record.name}${sceneAge ? ` — aged ${sceneAge}` : ''}` : 'Ready to get silly?'}</FittedArtCaption></section></div>}
  <section ref={panelRef} className="dad-panel" aria-label="Dad recording studio"><h2>The North Pole Recording Studio</h2>
  {error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
- {!access?<p>Opening Studio…</p>:!access.authorized?<><h3>One Dad.<br/>One very personal message.</h3><p>£5 includes one message creation, your choice of six Christmas scenes and the ‘OFFISHAL Nice-ish List certificate’. Preview, download and share your personalised MP4.</p><button className="dad-primary dad-purchase-cta" disabled={busy||!sales} onClick={checkout}>{busy?'Opening checkout…':sales?'Create Dad’s message — £5':'Purchases opening soon — £5'}</button><details className="dad-return-purchase"><summary>Already purchased?</summary><p>Enter your purchase email for a return link.</p><form onSubmit={async e=>{e.preventDefault();try{setNotice((await request('/api/dad-studio-return',{email})).message);}catch(e){setError(e.message);}}}><label>Email address<input type="email" required value={email} onChange={e=>setEmail(e.target.value)}/></label><button type="submit">Email my return link</button></form></details><details><summary>Friend or Guest?</summary><p>DISCOUNT CODES are entered at Stripe checkout.</p><form onSubmit={async e=>{e.preventDefault();setError('');try{await request('/api/santa-workshop-access');await request('/api/santa-workshop-access',{code:ownerCode});setOwnerCode('');await load();}catch(e){setError(e.message);}}}><input type="text" autoComplete="off" placeholder="friend or guest code" aria-label="Friend or guest code" required value={ownerCode} onChange={e=>setOwnerCode(e.target.value)}/><button type="submit">Use code</button></form></details></>:
+ {!access?<p role="status">Checking your creation…</p>:access.checkFailed?<div role="alert">
+  <p>We couldn’t check your Dad Studio access. Please try again.</p>
+  <button type="button" onClick={() => { setAccess(null); load(); }}>Check access again</button>
+ </div>:!access.authorized?<><h3>One Dad.<br/>One very personal message.</h3><p>£5 includes one message creation, your choice of six Christmas scenes and the ‘OFFISHAL Nice-ish List certificate’. Preview, download and share your personalised MP4.</p><button className="dad-primary dad-purchase-cta" disabled={busy||!sales} onClick={checkout}>{busy?'Opening checkout…':sales?'Create Dad’s message — £5':'Purchases opening soon — £5'}</button><details className="dad-return-purchase"><summary>Already purchased?</summary><p>Enter your purchase email for a return link.</p><form onSubmit={async e=>{e.preventDefault();try{setNotice((await request('/api/dad-studio-return',{email})).message);}catch(e){setError(e.message);}}}><label>Email address<input type="email" required value={email} onChange={e=>setEmail(e.target.value)}/></label><button type="submit">Email my return link</button></form></details><details><summary>Friend or Guest?</summary><p>DISCOUNT CODES are entered at Stripe checkout.</p><form onSubmit={async e=>{e.preventDefault();setError('');try{await request('/api/santa-workshop-access');await request('/api/santa-workshop-access',{code:ownerCode});setOwnerCode('');await load();}catch(e){setError(e.message);}}}><input type="text" autoComplete="off" placeholder="friend or guest code" aria-label="Friend or guest code" required value={ownerCode} onChange={e=>setOwnerCode(e.target.value)}/><button type="submit">Use code</button></form></details></>:
  <>
  {showProgress&&<><h3>Your Santa Message</h3><section className="dad-preparation" aria-label="Preparing your Santa message">
  <strong>Your message from Santa to {capitalise(sceneName || 'Dad')}</strong>
@@ -148,7 +235,10 @@ export default function DadMessageStudio(){
  </section>{busy&&<button className="dad-cancel-preparation" onClick={()=>job.current?.abort()}>Cancel preparation</button>}</>}
 
  {result?<>{gameDone&&<><h3>A message for {result.writtenName}</h3><SantaVideoPlayer festiveControls src={result.url} poster={result.poster} glow label={`Santa’s message for ${result.writtenName}`}/><div className="dad-actions dad-result-actions"><a className="dad-primary" href={result.url} download={dadVideoFilename(result)}>Download your message ↓</a><SantaGreetingShare message={{name:result.writtenName,blob:result.blob}} filename={dadVideoFilename(result)}/></div><DadCertificate name={result.writtenName} downloadable onReady={setCertificate}/><DadAccountSave result={result} certificate={certificate}/></>}</>:
- !busy&&access.remaining===0&&!confirmed.current?<><p>Your message creation has been used. Keep your downloaded MP4 to watch and share.</p>{sales&&<button className="dad-primary" onClick={checkout}>Create another Dad message — £5</button>}</>:
+ access.pending&&!confirmed.current?<div role="status">
+  <p>A recording is already being prepared. Wait for it to finish, then check your access again.</p>
+  <button type="button" onClick={() => { setAccess(null); load(false); }}>Check access again</button>
+ </div>:!busy&&access.remaining===0&&!confirmed.current?<><p>Your message creation has been used. Keep your downloaded MP4 to watch and share.</p>{sales&&<button className="dad-primary" onClick={checkout}>Create another Dad message — £5</button>}</>:
  !busy&&<><div className="dad-step-heading"><div><h3>{stages[step]}</h3></div>{step===5&&<button className="dad-primary dad-create-message" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>Create Message <span aria-hidden="true">→</span></button>}{step<4&&continueButton}{step===4&&<div className="dad-review-actions"><button type="button" onClick={()=>{name.choose(null);setChoices({});setEditingReview(false);setError('');setStep(0);}}><span aria-hidden="true">←</span> Start Again</button><button className="dad-primary" onClick={confirm}>Choose picture <span aria-hidden="true">→</span></button></div>}</div>
  <div className="dad-step-progress">
   <div className="smw-progress" role="progressbar" aria-valuemin={1} aria-valuemax={progressLabels.length} aria-valuenow={step+1} aria-label="Dad workshop progress" aria-valuetext={`Step ${step+1} of ${progressLabels.length} · ${progressLabels[step]}`}>
@@ -160,7 +250,10 @@ export default function DadMessageStudio(){
  {step===0&&name.record&&<section className="dad-name-age"><h4>Their age</h4><WorkshopAgeCarousel options={access.categories.age} value={choices.age} onChange={v=>change('age',v)}/></section>}
  {step>=1&&step<=3&&(()=>{const key=['habit','viewing','treat'][step-1];return <WorkshopSearchableChoices key={key} showClearButton={false} getOptionLabel={key === 'treat' ? undefined : dadScrollerLabel} category={['activity','achievement','treat'][step-1]} label={stages[step]} options={access.categories[key]} value={choices[key]} onChange={v=>change(key,v)} onTick={()=>{}} onSoundInteraction={()=>{}} searchLabel={`Search ${stages[step].toLowerCase()}`} placeholder="Start typing…" selectedText={access.categories[key].find(x=>x.id===choices[key])?.label||''} wording={key==='habit'?'(sarcastically) You are very useful around the house and especially good at…':key==='viewing'?'So considerate when the family are watching something. You give it 10 minutes then you swap to…':'(sarcastically) Cheers for the imaginative treats you leave me… ah yes…'}/>;})()}
  {step===4&&<><p className="dad-review-intro">Here’s Dad’s message. Check each detail below. You can still change any of your choices.</p><dl className="dad-recap">{reviewRows.map(row=><div className="dad-recap-row" key={row.label}><div><dt>{row.label}</dt><dd>{row.value}</dd></div><button type="button" aria-label={`Edit ${row.label.toLowerCase()}`} onClick={()=>edit(row.step)}><Pencil size={20} aria-hidden="true"/></button></div>)}</dl></>}
- {step===5&&<>{audioState==='error'&&<div className="dad-audio-status"><p>The recording could not be prepared. Retry with your confirmed choices.</p><button className="dad-primary" onClick={prepareAudio}>Retry recording</button></div>}{audioState==='preparing'&&<p role="status">Preparing your recording… You can choose your picture while you wait.</p>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
+ {step===5&&<>{audioState==='error'&&<div className="dad-audio-status"><p>The recording could not be prepared. Retry with your confirmed choices.</p><button className="dad-primary" onClick={prepareAudio}>Retry recording</button>{(recordingFailure?.failedAttempts || 0) >= 4 && <p>
+  {recordingFailure.reference && <>Support reference: <code>{recordingFailure.reference}</code>. </>}
+  <Link to={recordingFailure.reference ? `/submit-a-song?dadSupport=${encodeURIComponent(recordingFailure.reference)}` : '/submit-a-song'} target="_blank" rel="noopener">Contact Santa Radio</Link> for help. Keep this tab open to preserve your choices.
+ </p>}</div>}{audioState==='preparing'&&<p role="status">Preparing your recording… You can choose your picture while you wait.</p>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
  {step<4&&<div className="dad-actions dad-step-actions">{(step>0||editingReview)&&step<5&&<button onClick={()=>{setStep(editingReview?4:step-1);setEditingReview(false);}}>{editingReview?'Back to recap':'← Back'}</button>}{step<4?continueButton:step===4?<button className="dad-primary" onClick={confirm}>Confirm and choose a picture →</button>:<button className="dad-primary" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>{audioState==='preparing'?'Preparing your recording…':'Create my video →'}</button>}</div>}
 
  </>}

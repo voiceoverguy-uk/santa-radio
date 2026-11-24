@@ -1,3 +1,4 @@
+import { dadSupportReport, recordDadReplacement } from './dad-recording-support.js';
 import { androidInstallReport } from './android-install-statistics.js';
 import { manageContenders, signContenderUpload } from './contender-management.js';
 import { visitorReport } from './google-analytics-statistics.js';
@@ -60,6 +61,16 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
+      if (req.query?.view === 'dad-support') {
+        try {
+          if (req.method === 'GET') return res.json(await dadSupportReport(req.query.reference));
+          if (req.body?.action === 'record-replacement') return res.json(await recordDadReplacement(req.body.reference));
+          return res.status(400).json({ error: 'Choose a support action.' });
+        } catch (error) {
+          if ([400, 409].includes(error.status)) return res.status(error.status).json({ error: error.message });
+          throw error;
+        }
+      }
       if(req.query?.view==='contenders') {
         try { return res.json(await manageContenders(req.method==='PATCH' ? req.body : undefined)); }
         catch(error) { if([400,409,502,503].includes(error.status)) return res.status(error.status).json({error:error.message}); throw error; }

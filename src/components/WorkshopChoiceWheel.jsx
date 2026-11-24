@@ -18,6 +18,8 @@ export default function WorkshopChoiceWheel({
   showCount = true,
   currentSelectionLabel = '',
   selectionStatusLabel,
+  frameAction,
+  frameActionAtTop = false,
   footer,
 }) {
   const choices = options;
@@ -238,7 +240,8 @@ export default function WorkshopChoiceWheel({
       <p className="smw-choice-wheel-hint smw-wheel-accessible-text" id={`${wheelId}-hint`}>
         Scroll or use the arrow keys to choose. You can also tap an option.
       </p>
-      <div className={`smw-choice-wheel-frame${invalid ? ' is-invalid' : ''}`}>
+      <div className={`smw-choice-wheel-frame${frameAction ? ` smw-choice-wheel-frame--action${frameActionAtTop ? " smw-choice-wheel-frame--action-top" : ""}` : ""}${invalid ? ' is-invalid' : ''}`}>
+        {frameActionAtTop && frameAction && <div className="smw-choice-wheel-action">{frameAction}</div>}
         <span className="smw-choice-wheel-fade smw-choice-wheel-fade-top" aria-hidden="true" />
         <div
           ref={wheelRef}
@@ -282,6 +285,7 @@ export default function WorkshopChoiceWheel({
           <div ref={bottomSpacerRef} className="smw-choice-wheel-spacer" aria-hidden="true" />
         </div>
         <span className="smw-choice-wheel-fade smw-choice-wheel-fade-bottom" aria-hidden="true" />
+        {!frameActionAtTop && frameAction && <div className="smw-choice-wheel-action">{frameAction}</div>}
       </div>
       <div className={footer ? 'smw-choice-wheel-footer-row' : undefined}>
       <p className="smw-choice-wheel-status" aria-live="polite" aria-atomic="true">

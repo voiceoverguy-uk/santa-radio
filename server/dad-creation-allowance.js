@@ -61,11 +61,20 @@ export function createStudioAllowanceStore(pool = databasePool()) {
       });
     },
     async succeed(identity, reservation) {
-      const result = await pool.query(`UPDATE public.santa_dad_creation_allowances
-        SET operations=array_append(operations,operation), reservation=NULL, operation=NULL, reserved_until=NULL
-        WHERE access_key=$1 AND reservation=$2 AND reserved_until > clock_timestamp()
-        AND (expires_at IS NULL OR expires_at > clock_timestamp()) AND cardinality(operations)<1
-        RETURNING access_key`, [identity.key, reservation]);
+      const result = await pool.query(`
+        WITH completed AS (
+          UPDATE public.santa_dad_creation_allowances
+          SET operations=array_append(operations,operation), reservation=NULL, operation=NULL, reserved_until=NULL
+          WHERE access_key=$1 AND reservation=$2 AND reserved_until > clock_timestamp()
+          AND (expires_at IS NULL OR expires_at > clock_timestamp()) AND cardinality(operations)<1
+          RETURNING access_key
+        ), support AS (
+          UPDATE public.santa_dad_recording_support s
+          SET recording_completed_at=now()
+          FROM completed c WHERE s.access_key=c.access_key
+        )
+        SELECT access_key FROM completed
+      `, [identity.key, reservation]);
       if (!result.rowCount) throw problem('This preparation expired. Check Studio before trying again.');
     },
     async release(identity, reservation) {
