@@ -81,6 +81,7 @@ export default function DadMessageStudio(){
  const [audioState,setAudioState]=useState('idle'),[editingReview,setEditingReview]=useState(false),[sceneChosen,setSceneChosen]=useState(false);
 
  const accessCheck = useRef(0);
+ const [recordingFailure, setRecordingFailure] = useState(null);
  const load = async (reconcilePayment = true) => {
   const check = ++accessCheck.current;
   let paymentCheckFailed = false;
@@ -91,6 +92,12 @@ export default function DadMessageStudio(){
    const data = await request('/api/dad-studio-message');
    if (check !== accessCheck.current || confirmed.current) return;
    if (data.authorized !== true || ![0, 1].includes(data.remaining)) throw new Error('Invalid access response');
+   if (data.support) {
+    setRecordingFailure(current => ({
+     failedAttempts: Math.max(current?.failedAttempts || 0, data.support.failedAttempts),
+     reference: data.support.reference,
+    }));
+   }
    setAccess({ ...data, categories: data.categories ? dadDisplayCategories(data.categories) : data.categories });
   } catch (failure) {
    if (check !== accessCheck.current || confirmed.current) return;
@@ -155,13 +162,26 @@ export default function DadMessageStudio(){
    if (!r.ok) {
     const data = await r.json().catch(() => null);
     const message = data?.error || 'Your recording could not be prepared. Please try again.';
-    throw new Error(data?.reference ? `${message} Reference ${data.reference}.` : message);
+    throw Object.assign(new Error(message), {
+     reference: data?.reference,
+     failedAttempts: data?.failedAttempts,
+     status: r.status,
+    });
    }
    const metadata=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(r.headers.get('X-Studio-Selection')),c=>c.charCodeAt(0))));
    const audioBlob=await r.blob();controller.signal.throwIfAborted();
    saved.current={operation:selection.operation,...metadata,...selection.details,writtenName:capitalise(metadata.record.name),audioBlob};
    setAccess(a=>({...a,remaining:a.admin?1:0}));setAudioState('ready');
-  }catch(e){setError(controller.signal.aborted?(controller.signal.reason?.message||'Recording preparation was interrupted. Please retry.'):e.message);setAudioState('error');}
+  } catch (failure) {
+   setError(controller.signal.aborted
+    ? (controller.signal.reason?.message || 'Recording preparation was interrupted. Please retry.')
+    : failure.message);
+   setRecordingFailure(previous => ({
+    failedAttempts: Math.max((previous?.failedAttempts || 0) + 1, failure.failedAttempts || 0),
+    reference: failure.reference || previous?.reference,
+   }));
+   setAudioState('error');
+  }
   finally{clearTimeout(audioTimeout);audioFlight.current=false;if(job.current===controller)job.current=null;}
  };
  const confirm=()=>{
@@ -230,7 +250,10 @@ export default function DadMessageStudio(){
  {step===0&&name.record&&<section className="dad-name-age"><h4>Their age</h4><WorkshopAgeCarousel options={access.categories.age} value={choices.age} onChange={v=>change('age',v)}/></section>}
  {step>=1&&step<=3&&(()=>{const key=['habit','viewing','treat'][step-1];return <WorkshopSearchableChoices key={key} showClearButton={false} getOptionLabel={key === 'treat' ? undefined : dadScrollerLabel} category={['activity','achievement','treat'][step-1]} label={stages[step]} options={access.categories[key]} value={choices[key]} onChange={v=>change(key,v)} onTick={()=>{}} onSoundInteraction={()=>{}} searchLabel={`Search ${stages[step].toLowerCase()}`} placeholder="Start typing…" selectedText={access.categories[key].find(x=>x.id===choices[key])?.label||''} wording={key==='habit'?'(sarcastically) You are very useful around the house and especially good at…':key==='viewing'?'So considerate when the family are watching something. You give it 10 minutes then you swap to…':'(sarcastically) Cheers for the imaginative treats you leave me… ah yes…'}/>;})()}
  {step===4&&<><p className="dad-review-intro">Here’s Dad’s message. Check each detail below. You can still change any of your choices.</p><dl className="dad-recap">{reviewRows.map(row=><div className="dad-recap-row" key={row.label}><div><dt>{row.label}</dt><dd>{row.value}</dd></div><button type="button" aria-label={`Edit ${row.label.toLowerCase()}`} onClick={()=>edit(row.step)}><Pencil size={20} aria-hidden="true"/></button></div>)}</dl></>}
- {step===5&&<>{audioState==='error'&&<div className="dad-audio-status"><p>The recording could not be prepared. Retry with your confirmed choices.</p><button className="dad-primary" onClick={prepareAudio}>Retry recording</button></div>}{audioState==='preparing'&&<p role="status">Preparing your recording… You can choose your picture while you wait.</p>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
+ {step===5&&<>{audioState==='error'&&<div className="dad-audio-status"><p>The recording could not be prepared. Retry with your confirmed choices.</p><button className="dad-primary" onClick={prepareAudio}>Retry recording</button>{(recordingFailure?.failedAttempts || 0) >= 4 && <p>
+  {recordingFailure.reference && <>Support reference: <code>{recordingFailure.reference}</code>. </>}
+  <Link to={recordingFailure.reference ? `/submit-a-song?dadSupport=${encodeURIComponent(recordingFailure.reference)}` : '/submit-a-song'} target="_blank" rel="noopener">Contact Santa Radio</Link> for help. Keep this tab open to preserve your choices.
+ </p>}</div>}{audioState==='preparing'&&<p role="status">Preparing your recording… You can choose your picture while you wait.</p>}<div className="dad-art-options">{DAD_ARTWORK.map((item,i)=><div key={item.id} className="dad-scene-card"><button className="dad-scene-select" type="button" aria-pressed={sceneChosen&&art===i} aria-label={`Select ${item.label}`} disabled={busy} onClick={()=>{setArt(i);setSceneChosen(true);}}><span className="dad-scene-thumbnail"><img src={item.src} alt=""/><span className="dad-scene-thumbnail__label">{item.label}</span></span></button><button className="dad-scene-preview-button" type="button" aria-label={`Enlarge ${item.label}`} disabled={busy} onClick={()=>{setPreviewArt(i);sceneDialog.current?.showModal();}}><span className="dad-scene-zoom" aria-hidden="true"><ZoomIn size={22}/></span></button></div>)}</div></>}
  {step<4&&<div className="dad-actions dad-step-actions">{(step>0||editingReview)&&step<5&&<button onClick={()=>{setStep(editingReview?4:step-1);setEditingReview(false);}}>{editingReview?'Back to recap':'← Back'}</button>}{step<4?continueButton:step===4?<button className="dad-primary" onClick={confirm}>Confirm and choose a picture →</button>:<button className="dad-primary" disabled={audioState!=='ready'||!sceneChosen} onClick={make}>{audioState==='preparing'?'Preparing your recording…':'Create my video →'}</button>}</div>}
 
  </>}

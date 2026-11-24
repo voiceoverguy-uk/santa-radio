@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WorkshopSearchableChoices from './WorkshopSearchableChoices.jsx';
 import { workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './WorkshopDestinationPicker.css';
@@ -28,7 +28,9 @@ export default function WorkshopDestinationPicker({
   onSoundInteraction,
   wording = '',
 }) {
-  const regionHeadingRef = useRef(null);
+  const [openGroup, setOpenGroup] = useState(null);
+  const picker = useRef(null);
+  const focusNext = useRef(false);
   const fantasy = category === 'fantasy';
   const visibleOptions = options.filter(option => workshopDestinationCategory(option) === category)
     .map(option => ({ ...option, label: workshopDestinationLabel(option.label) }));
@@ -50,40 +52,21 @@ export default function WorkshopDestinationPicker({
 
   const regionKind = groupKey === 'usa-states' ? 'state' : 'county';
   const regionPlural = regionKind === 'state' ? 'states' : 'counties';
-  const useCountryOnly = () => {
-    onRegionChange?.('');
-    regionHeadingRef.current?.focus({ preventScroll: true });
+  const regionalView = canChooseRegion && openGroup === groupKey;
+  const selectedDestination = selectedRegion ? `${selectedRegion.label}, ${country.label}` : country?.label;
+  const switchView = group => {
+    focusNext.current = true;
+    setOpenGroup(group);
   };
-  const regionSection = canChooseRegion && (
-    <section key={groupKey} className="smw-destination-picker__regional" aria-label={regionalHeadings[groupKey]}>
-      <h3 ref={regionHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
-        Choose a {regionKind} <span>(optional)</span>
-      </h3>
-      <p className="smw-destination-picker__regional-note">
-        Make their message more local, or leave this unselected to use {country.label} only.
-      </p>
-      <WorkshopSearchableChoices
-        key={groupKey} category="place" label={regionalHeadings[groupKey]}
-        options={availableRegions} value={region}
-        onChange={id => onRegionChange?.(String(id))}
-        onTick={onTick} onSoundInteraction={onSoundInteraction}
-        showWordingPreview={false}
-        selectionStatusLabel={selectedRegion ? `${selectedRegion.label}, ${country.label}` : ''}
-        searchLabel={`Search ${regionPlural} in ${country.label}`}
-        placeholder={`Search ${regionPlural} in ${country.label}`}
-        wheelFooter={selectedRegion && (
-          <div className="smw-destination-picker__regional-actions">
-            <button className="smw-destination-picker__country-only" type="button" onClick={useCountryOnly}>
-              Use {country.label} only
-            </button>
-          </div>
-        )}
-      />
-    </section>
-  );
+  useLayoutEffect(() => {
+    if (!focusNext.current) return;
+    focusNext.current = false;
+    const target = picker.current?.querySelector('[role="listbox"]') || picker.current?.querySelector('input[type="search"]');
+    target?.focus({ preventScroll: true });
+  }, [regionalView]);
 
   return (
-    <section className="smw-destination-picker" aria-label="Destination">
+    <section ref={picker} className="smw-destination-picker" aria-label="Destination">
       <div className="smw-talent-categories" role="group" aria-label="Choose a destination category">
         {[
           ['countries', 'Countries & real places'],
@@ -91,38 +74,47 @@ export default function WorkshopDestinationPicker({
         ].map(([key, label]) => (
           <button key={key} type="button" className={category === key ? 'is-selected' : ''}
             aria-pressed={category === key} onClick={() => {
+              setOpenGroup(null);
               if (category !== key) onCategoryChange?.(key);
             }}>{label}</button>
         ))}
       </div>
-      <div className="smw-destination-picker__country">
-        <h3 tabIndex={-1}
-          className="smw-destination-picker__heading smw-destination-picker__heading--accessible-only">
-          {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
-        </h3>
+      <div className={regionalView ? "smw-destination-picker__regional" : "smw-destination-picker__country"}>
         <div className="smw-destination-picker__searchable">
           <WorkshopSearchableChoices
-            key={category}
+            key={regionalView ? groupKey : category}
             category="place"
-            label={fantasy ? 'Fantasy & space' : 'Countries & real places'}
-            options={visibleOptions}
-            value={value}
-            onChange={onChange}
-            invalid={invalid}
+            label={regionalView ? regionalHeadings[groupKey] : fantasy ? 'Fantasy & space' : 'Countries & real places'}
+            options={regionalView ? availableRegions : visibleOptions}
+            value={regionalView ? region : value}
+            onChange={regionalView ? id => onRegionChange?.(String(id)) : onChange}
+            invalid={!regionalView && invalid}
             onTick={onTick}
             onSoundInteraction={onSoundInteraction}
             wording={wording}
-            searchLabel={fantasy ? 'Search fantasy and space destinations' : 'Search locations'}
-            placeholder={fantasy ? 'Try a fantasy place or space destination' : 'Search countries and real places'}
+            searchLabel={regionalView ? `Search ${regionPlural} in ${country.label}` : fantasy ? 'Search fantasy and space destinations' : 'Search locations'}
+            placeholder={regionalView ? `Search ${regionPlural} in ${country.label}` : fantasy ? 'Try a fantasy place or space destination' : 'Search countries and real places'}
             selectedText={selectedRegion?.label || country?.label || ''}
-            afterWheel={regionSection || (guidance && <div className="smw-destination-picker__region-prompt">
-              <p>{guidance}</p>
-            </div>)}
+            selectionStatusLabel={selectedDestination}
+            fallbackSelectionLabel={regionalView ? country.label : undefined}
+            frameActionAtTop={regionalView}
+            frameAction={regionalView ? (
+              <button type="button" onClick={() => switchView(null)}>‹ {country.label}</button>
+            ) : canChooseRegion && (
+              <button type="button" onClick={() => switchView(groupKey)}>
+                {selectedRegion ? 'Change' : 'Choose a'} {regionKind} <span aria-hidden="true">›</span>
+              </button>
+            )}
+            wheelFooter={regionalView && selectedRegion && (
+              <button type="button" className="smw-destination-picker__country-only" onClick={() => {
+                onRegionChange?.('');
+                switchView(null);
+              }}>Use {country.label} only</button>
+            )}
+            afterWheel={!regionalView && guidance && <p className="smw-destination-picker__region-prompt">{guidance}</p>}
           />
         </div>
       </div>
-
-
     </section>
   );
 }

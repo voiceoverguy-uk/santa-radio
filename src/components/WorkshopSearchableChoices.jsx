@@ -14,7 +14,7 @@ const searchLabels = {
   funny: ['Search funny talents', 'Search hosted choices'],
 };
 
-export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter, afterWheel, showWordingPreview = true, selectionStatusLabel, showClearButton = true, getOptionLabel }) {
+export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter, frameAction, frameActionAtTop, fallbackSelectionLabel, afterWheel, showWordingPreview = true, selectionStatusLabel, showClearButton = true, getOptionLabel }) {
   const [query, setQuery] = useState('');
   const inputId = useId();
   const inputRef = useRef(null);
@@ -48,17 +48,19 @@ export default function WorkshopSearchableChoices({ category, label, options, va
         {matches.length ? <WorkshopChoiceWheel
           key={workshopSearchTerms(query).join(' ')}
           showCount={false} label={label} options={wheelOptions} value={value}
-          currentSelectionLabel={wheelSelectionLabel}
+          currentSelectionLabel={wheelSelectionLabel || fallbackSelectionLabel}
+          frameAction={frameAction} frameActionAtTop={frameActionAtTop}
           selectionStatusLabel={selectionStatusLabel}
           onChange={onChange} invalid={invalid} onTick={onTick} onSoundInteraction={onSoundInteraction}
           footer={wheelFooter}
         /> : <div className="smw-choice-wheel-field smw-search-empty" role="status">
           <div className="smw-choice-wheel-frame smw-search-empty-message">
             <p>No matching choices. Try another word or clear the search.</p>
+            {frameAction && <div className="smw-choice-wheel-action">{frameAction}</div>}
           </div>
           <div className={wheelFooter ? 'smw-choice-wheel-footer-row' : undefined}>
           <p className="smw-choice-wheel-status">
-            {wheelSelectionLabel ? `Selected: ${selectionStatusLabel || wheelSelectionLabel}` : 'No option selected yet.'}
+            {(wheelSelectionLabel || fallbackSelectionLabel) ? `Selected: ${selectionStatusLabel || wheelSelectionLabel || fallbackSelectionLabel}` : 'No option selected yet.'}
           </p>
           {wheelFooter}
           </div>

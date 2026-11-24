@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { dadSupportStatus, recordDadFailure } from './dad-recording-support.js';
 import { dadVoucherSession } from './dad-vouchers.js';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -22,19 +23,23 @@ export async function dadIdentity(req){
  if(!purchase)throw fail(403,'Please purchase Dad Studio access or reopen your private return link.');
  return {key:digest(`dad-purchase:${purchase}`),expiresAt:null};
 }
-export function createDadMessageHandler({identity=dadIdentity,library=blobDadLibrary,names=santaNameLibrary,allowances=studioAllowanceStore,render=renderDadMessage,limit=consumeNameAccess}={}){
+export function createDadMessageHandler({identity=dadIdentity,library=blobDadLibrary,names=santaNameLibrary,allowances=studioAllowanceStore,render=renderDadMessage,limit=consumeNameAccess,supportStatus=dadSupportStatus,recordFailure=recordDadFailure}={}){
  let active=0;
  return async(req,res)=>{
  privateResponse(res);let directory,reservation,who;const controller=new AbortController();
- let stage = 'access';
+ let stage = 'access', handlingRecording = false;
  const timer=setTimeout(()=>controller.abort(),110000);const abort=()=>controller.abort();
  const json=(status,body)=>{if(!res.headersSent&&!res.destroyed){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(body));}};
  if(!['GET','POST'].includes(req.method)){clearTimeout(timer);return json(405,{error:'Use Dad Studio.'});}
  if(req.headers['sec-fetch-site']==='cross-site'||req.method==='POST'&&!sameStudioOrigin(req)){clearTimeout(timer);return json(403,{error:'Open Dad Studio on this website.'});}
- if(active>=2){clearTimeout(timer);return json(429,{error:'Santa is busy. Please retry shortly.'});}active++;
  req.once?.('aborted',abort);res.once?.('close',abort);
  try{
  who=await identity(req);await limit(req,req.method==='GET'?'studioRead':'studioMessage');
+ if (req.method === 'POST') {
+  if (active >= 2) throw fail(429, 'Santa’s studio is busy. Keep this page open and retry in a few minutes.');
+  active++;
+  handlingRecording = true;
+ }
  stage = 'catalogue';
  const inventory=await library.load();if(!inventory)throw Error('Dad library unavailable');
  if (req.method === 'GET') {
@@ -42,7 +47,8 @@ export function createDadMessageHandler({identity=dadIdentity,library=blobDadLib
   const allowance = who ? await allowances.status(who) : { remaining: 1, limit: 1, admin: true };
   const categories = Object.fromEntries(Object.entries(inventory.catalogue.categories)
    .map(([key, rows]) => [key, rows.map(({ file, ...record }) => record)]));
-  return json(200, { authorized: true, ...allowance, categories });
+  const support = who ? await supportStatus(who).catch(() => null) : null;
+  return json(200, { authorized: true, ...allowance, categories, support });
  }
  const data=await readNameJson(req),keys=['name','age','habit','viewing','treat'];
  if(Object.keys(data).length!==5||keys.some(k=>typeof data[k]!=='string'))throw fail(400,'Please complete all Dad choices.');
@@ -70,13 +76,22 @@ export function createDadMessageHandler({identity=dadIdentity,library=blobDadLib
  res.writeHead(200,{'Content-Type':'audio/mpeg','Content-Length':audio.length});res.end(audio);
  } catch (error) {
   const status = error.status || 503;
-  if (status < 500) return json(status, { error: error.message });
+  if (status < 500 && status !== 429) return json(status, { error: error.message });
   const reference = randomUUID();
   const code = typeof error.code === 'string' && /^[A-Z0-9_]{1,32}$/.test(error.code) ? error.code : undefined;
-  console.error('[dad-studio] request failed', { reference, method: req.method, stage, code, aborted: controller.signal.aborted });
-  json(status, { error: 'Your message could not be prepared. Please try again.', reference });
+  const failure = { stage, code, status, aborted: controller.signal.aborted, at: new Date().toISOString() };
+  const support = who && req.method === 'POST'
+    ? await recordFailure(who, reference, failure).catch(() => null) : null;
+  console.error('[dad-studio] request failed', { ...failure, reference: support?.reference || reference, method: req.method });
+  if (status === 429 && !res.headersSent) res.setHeader('Retry-After', '60');
+  json(status, {
+   error: status === 429 ? 'Santa’s studio is busy. Keep this page open and retry in a few minutes.'
+    : 'Your message could not be prepared. Please try again.',
+   reference: support?.reference || reference,
+   failedAttempts: support?.failedAttempts,
+  });
  }
- finally{clearTimeout(timer);req.removeListener?.('aborted',abort);res.removeListener?.('close',abort);controller.abort();if(directory)await rm(directory,{recursive:true,force:true}).catch(()=>{});if(reservation)await allowances.release(who,reservation).catch(()=>{});active--;}
+ finally{clearTimeout(timer);req.removeListener?.('aborted',abort);res.removeListener?.('close',abort);controller.abort();if(directory)await rm(directory,{recursive:true,force:true}).catch(()=>{});if(reservation)await allowances.release(who,reservation).catch(()=>{});if(handlingRecording)active--;}
  };
 }
 export default createDadMessageHandler();

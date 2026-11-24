@@ -57,7 +57,7 @@ async function review(page, { destination = 'The Enchanted Forest', talent = nul
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
     if (answer === destination && region) {
-      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
+      await page.getByRole('button', { name: /^(Choose a|Change) (county|state)$/ }).click();
       await page.getByRole('option', { name: region, exact: true }).click();
     }
     await page.locator('.smw-button-next').click();
@@ -296,6 +296,7 @@ for (const width of [320, 1365]) {
         await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
         await page.getByRole('option', { name: 'England', exact: true }).click();
         // Explicitly remove the selected county without changing the country.
+        await page.getByRole('button', { name: /^(Choose a|Change) (county|state)$/ }).click();
         await page.getByRole('button', { name: 'Use England only', exact: true }).click();
         await page.getByRole('button', { name: 'Return to review', exact: true }).click();
         for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
