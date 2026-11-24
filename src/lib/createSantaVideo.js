@@ -3,7 +3,11 @@ import { drawStitcherImage, stitcherArguments } from './bigStitcher.js';
 export const SANTA_VIDEO_ARTWORK = '/images/big-stitcher-christmas-v3.png';
 // Keep memory bounded when several completed greetings are shown together.
 let queue = Promise.resolve();
-export function createSantaVideo({ audio, name, prepareFrames, artwork = SANTA_VIDEO_ARTWORK, signal, onStatus = () => {}, onProgress = () => {} }) {
+export function createSantaVideo({
+  audio, name, prepareFrames, artwork = SANTA_VIDEO_ARTWORK, signal,
+  encodingStatus = 'Adding Santa’s voice to your video… Keep this page open.',
+  onStatus = () => {}, onProgress = () => {},
+}) {
   const job = queue.catch(() => {}).then(async () => {
     signal?.throwIfAborted();
     let ffmpeg;
@@ -35,7 +39,7 @@ export function createSantaVideo({ audio, name, prepareFrames, artwork = SANTA_V
       await ffmpeg.load({ coreURL, wasmURL });
       signal?.throwIfAborted();
       onProgress(duration > 0 ? 0 : null);
-      onStatus('Adding Santa’s voice to your video… Keep this page open.');
+      onStatus(encodingStatus);
       for (const file of prepared.files) await ffmpeg.writeFile(file.name, new Uint8Array(await file.blob.arrayBuffer()));
       await ffmpeg.writeFile('audio.mp3', new Uint8Array(await audio.arrayBuffer()));
       if (await ffmpeg.exec(prepared.args) !== 0) throw new Error('Your video could not be completed. Please try again.');

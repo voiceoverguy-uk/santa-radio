@@ -24,7 +24,18 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
     const controller = new AbortController();
     let objectUrl;
     setHideProgress(false); setUrl(''); setPoster(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
-    Promise.all([createSantaVideoPoster(santaNameDisplay(message.name)), createSantaVideo({ audio: message.blob, name: santaNameDisplay(message.name), signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })])
+    const name = santaNameDisplay(message.name);
+    Promise.all([
+      createSantaVideoPoster(name),
+      createSantaVideo({
+        audio: message.blob,
+        name,
+        signal: controller.signal,
+        encodingStatus: `Santa is recording a message for ${name}… Keep this page open.`,
+        onProgress: value => { if (!controller.signal.aborted) setProgress(value); },
+        onStatus: text => { if (!controller.signal.aborted) setStatus(text); },
+      }),
+    ])
       .then(([cover, blob]) => {
         if (controller.signal.aborted) return;
         setPoster(cover); setVideoBlob(blob); objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.'); readyCallback.current?.();
