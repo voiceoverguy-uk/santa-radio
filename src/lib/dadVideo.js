@@ -26,8 +26,9 @@ export function dadTreatCaption(value){
 }
 export function dadTimeline(result){
  const s=result.clipStarts;
+ const recipient = result.writtenName.trim();
  const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
- return [{id:'incoming',text:'Incoming message from Santa',start:0,end:5,blink:true},
+ return [{id:'incoming',text:recipient ? `Incoming message from Santa\nFor ${recipient}` : 'Incoming message from Santa',start:0,end:5,noFade:true},
  {id:'name',text:result.writtenName,start:s.name,end:Math.min(s.age,s.name+7)},
  {id:'age',text:`${result.writtenName}\nAged ${result.age}`,start:s.age,end:Math.min(s.habit,s.age+7)},
  {id:'habit',text:`You’re especially good at ${result.habit}`,start:s.habit,end:Math.min(s.viewing,s.habit+7)},
@@ -41,7 +42,7 @@ function frames(image,result){
  const width=1280,height=720;
  const canvas=(h)=>{const c=document.createElement('canvas');c.width=width;c.height=h;return c;};
  const base=canvas(height),ctx=base.getContext('2d');ctx.drawImage(image,0,0,width,height);
- // Name first appears in the caption panel, then moves above it for the jokes.
+ // Keep the name in the opening frames for share previews, then above the caption panel for the jokes.
  const badge=canvas(86),badgeCtx=badge.getContext('2d');
  let titleSize=42;badgeCtx.font=`bold ${titleSize}px Georgia, serif`;
  while(badgeCtx.measureText(result.writtenName).width>700&&titleSize>24){titleSize--;badgeCtx.font=`bold ${titleSize}px Georgia, serif`;}
