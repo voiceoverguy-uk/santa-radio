@@ -1,13 +1,15 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { takeStudioReturnFragment } from '../lib/studioReturnFragment.js';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 import './StudioReturnAccess.css';
 
 // Tokens stay in memory. Email-link scanners cannot redeem on a GET: the
 // visitor explicitly chooses Open my Studio before the protected POST.
-export default function StudioReturnAccess() {
+export default function StudioReturnAccess({ collapsible = false }) {
   const id = useId(), navigate = useNavigate(), request = useRef(null);
+  const { hash } = useLocation();
+  const disclosure = useRef(null);
   const [token, setToken] = useState('');
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
@@ -16,11 +18,15 @@ export default function StudioReturnAccess() {
   useEffect(() => {
     const fragment = takeStudioReturnFragment();
     if (fragment) {
+      if (disclosure.current) disclosure.current.open = true;
       if (fragment.valid) setToken(fragment.value);
       else setError('This private link is invalid. Request a fresh link using your purchase email.');
     }
     return () => request.current?.abort();
   }, []);
+  useEffect(() => {
+    if (hash === '#studio-return-access' && disclosure.current) disclosure.current.open = true;
+  }, [hash]);
   const submit = async event => {
     event.preventDefault();
     if (request.current) return;
@@ -55,8 +61,7 @@ export default function StudioReturnAccess() {
       setBusy(false);
     }
   };
-  return <section id="studio-return-access" aria-labelledby={`${id}-title`}>
-    <h2 id={`${id}-title`}>Already purchased?</h2>
+  const content = <>
     <form className="workshop-password-form" onSubmit={submit}>
       {token ? <p>Use your private, single-use email link to reopen your paid Studio.</p> : <>
         <label htmlFor={`${id}-email`}>Purchase email address</label>
@@ -69,5 +74,13 @@ export default function StudioReturnAccess() {
       {error && <p role="alert">{error}</p>}
     </form>
     <p>Your £6.50 purchase includes two successful creations. Returning keeps your remaining allowance; it does not restore recordings. Download your video message and gifts before leaving Studio.</p>
+  </>;
+  if (collapsible) return <details ref={disclosure} id="studio-return-access" aria-labelledby={`${id}-title`}>
+    <summary id={`${id}-title`}>Already purchased?</summary>
+    {content}
+  </details>;
+  return <section id="studio-return-access" aria-labelledby={`${id}-title`}>
+    <h2 id={`${id}-title`}>Already purchased?</h2>
+    {content}
   </section>;
 }
