@@ -3,11 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { STUDIO_PATH, STUDIO_CHECKOUT_PATH } from '../lib/studioRoute.js';
 import { hasStudioPurchaseHint, studioRemainingHint, rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 
-export default function StudioPurchaseButton({ onPaidAccessChange, label, onReturnRequest }) {
-  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} label={label} onReturnRequest={onReturnRequest} />;
+export default function StudioPurchaseButton({ onPaidAccessChange, label, onReturnRequest, explore = false, hideReturnLink = false }) {
+  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} label={label} onReturnRequest={onReturnRequest} explore={explore} hideReturnLink={hideReturnLink} />;
 }
 
-function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest }) {
+function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest, explore, hideReturnLink }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [paid, setPaid] = useState(() => !sandbox && hasStudioPurchaseHint() ? { remembered: true, remaining: studioRemainingHint() } : null);
@@ -35,7 +35,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
       onPaidAccessChange?.(recognized);
       if (!sandbox) rememberStudioPurchase(recognized, entitlement.remaining);
       if (recognized) { setAvailable(false); return; }
-      if (!sandbox) return;
+      if (explore || !sandbox) return;
       const response = await fetch('/api/santa-studio-checkout', {
         credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
       });
@@ -53,7 +53,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
       if (!disposed) setChecking(false);
     });
     return () => { disposed = true; clearTimeout(timeout); controller.abort(); };
-  }, [sandbox, refresh, onPaidAccessChange]);
+  }, [sandbox, refresh, onPaidAccessChange, explore]);
   useEffect(() => {
     const recheck = () => { if (!document.hidden) setRefresh(value => value + 1); };
     window.addEventListener('focus', recheck);
@@ -71,6 +71,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
   }, []);
   const purchase = async () => {
     if (busy) return;
+    if (explore) { navigate(STUDIO_PATH); return; }
     if (!sandbox) {
       if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname === 'santaradio.co.uk') {
         window.location.assign(`https://www.santaradio.co.uk${STUDIO_CHECKOUT_PATH}`);
@@ -109,13 +110,13 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
   </div>;
   return <div className="santa-studio-promotion__checkout-note">
     {<button className="santa-studio-promotion__purchase" type="button"
-      disabled={sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
-      {sandbox
+      disabled={!explore && sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
+      {explore ? (label || 'Explore the Kids’ Message →') : sandbox
         ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Create your Santa messages · £6.50 (test)'
         : busy ? 'Opening secure checkout…' : (label || 'Create your Santa messages · £6.50')}
     </button>}
     <p id={noteId} role="status">
-      {sandbox
+      {sandbox && !explore
         ? available
           ? 'Sandbox only. Two successful creations for £6.50; no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. Secure return emails are live-site only.'
           : checking ? 'Checking sandbox availability…' : 'Sandbox purchases are available in the development preview only.'
@@ -123,7 +124,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&
       <p role="status">{sandbox ? 'Test checkout was cancelled.' : 'Checkout was cancelled.'} No new access has been granted. You can try Purchase again.</p>}
-    {<p>{onReturnRequest ? <button className="bespoke-return-link" type="button" aria-haspopup="dialog" onClick={onReturnRequest}>Already paid? Enter your email</button> : <Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link>}</p>}
+    {!hideReturnLink && <p>{onReturnRequest ? <button className="bespoke-return-link" type="button" aria-haspopup="dialog" onClick={onReturnRequest}>Already paid? Enter your email</button> : <Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link>}</p>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setRefresh(value => value + 1)}>Retry purchase check</button></div>}
   </div>;
 }

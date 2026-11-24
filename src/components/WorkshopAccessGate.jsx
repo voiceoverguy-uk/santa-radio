@@ -6,7 +6,11 @@ import { pageMetadata } from '../seo/catalogue.js';
 import { useLocation } from 'react-router-dom';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 import StudioReturnAccess from './StudioReturnAccess.jsx';
-import HomepageSantaStudio from './HomepageSantaStudio.jsx';
+import StudioPurchaseButton from './StudioPurchaseButton.jsx';
+import StudioOpeningPicture from './StudioOpeningPicture.jsx';
+import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
+import '../pages/SantaMessageWorkshop.css';
+import './HomepageSantaStudio.css';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 import { rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 import StudioPaymentSuccess from './StudioPaymentSuccess.jsx';
@@ -198,6 +202,18 @@ export default function WorkshopAccessGate({ children }) {
     setAttempt(value => value + 1);
   }, []);
 
+  useEffect(() => {
+    if (status !== 'locked') return;
+    const frame = window.requestAnimationFrame(() => {
+      if (location.hash === '#studio-return-access') {
+        document.getElementById('studio-return-access')?.scrollIntoView({ block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [status, location.hash]);
+
   const metadata = pageMetadata({
     path: STUDIO_PATH,
     title: 'Santa’s Message Workshop | Santa Radio',
@@ -238,10 +254,35 @@ export default function WorkshopAccessGate({ children }) {
     </main>;
   }
 
-  return <main className="workshop-gate workshop-gate--promotion">
+  return <main className="smw-page kids-studio-welcome">
     <PageSeo metadata={metadata} />
-    <HomepageSantaStudio directEntry onAuthorized={onAuthorized} accessFeedback={accessFeedback}>
-      <div className="workshop-gate-card studio-entry-return"><StudioReturnAccess /></div>
-    </HomepageSantaStudio>
+    <div className="smw-shell">
+      <header className="kids-welcome-heading">
+        <p className="smw-section-kicker">A WORD FROM THE NORTH POLE</p>
+        <h1>Kids’ Message Maker Studio</h1>
+        <p>Imagine their face when Santa knows their name.</p>
+        <p>A magical, personalised message from Santa celebrating their achievements, their favourite things and the little details that make them special.</p>
+      </header>
+      <section className="smw-builder kids-welcome-layout" aria-label="Kids’ recording studio">
+        <div className="smw-start-artwork kids-welcome-art">
+          <img className="smw-start-logo" src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1200" height="668" />
+          <StudioOpeningPicture caption="Ready to make some Christmas magic?" />
+        </div>
+        <div className="kids-welcome-panel">
+          <p className="smw-start-kicker">The North Pole Recording Studio</p>
+          <h2>Two magical messages.<br />Made just for them.</h2>
+          <p>£6.50 includes two personalised message creations, your choice of six Christmas scenes and three digital gifts for each creation: a Nice List certificate, a personalised letter from Santa and a Santa picture with their name.</p>
+          <p>Watch, download and share your personalised videos. Create both now or save one for later.</p>
+          {accessFeedback}
+          <StudioPurchaseButton label="Create their Santa magic — £6.50" hideReturnLink />
+          <div className="kids-welcome-return"><StudioReturnAccess /></div>
+          <details className="kids-welcome-voucher">
+            <summary>Friend or Guest?</summary>
+            <p>Enter your access voucher below. Discount codes are entered at Stripe checkout.</p>
+            <WorkshopPasswordForm onAuthorized={onAuthorized} compact />
+          </details>
+        </div>
+      </section>
+    </div>
   </main>;
 }
