@@ -86,7 +86,7 @@ for (const width of [390, 1440]) {
       const search = page.getByRole('searchbox', { name: 'Search locations', exact: true });
       await search.fill(country);
       await page.getByRole('option', { name: country, exact: true }).click();
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       await page.getByRole('option', { name: label, exact: true }).click();
       await page.locator('.smw-button-next').click();
       await expect(paragraph).toContainText(`${label}, ${country}`);
@@ -150,7 +150,7 @@ test('regional writing fails explicitly and retries only the selected context wi
     });
   });
   await page.getByRole('option', { name: 'United States', exact: true }).click();
-  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
   await page.getByRole('option', { name: 'Georgia', exact: true }).click();
   await page.locator('.smw-button-next').click();
   await expect(page.getByText('Santa’s local letter story could not be loaded.', { exact: false })).toBeVisible();
@@ -182,7 +182,7 @@ test('delayed and failed regional writing blocks both create actions until the l
     } else await route.fulfill({ json: { parentId: group.parentId, regionId: georgia.id, letterContext: georgia.letterContext } });
   });
   await page.getByRole('option', { name: 'United States', exact: true }).click();
-  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
   await page.getByRole('option', { name: 'Georgia', exact: true }).click();
   await page.locator('.smw-button-next').click();
   const actions = page.getByRole('button', { name: 'Create message', exact: true });
@@ -235,7 +235,7 @@ for (const width of [320, 390, 1365]) {
       ['Northern Ireland', 'county'], ['United States', 'state'],
     ]) {
       await page.getByRole('option', { name: country, exact: true }).click();
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       const regional = page.locator('.smw-destination-picker__regional:visible');
       await regional.getByRole('option').first().click();
       const reset = page.getByRole('button', { name: `Use ${country} only`, exact: true });
@@ -278,7 +278,7 @@ test('mobile header Continue reviews the chosen county and disappears for an inv
   await expect(shortcut).toHaveCount(0);
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await expect(shortcut).toBeVisible();
-  await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+  await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
   await page.getByRole('option', { name: 'Kent', exact: true }).click();
   await expect(shortcut).toBeVisible();
   await page.locator('.smw-builder').screenshot({ path: 'generated-artifacts/studio-header-county-continue.png', animations: 'disabled' });
@@ -293,7 +293,7 @@ test('mobile header Continue reviews the chosen county and disappears for an inv
 });
 
 for (const width of [1365, 320]) {
-  test(`active countries button returns from counties and states without clearing selections at ${width}px`, async ({ page }) => {
+  test(`active countries button keeps both selectors and selected region at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openRegionalStage(page);
@@ -302,7 +302,7 @@ for (const width of [1365, 320]) {
     const countries = page.getByRole('button', { name: 'Countries & real places', exact: true });
     for (const [country, kind] of [['England', 'county'], ['United States', 'state']]) {
       await page.getByRole('option', { name: country, exact: true }).click();
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       const option = regionalView.getByRole('option').first();
       const regionName = await option.textContent();
       await option.click();
@@ -313,12 +313,12 @@ for (const width of [1365, 320]) {
         await countries.click();
       }
       await expect(countryView).toBeVisible();
-      await expect(regionalView).toBeHidden();
+      await expect(regionalView).toBeVisible();
       await expect(countryView.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
       await expect(countries).toHaveAttribute('aria-pressed', 'true');
-      await expect(countryView.locator('.smw-choice-wheel-status')).toContainText(country);
+      await expect(countryView.locator('.smw-choice-wheel-status').first()).toContainText(country);
       await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       await expect(regionalView.getByRole('option', { name: regionName, exact: true })).toHaveAttribute('aria-selected', 'true');
       await countries.click();
     }
@@ -364,27 +364,15 @@ for (const width of [1365, 320, 390, 430]) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openRegionalStage(page);
     await page.getByRole('option', { name: 'England', exact: true }).click();
-    const regionAction = page.getByRole('button', { name: 'Choose a county', exact: true });
-    const actionStyle = await regionAction.evaluate(node => {
-      const style = getComputedStyle(node);
-      const action = node.getBoundingClientRect();
-      const parent = node.parentElement.getBoundingClientRect();
-      return {
-        background: style.backgroundColor, border: style.borderTopColor,
-        centreOffset: Math.abs(action.x + action.width / 2 - parent.x - parent.width / 2),
-        height: action.height,
-      };
-    });
-    expect(actionStyle.background).toBe('rgba(0, 0, 0, 0)');
-    expect(actionStyle.border).toBe('rgba(0, 0, 0, 0)');
-    expect(actionStyle.centreOffset).toBeLessThanOrEqual(1);
-    expect(actionStyle.height).toBeGreaterThanOrEqual(44);
-    await expect(page.getByText('Optional: make the destination more local, or continue with the country alone.', { exact: true })).toHaveCount(0);
-    await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+    const regional = page.locator('.smw-destination-picker__regional');
+    await expect(regional).toBeVisible();
+    await expect(regional.getByRole('heading', { name: 'Choose a county (optional)', exact: true })).toBeVisible();
+    await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker .smw-activity-wording')).toHaveCount(1);
     const search = page.getByRole('searchbox', { name: 'Search counties in England', exact: true });
     await search.fill('Kent');
     await page.getByRole('option', { name: 'Kent', exact: true }).click();
-    const preview = page.locator('.smw-destination-picker__regional .smw-wording-selection');
+    const preview = page.locator('.smw-destination-picker__country .smw-wording-selection');
     await expect(preview).toHaveText('Kent');
     await expect(page.getByRole('option', { name: 'Kent', exact: true })).toHaveAttribute('aria-selected', 'true');
     await expectNoDestinationSummary(page);
@@ -420,11 +408,11 @@ for (const width of [1365, 320, 390, 430]) {
     await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
     await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('Kent');
     await expect(reset).toBeVisible();
-    await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Counties in England', exact: true })).toBeFocused();
+    await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Choose a county (optional)', exact: true })).toBeVisible();
     await reset.focus();
     await page.keyboard.press('Enter');
-    await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
+    await expect(page.getByRole('heading', { name: 'Choose a county (optional)', exact: true })).toBeFocused();
     await expect(reset).toHaveCount(0);
     await expectNoDestinationSummary(page);
     await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('England');
@@ -445,30 +433,25 @@ for (const width of [1365, 320]) {
     ]) {
       await page.getByRole('option', { name: country, exact: true }).click();
       await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
-      const parentScroll = await page.getByRole('listbox').evaluate(node => node.scrollTop);
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
-      const heading = page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true });
-      await expect(heading).toBeFocused();
-      expect(await heading.evaluate(node => {
-        const rect = node.getBoundingClientRect();
-        const header = document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0;
-        return rect.top >= header && rect.top < innerHeight;
-      })).toBe(true);
-      await expect(page.getByRole('listbox')).toHaveCount(1);
-      await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
-      await expect(page.getByRole('searchbox')).toHaveValue('');
+      const countryWheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
+      const regional = page.locator('.smw-destination-picker__regional');
+      const regionWheel = regional.getByRole('listbox');
+      const parentScroll = await countryWheel.evaluate(node => node.scrollTop);
+      await expect(regional.getByRole('heading', { name: `Choose a ${kind} (optional)`, exact: true })).toBeVisible();
+      await expect(page.getByRole('listbox')).toHaveCount(2);
+      await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
+      const search = regional.getByRole('searchbox', { name: `Search ${kind === 'state' ? 'states' : 'counties'} in ${country}`, exact: true });
+      await expect(search).toHaveValue('');
       await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
-      await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
-      await expect.poll(() => page.getByRole('listbox').evaluate(node => node.scrollTop)).toBeCloseTo(parentScroll, 0);
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
-      const search = page.getByRole('searchbox', { name: `Search ${kind === 'state' ? 'states' : 'counties'} in ${country}`, exact: true });
+      await expect(countryWheel.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await expect.poll(() => countryWheel.evaluate(node => node.scrollTop)).toBeCloseTo(parentScroll, 0);
       await search.fill(region.toUpperCase());
-      await expect(page.getByRole('option')).toHaveCount(1);
-      await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
-      await page.getByRole('listbox').focus();
-      await page.keyboard.press('ArrowDown');
+      await expect(regional.getByRole('option')).toHaveCount(1);
+      await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
+      await regionWheel.press('ArrowDown');
       await expectNoDestinationSummary(page);
-      await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText(region);
+      await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(region);
+      await expect(regional.locator('.smw-choice-wheel-status')).toHaveText(`Selected: ${region}, ${country}`);
       if (country === 'England') {
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-regional-${width}.png`,
           style: '.navbar, .skip-link { visibility: hidden; }' });
@@ -483,8 +466,8 @@ for (const width of [1365, 320]) {
       }
       await search.fill('does not match');
       await expect(page.locator('.smw-destination-picker__regional .smw-search-empty')).toContainText(`Selected: ${region}`);
-      await page.getByRole('button', { name: 'Clear', exact: true }).click();
-      await expect(page.getByRole('option')).toHaveText([region, 'Z Fixture Place']);
+      await regional.getByRole('button', { name: 'Clear', exact: true }).click();
+      await expect(regional.getByRole('option')).toHaveText([region, 'Z Fixture Place']);
       await expect(page.getByRole('option', { name: region, exact: true })).toHaveAttribute('aria-selected', 'true');
       await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(region);
@@ -494,10 +477,10 @@ for (const width of [1365, 320]) {
       await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
       await expectNoDestinationSummary(page);
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(region);
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       await expect(page.getByRole('option', { name: region, exact: true })).toHaveAttribute('aria-selected', 'true');
       await page.getByRole('option', { name: 'Z Fixture Place', exact: true }).click();
-      await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText('Z Fixture Place');
+      await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('Z Fixture Place');
       await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await page.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
       await expectNoDestinationSummary(page);
@@ -511,7 +494,7 @@ for (const width of [1365, 320]) {
     // Ireland remains an independent country, with no regional step.
     await page.getByRole('searchbox', { name: 'Search locations', exact: true }).fill('Ireland');
     await page.getByRole('option', { name: 'Ireland', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Choose a county', exact: true })).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker__regional')).toHaveCount(0);
     await page.getByRole('button', { name: 'Clear', exact: true }).click();
   });
 }
@@ -519,7 +502,7 @@ for (const width of [1365, 320]) {
 test('regional request carries both trusted IDs and changing country clears the region', async ({ page }) => {
   await openRegionalStage(page);
   await page.getByRole('option', { name: 'United States', exact: true }).click();
-  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
   await page.getByRole('option', { name: 'Georgia', exact: true }).click();
   await page.locator('.smw-button-next').click();
   const letterText = await page.locator('.studio-letter__paper').first().textContent();
@@ -543,7 +526,7 @@ test('regional request carries both trusted IDs and changing country clears the 
   await expect.poll(() => submitted?.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
   expect(submitted).not.toHaveProperty('region');
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
-  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
   await page.getByRole('option', { name: 'Georgia', exact: true }).click();
   await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
   await page.getByRole('option', { name: 'England', exact: true }).click();
@@ -563,7 +546,7 @@ for (const missing of [true, false]) {
     await page.getByRole('option', { name: 'England', exact: true }).click();
     await expect(page.getByText('State and county choices are not available just yet. You can still choose this country.')).toBeVisible();
     await expect(page.getByRole('listbox')).toHaveCount(1);
-    await expect(page.getByRole('button', { name: 'Choose a county', exact: true })).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker__regional')).toHaveCount(0);
     await page.locator('.smw-button-next').click();
     await expect(page.locator('.smw-summary-row').last()).toContainText('England');
     await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message' })).toBeEnabled();
@@ -616,8 +599,8 @@ for (const width of [1365, 320]) {
       await page.locator('.smw-button-next').click();
 
       let baseline;
-      const layout = page.locator('.smw-searchable-layout:visible');
-      const frame = layout.locator('.smw-choice-wheel-frame');
+      const layout = page.locator('.smw-searchable-layout:visible').first();
+      const frame = layout.locator(':scope > .smw-filtered-wheel > .smw-choice-wheel-field > .smw-choice-wheel-frame');
       const checkGeometry = async () => {
         const rect = await frame.boundingBox();
         baseline ||= rect;
@@ -689,20 +672,35 @@ for (const width of [1365, 320]) {
         await checkStates();
         await page.locator('.smw-button-next').click();
       }
-      // Country, county and state wheels share the same frame; the retained
-      // wording preview and country-only action reflect the selected region.
+      // Each regional wheel preserves its dimensions and selected record during filtering.
       await checkGeometry();
-      for (const [country, kind] of [['England', 'county'], ['United States', 'state']]) {
-        await page.getByRole('searchbox').fill(country);
-        await expect(page.getByRole('option')).toHaveCount(1);
-        await page.getByRole('listbox').press('Home');
+      for (const country of ['England', 'United States']) {
+        const countrySearch = page.getByRole('searchbox', { name: 'Search locations', exact: true });
+        await countrySearch.fill(country);
+        const countryWheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
+        await expect(countryWheel.getByRole('option')).toHaveCount(1);
+        await countryWheel.press('Home');
         await checkGeometry();
-        await page.getByRole('button', { name: 'Clear', exact: true }).click();
-        await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
-        await checkStates();
+        await countrySearch.fill('');
+        const regional = page.locator('.smw-destination-picker__regional');
+        const regionWheel = regional.getByRole('listbox');
+        const regionalFrame = regional.locator('.smw-choice-wheel-frame');
+        const before = await regionalFrame.boundingBox();
+        await regionWheel.press('Home');
+        await regionWheel.press('End');
+        await expect(regionWheel.getByRole('option', { selected: true })).toHaveText(longLabel);
         await expect(layout.locator('.smw-wording-selection')).toHaveText(longLabel);
-        await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
+        await regional.getByRole('searchbox').fill('Remembering');
+        await expect(regionWheel.getByRole('option')).toHaveCount(1);
+        const filtered = await regionalFrame.boundingBox();
+        expect(Math.abs(filtered.width - before.width)).toBeLessThanOrEqual(.5);
+        expect(Math.abs(filtered.height - before.height)).toBeLessThanOrEqual(.5);
+        await regional.getByRole('searchbox').fill('no matching choice');
+        await expect(regional.locator('.smw-search-empty')).toContainText(longLabel);
+        await regional.getByRole('button', { name: 'Clear', exact: true }).click();
+        await expect(regionWheel.getByRole('option', { selected: true })).toHaveText(longLabel);
+        await page.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
+        await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
         await checkGeometry();
       }
       await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
@@ -887,11 +885,11 @@ for (const width of [1365, 320]) {
     await next.click();
     await expect(page.locator('.smw-validation')).not.toBeEmpty();
     await page.getByRole('option', { name: 'England', exact: true }).click();
-    await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Counties in England', exact: true })).toBeFocused();
-    await page.getByRole('listbox').press('Home');
+    await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Choose a county (optional)', exact: true })).toBeVisible();
+    await page.locator('.smw-destination-picker__regional').getByRole('listbox').press('Home');
     await expectNoDestinationSummary(page);
-    await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText('Kent');
+    await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('Kent');
     // Category controls remain keyboard-operable during regional browsing.
     await fantasy.focus();
     await page.keyboard.press('Enter');
@@ -906,7 +904,7 @@ for (const width of [1365, 320]) {
     await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
     await expect(preview).toHaveCount(0);
     await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /Choose a (state|county)/ })).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker__regional')).toHaveCount(0);
     await next.click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 7');
     const search = page.getByRole('searchbox');
@@ -917,7 +915,7 @@ for (const width of [1365, 320]) {
     await expect(page.getByRole('searchbox')).toHaveValue('');
     await expect(page.getByRole('option')).toHaveText(countryLabels);
     await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Choose a county', exact: true })).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker__regional')).toHaveCount(0);
     await page.getByRole('searchbox').fill('Antarctica');
     await fantasy.click();
     await expect(page.getByRole('searchbox')).toHaveValue('');
@@ -997,91 +995,45 @@ for (const width of [1365, 320]) {
 }
 
 for (const [country, kind] of [
-  ['United States', 'state'],
-  ['England', 'county'],
-  ['Wales', 'county'],
-  ['Scotland', 'county'],
-  ['Northern Ireland', 'county'],
+  ['United States', 'state'], ['England', 'county'], ['Wales', 'county'],
+  ['Scotland', 'county'], ['Northern Ireland', 'county'],
 ]) {
   for (const width of [1365, 390, 320]) {
-    test(`regional action placement ${country} ${width}: responsive unboxed action and keyboard`, async ({ page }) => {
+    test(`automatic regional selector ${country} ${width}: optional, visible and keyboard operable`, async ({ page }) => {
       test.setTimeout(60000);
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await openRegionalStage(page);
       if (width === 320) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
-      const countryHeading = page.getByRole('heading', { name: 'Choose a country or real place', exact: true });
-      expect(await countryHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
-      const wheelGap = await page.locator('.smw-destination-picker').evaluate(node => {
-        const categories = node.querySelector('.smw-talent-categories').getBoundingClientRect();
-        const content = node.querySelector('.smw-destination-picker__country').getBoundingClientRect();
-        return content.top - categories.bottom;
-      });
-      expect(wheelGap).toBeGreaterThanOrEqual(0);
-      expect(wheelGap).toBeLessThanOrEqual(20);
-      await page.getByRole('option', { name: country, exact: true }).click();
-      const action = page.getByRole('button', { name: `Choose a ${kind}`, exact: true });
-      await expect(action).toHaveCount(1);
-      const geometry = await page.locator('.smw-destination-picker__country').evaluate(node => {
-        const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
-        const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
-        const frame = node.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
-        return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
-          frameBottom: frame.bottom, rightOffset: Math.abs(action.right - frame.right),
-          centreOffset: Math.abs(action.x + action.width / 2 - frame.x - frame.width / 2),
-          actionLeft: action.left, actionRight: action.right };
-      });
-      expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.frameBottom);
-      if (width > 520) expect(geometry.actionTop - geometry.frameBottom).toBeLessThanOrEqual(8);
-      if (width <= 760) expect(geometry.rightOffset).toBeLessThanOrEqual(1);
-      else expect(geometry.centreOffset).toBeLessThanOrEqual(1);
-      expect(geometry.actionLeft).toBeGreaterThanOrEqual(0);
-      expect(geometry.actionRight).toBeLessThanOrEqual(width);
-      await expect(page.locator('.smw-destination-picker__region-prompt')).toHaveCount(0);
-      await page.locator('.smw-builder').screenshot({
-        path: `generated-artifacts/studio-destination-action-${country}-${width}.png`,
-        animations: 'disabled',
-      });
-      await page.getByRole('listbox').focus();
-      await page.keyboard.press('Tab');
-      await expect(action).toBeFocused();
-      await page.keyboard.press('Enter');
-      await expect(page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true })).toBeFocused();
+      const countryWheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
       const regional = page.locator('.smw-destination-picker__regional');
-      await expect(regional.getByRole('button', { name: 'Back to countries', exact: true })).toHaveCount(0);
-      await expect(regional.locator('.smw-destination-picker__regional-actions')).toHaveCount(0);
-      const regionalHeading = regional.getByRole('heading', { level: 3 });
-      expect(await regionalHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
-      await regional.getByRole('option').first().click();
-      const regionalGeometry = await regional.evaluate(node => {
-        const wheel = node.querySelector('[role="listbox"]').getBoundingClientRect();
-        const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
-        const actions = [...node.querySelectorAll('.smw-destination-picker__regional-actions button')]
-          .map(button => button.getBoundingClientRect().toJSON());
-        return { wheel: wheel.toJSON(), status: status.toJSON(), actions };
+      await expect(regional).toHaveCount(0);
+      await countryWheel.getByRole('option', { name: country, exact: true }).click();
+      await expect(countryWheel).toBeVisible();
+      await expect(countryWheel).toBeFocused();
+      await expect(regional.getByRole('heading', { name: `Choose a ${kind} (optional)`, exact: true })).toBeVisible();
+      await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
+      await expect(page.locator('.smw-destination-picker .smw-activity-wording')).toHaveCount(1);
+      const geometry = await regional.evaluate(node => {
+        const bounds = node.getBoundingClientRect();
+        const countryFrame = node.previousElementSibling.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
+        return { top: bounds.top, left: bounds.left, right: bounds.right, countryBottom: countryFrame.bottom, width: innerWidth };
       });
-      expect(regionalGeometry.actions).toHaveLength(1);
-      await expect(regional.getByRole('button', { name: 'Back to countries', exact: true })).toHaveCount(0);
-      await expect(regional.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
-      for (const action of regionalGeometry.actions) {
-        expect(action.top).toBeGreaterThanOrEqual(regionalGeometry.wheel.bottom);
-        if (width > 520) expect(action.top - regionalGeometry.wheel.bottom).toBeLessThanOrEqual(8);
-        expect(action.left).toBeGreaterThanOrEqual(regionalGeometry.wheel.left - 1);
-        expect(action.right).toBeLessThanOrEqual(regionalGeometry.wheel.right + 1);
-        expect(action.height).toBeGreaterThanOrEqual(44);
-      }
-      await page.locator('.smw-builder').screenshot({
-        path: `generated-artifacts/studio-regional-actions-${country}-${width}.png`,
-        animations: 'disabled',
-      });
-      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
-      await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
-      await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
-      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
-      await regional.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
-      await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
+      expect(geometry.top).toBeGreaterThanOrEqual(geometry.countryBottom);
+      expect(geometry.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.right).toBeLessThanOrEqual(geometry.width);
+      await page.keyboard.press('Tab');
+      await expect(regional.getByRole('searchbox')).toBeFocused();
+      await regional.getByRole('listbox').press('Home');
+      const selected = await regional.getByRole('option', { selected: true }).textContent();
+      await expect(regional.locator('.smw-choice-wheel-status')).toHaveText(`Selected: ${selected}, ${country}`);
+      const reset = regional.getByRole('button', { name: `Use ${country} only`, exact: true });
+      await expect(reset).toBeVisible();
+      await reset.click();
+      await expect(regional).toBeVisible();
+      await expect(regional.getByRole('option', { selected: true })).toHaveCount(0);
+      await expect(countryWheel.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(country);
-      await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     });
   }

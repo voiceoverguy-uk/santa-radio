@@ -57,7 +57,7 @@ async function review(page, { destination = 'The Enchanted Forest', talent = nul
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
     if (answer === destination && region) {
-      await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional')).toBeVisible();
       await page.getByRole('option', { name: region, exact: true }).click();
     }
     await page.locator('.smw-button-next').click();
