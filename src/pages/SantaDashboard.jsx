@@ -19,7 +19,7 @@ function RequestedTime({ value }) {
   const date = new Date(value);
   if (!value || !Number.isFinite(date.getTime())) return <span>Unavailable</span>;
   const hours = Math.max(0, Math.floor((Date.now() - date.getTime()) / 3600000));
-  return <div><time dateTime={date.toISOString()}>{formatUkDateTime(date)</time><small style={{display:'block'}}>{hours === 0 ? 'Less than an hour ago' : `${hours.toLocaleString('en-GB')} ${hours === 1 ? 'hour' : 'hours'} ago`}</small></div>;
+  return <div><time dateTime={date.toISOString()}>{formatUkDateTime(date)}</time><small style={{display:'block'}}>{hours === 0 ? 'Less than an hour ago' : `${hours.toLocaleString('en-GB')} ${hours === 1 ? 'hour' : 'hours'} ago`}</small></div>;
 }
 export default function SantaDashboard() {
   const [freeDaysVisible,setFreeDaysVisible]=useState(4);
