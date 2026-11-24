@@ -797,3 +797,35 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-finished-bottom .smw-finished-footer {min-width:0;max-width:100%}
 .smw-finished-bottom .smw-finished-footer .smw-button {white-space:normal;max-width:100%}
 @media(max-width:600px){.smw-finished-bottom .smw-finished-account{flex-basis:100%}.smw-finished-bottom .smw-finished-footer{width:100%}}
+
+
+/* The public Kids' Studio welcome uses the same golden frame and illustrated
+   scenes as the creation steps, with purchase and returning access together. */
+.kids-studio-welcome { min-height: 70svh; padding-bottom: 80px; }
+.kids-welcome-heading { text-align: center; max-width: 760px; margin: 0 auto 36px; }
+.kids-welcome-heading h1 { margin: 5px 0 8px; color: #efda9a; font-size: clamp(28px, 4vw, 44px); line-height: 1.2; }
+.kids-welcome-heading p:not(.smw-section-kicker) { margin: 4px 0; line-height: 1.55; }
+.kids-studio-welcome .kids-welcome-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; gap: clamp(24px, 4vw, 48px); padding-block: 32px; }
+.kids-welcome-art, .kids-welcome-panel { min-width: 0; }
+.kids-welcome-art .smw-opening-picture { width: 100%; }
+.kids-welcome-panel h2 { margin: 0 0 24px; color: #fff3cd; font: 400 clamp(22px, 2.6vw, 30px)/1.25 'Cinzel', Georgia, serif; }
+.kids-welcome-panel p { line-height: 1.55; }
+.kids-welcome-panel .santa-studio-promotion__purchase { display: block; width: 100%; min-height: 58px; margin-top: 20px; padding: 14px; border: 1px solid #d6b66a; border-radius: 10px; background: #ae1624; color: #fff8e7; font-family: inherit; font-size: clamp(16px, 2vw, 20px); font-weight: 700; line-height: 1.35; cursor: pointer; }
+.kids-welcome-panel .santa-studio-promotion__checkout-note > p { color: #e8e1ce; text-align: center; }
+.kids-welcome-return { margin-top: 36px; padding-top: 22px; border-top: 1px solid #b99b4f60; }
+.kids-welcome-return h2 { margin-bottom: 12px; font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; }
+.kids-welcome-return #studio-return-access { scroll-margin-top: 105px; }
+.kids-welcome-panel .workshop-password-form { margin-top: 12px; }
+.kids-welcome-panel .workshop-password-form button { justify-self: start; }
+.kids-welcome-panel .workshop-password-form input { border: 1px solid #c5a95b; background: #fff8e7; }
+.kids-welcome-return #studio-return-access > p { margin-top: 12px; color: #e8e1ce; font-size: .82rem; }
+.kids-welcome-voucher { margin-top: 12px; }
+.kids-welcome-voucher summary { cursor: pointer; color: #fff8e7; }
+.kids-welcome-voucher > p { margin: 10px 0; font-size: .85rem; }
+.kids-welcome-panel :is(button, input, summary):focus-visible { outline: 3px solid #e7c877; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .kids-studio-welcome .kids-welcome-layout { grid-template-columns: minmax(0, 1fr); padding-block: 24px; }
+  .kids-studio-welcome .kids-welcome-art { width: min(100%, 460px); margin: 0 auto; }
+  .kids-welcome-heading { margin-bottom: 24px; }
+  .kids-welcome-return { margin-top: 26px; }
+}
