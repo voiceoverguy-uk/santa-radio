@@ -813,7 +813,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .kids-welcome-panel .santa-studio-promotion__purchase { display: block; width: 100%; min-height: 58px; margin-top: 20px; padding: 14px; border: 1px solid #d6b66a; border-radius: 10px; background: #ae1624; color: #fff8e7; font-family: inherit; font-size: clamp(16px, 2vw, 20px); font-weight: 700; line-height: 1.35; cursor: pointer; }
 .kids-welcome-panel .santa-studio-promotion__checkout-note > p { color: #e8e1ce; text-align: center; }
 .kids-welcome-return { margin-top: 36px; padding-top: 22px; border-top: 1px solid #b99b4f60; }
-.kids-welcome-return h2 { margin-bottom: 12px; font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; }
+.kids-welcome-return summary { cursor: pointer; color: #fff8e7; font-size: 16px; font-weight: 600; line-height: 1.4; }
 .kids-welcome-return #studio-return-access { scroll-margin-top: 105px; }
 .kids-welcome-panel .workshop-password-form { margin-top: 12px; }
 .kids-welcome-panel .workshop-password-form button { justify-self: start; }
