@@ -278,7 +278,7 @@ export default function WorkshopAccessGate({ children }) {
           <div className="kids-welcome-return"><StudioReturnAccess collapsible /></div>
           <details className="kids-welcome-voucher">
             <summary>Friend or Guest?</summary>
-            <p>Discount codes are entered at Stripe checkout.</p>
+            <p>DISCOUNT CODES are entered at Stripe checkout.</p>
             <WorkshopPasswordForm onAuthorized={onAuthorized} compact friendGuest />
           </details>
         </div>
