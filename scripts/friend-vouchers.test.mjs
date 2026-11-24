@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { markVoucherCopied } from '../server/voucher-copy.js';
 import { studioTestDatabase } from './helpers/studio-live-postgres.mjs';
@@ -118,4 +118,36 @@ test('retired codes cannot authorize new or existing legacy sessions',()=>{
   }
   assert.equal(adminVoucherMatches('headelf26'),true);
   assert.equal(adminVoucherMatches('headelf26x'),false);
+});
+
+test('fixed-date gifts have independent two-creation allowances and the same deadline for redemption and use',async()=>{
+  const cutoff=new Date(Date.now()+35*86400000);
+  const gifts=Array.from({length:2},()=> 'FRIEND-GIFT-'+randomBytes(10).toString('hex').toUpperCase().match(/.{5}/g).join('-'));
+  const hashes=gifts.map(code=>createHash('sha256').update(code).digest('hex'));
+  for(const hash of hashes) await pool.query('INSERT INTO public.santa_fixed_gift_vouchers(code_sha256,valid_until) VALUES($1,$2)',[hash,cutoff]);
+  const before=await listFriendVouchers(pool);
+  const visitors=[browser(),browser()];
+  const claims=await Promise.all(visitors.map(b=>redeemFriendVoucher(b.req,b.res,gifts[0].toLowerCase(),{pool,key})));
+  assert.equal(claims.filter(Boolean).length,1);
+  const first=visitors[claims.findIndex(Boolean)], other=visitors[claims.findIndex(x=>!x)];
+  const session=friendSession(first.req,key);
+  assert.equal(session.expiresAt,cutoff.getTime());
+  assert.ok(friendSession(first.req,key,cutoff.getTime()-1));
+  assert.equal(friendSession(first.req,key,cutoff.getTime()),null);
+  assert.ok(await redeemFriendVoucher(other.req,other.res,gifts[1],{pool,key}));
+  const second=friendSession(other.req,key);
+  assert.notEqual(second.generationKey,session.generationKey);
+  assert.equal(second.expiresAt,session.expiresAt);
+  const store=createStudioAllowanceStore(pool);
+  const identity={key:session.generationKey,expiresAt:cutoff};
+  for(let n=0;n<2;n++) await store.succeed(identity,await store.reserve(identity,randomUUID()));
+  await assert.rejects(store.reserve(identity,randomUUID()),/Both creations/);
+  assert.equal((await store.status({key:second.generationKey,expiresAt:cutoff})).remaining,2);
+  assert.ok(await redeemFriendVoucher(first.req,first.res,gifts[0],{pool,key}));
+  assert.deepEqual(friendSession(first.req,key),session);
+  assert.equal((await store.status(identity)).remaining,0);
+  assert.equal(await redeemFriendVoucher(other.req,other.res,gifts[0],{pool,key}),false);
+  await pool.query("UPDATE public.santa_fixed_gift_vouchers SET valid_until=now() WHERE code_sha256=$1",[hashes[0]]);
+  assert.equal(await redeemFriendVoucher(first.req,first.res,gifts[0],{pool,key}),false);
+  assert.deepEqual(await listFriendVouchers(pool),before);
 });
