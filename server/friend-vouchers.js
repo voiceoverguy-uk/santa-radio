@@ -31,8 +31,10 @@ export function friendSession(req, key = secret(), now = Date.now()) {
     return { codeId: 'admin', limited: true, admin: true, expiresAt: Number(parts[2]),
       generationKey: digest(`friend-admin:${parts[1]}`) };
   }
-  if (!parts || parts.length !== 3 || parts[0] !== 'access' || !/^[1-9]\d{0,9}$/.test(parts[1])
-    || Number(parts[1]) > 2147483647 || !/^\d{13}$/.test(parts[2]) || Number(parts[2]) <= now) return null;
+  if (!parts || parts.length !== 3 || parts[0] !== 'access'
+    || !/^\d{13}$/.test(parts[2]) || Number(parts[2]) <= now) return null;
+  const dashboardIssue = /^[1-9]\d{0,9}$/.test(parts[1]) && Number(parts[1]) <= 2147483647;
+  if (!dashboardIssue && !/^gift-[a-f0-9]{64}$/.test(parts[1])) return null;
   return { codeId: `friend-${parts[1]}`, limited: true, friend: true,
     expiresAt: Number(parts[2]), generationKey: digest(`friend-voucher:${parts[1]}`) };
 }
@@ -44,29 +46,48 @@ export function issueAdminVoucher(req, res, { key = secret(), expiresAt = Date.n
   setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, Math.max(0, expiresAt - Date.now()));
   return { authorized: true, expiresAt, voucher: { unlimited: false, admin: true } };
 }
-export function friendClaim(req, res, key = secret()) {
+function savedClaim(req, key) {
   if (!validKey(key)) throw new Error('FRIEND_SIGNING_UNAVAILABLE');
   const parts = verified(cookie(req, CLAIM), key);
-  if (parts?.length === 2 && parts[0] === 'claim' && /^[A-Za-z0-9_-]{43}$/.test(parts[1])) return parts[1];
-  const nonce = randomBytes(32).toString('base64url'), payload = `claim.${nonce}`;
-  setCookie(req, res, CLAIM, `${payload}.${sign(payload, key)}`, MONTH);
+  return parts?.length === 2 && parts[0] === 'claim' && /^[A-Za-z0-9_-]{43}$/.test(parts[1]) ? parts[1] : null;
+}
+function setClaim(req, res, key, nonce, duration) {
+  const payload = `claim.${nonce}`;
+  setCookie(req, res, CLAIM, `${payload}.${sign(payload, key)}`, duration);
+}
+export function friendClaim(req, res, key = secret()) {
+  const existing = savedClaim(req, key);
+  if (existing) return existing;
+  const nonce = randomBytes(32).toString('base64url');
+  setClaim(req, res, key, nonce, MONTH);
   return nonce;
 }
 export async function redeemFriendVoucher(req, res, code, { pool = databasePool(), key = secret() } = {}) {
   const normalized = code.trim().toUpperCase();
-  if (!/^FRIEND-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
-  const claim = digest(friendClaim(req, res, key));
-  // One database statement serializes competing redeemers. The original browser
-  // may retry a lost response without spending the voucher twice or resetting it.
-  const { rows: [row] } = await pool.query(`UPDATE public.santa_friend_vouchers
-    SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
-    WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)
-    AND (redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '30 days')
-    RETURNING slot, redeemed_at`, [normalized, claim]);
+  const fixedGift = /^FRIEND-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
+  if (!fixedGift && !/^FRIEND-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
+  const existing = savedClaim(req, key);
+  const nonce = existing ?? randomBytes(32).toString('base64url');
+  const claimant = digest(nonce);
+  // Each update allows only the first claimant and that browser's retries.
+  const result = fixedGift
+    ? await pool.query(`UPDATE public.santa_fixed_gift_vouchers
+      SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
+      WHERE code_sha256=$1 AND valid_until > clock_timestamp()
+        AND (redeemed_at IS NULL OR claimant_sha256=$2)
+      RETURNING 'gift-' || code_sha256 AS issue, valid_until AS expires_at`, [digest(normalized), claimant])
+    : await pool.query(`UPDATE public.santa_friend_vouchers
+      SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
+      WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)
+        AND (redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '30 days')
+      RETURNING slot AS issue, redeemed_at + interval '720 hours' AS expires_at`, [normalized, claimant]);
+  const row = result.rows[0];
   if (!row) return false;
-  const expiresAt = new Date(row.redeemed_at).getTime() + MONTH;
-  const payload = `access.${row.slot}.${expiresAt}`;
-  setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, Math.max(0, expiresAt - Date.now()));
+  const expiresAt = new Date(row.expires_at).getTime();
+  const duration = Math.max(0, expiresAt - Date.now());
+  if (!existing || fixedGift) setClaim(req, res, key, nonce, Math.max(MONTH, duration));
+  const payload = `access.${row.issue}.${expiresAt}`;
+  setCookie(req, res, ACCESS, `${payload}.${sign(payload, key)}`, duration);
   return { authorized: true, expiresAt, voucher: { unlimited: false, friend: true } };
 }
 function newFriendCode() {
