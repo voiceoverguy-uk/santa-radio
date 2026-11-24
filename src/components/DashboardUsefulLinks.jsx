@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { ORIGIN } from '../seo/catalogue.js';
 import { messageMakerOffers, messageOfferPath } from '../lib/messageMakerOffers.js';
+import { CHECKER_PATH } from '../naughty-or-nice/checkerLogic.js';
 import './DashboardUsefulLinks.css';
 
+const links = [
+  ...messageMakerOffers.map(offer => ({ label: offer.label ?? offer.title, path: messageOfferPath(offer) })),
+  { label: 'Naughty or Nice List Checker', path: CHECKER_PATH },
+];
 
 export default function DashboardUsefulLinks() {
   const [copied, setCopied] = useState('');
@@ -24,12 +29,11 @@ export default function DashboardUsefulLinks() {
     <section className="dashboard-links" aria-labelledby="dashboard-links-title">
       <h2 id="dashboard-links-title">Useful links</h2>
       <ul>
-        {messageMakerOffers.map(offer => {
-          const { id, label = offer.title } = offer;
-          const url = `${ORIGIN}${messageOfferPath(offer)}`;
+        {links.map(({ label, path }) => {
+          const url = `${ORIGIN}${path}`;
           const Icon = copied === url ? Check : Copy;
           return (
-            <li key={id}>
+            <li key={path}>
               <div>
                 <strong>{label}</strong>
                 <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
