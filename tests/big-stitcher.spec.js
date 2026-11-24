@@ -21,6 +21,10 @@ test('dashboard combines dropped media and a name into a playable MP4', async ({
     await page.getByLabel('Private Studio owner token').fill('local-test');
     await page.getByRole('button', { name: 'Open dashboard' }).click();
     const box = page.locator('.big-stitcher');
+    const artwork = box.locator('canvas, img, video');
+    const close = box.getByRole('button', { name: 'Close preview and reset Big Stitcher' });
+    await expect(artwork).toHaveCount(0);
+    await expect(close).toHaveCount(0);
     await expect(box.getByRole('button', { name: 'Create MP4' })).toBeDisabled();
     const transfer = await page.evaluateHandle(({ audio, image }) => {
       const transfer = new DataTransfer();
@@ -30,9 +34,12 @@ test('dashboard combines dropped media and a name into a playable MP4', async ({
     }, { audio: [...readFileSync(audio)], image: [...readFileSync(image)] });
     await box.getByRole('button', { name: /Drop your MP3/ }).dispatchEvent('drop', { dataTransfer: transfer });
     await box.getByLabel('Name on the image').fill('Oliver');
+    await expect(artwork).toHaveCount(0);
     await expect(box.getByRole('button', { name: 'Create MP4' })).toBeEnabled();
     await box.getByRole('button', { name: 'Create MP4' }).click();
     await expect(box.getByRole('link', { name: 'Download MP4' })).toBeVisible({ timeout: 90000 });
+    await expect(box.locator('video')).toHaveAttribute('poster', /^blob:/);
+    await expect(close).toBeVisible();
     await expect(box.getByRole('progressbar', { name: 'MP4 creation progress' })).toHaveAttribute('value', '1');
     const downloadPromise = page.waitForEvent('download');
     await box.getByRole('link', { name: 'Download MP4' }).click();
@@ -68,8 +75,23 @@ test('dashboard combines dropped media and a name into a playable MP4', async ({
     await box.getByRole('button', { name: 'Cancel', exact: true }).click();
     releaseEncoder();
     await expect(box.getByRole('status')).toContainText('Cancelled');
+    await expect(artwork).toHaveCount(0);
     await box.getByRole('button', { name: 'Create MP4' }).click();
     await expect(box.getByRole('link', { name: 'Download MP4' })).toHaveAttribute('download', 'Amelia.mp4', { timeout: 90000 });
     await expect.poll(() => box.locator('video').evaluate(video => video.videoWidth / video.videoHeight)).toBeCloseTo(16 / 9);
+    await close.click();
+    await expect(artwork).toHaveCount(0);
+    await expect(close).toHaveCount(0);
+    await expect(box.getByRole('link', { name: 'Download MP4' })).toHaveCount(0);
+    await expect(box.locator('audio, progress')).toHaveCount(0);
+    await expect(box.getByRole('status')).toBeEmpty();
+    await expect(box.getByLabel('Name on the image')).toHaveValue('');
+    await expect(box).toContainText('MP3: Not selected');
+    await expect(box).toContainText('Santa Radio Christmas · 16:9 (default)');
+    await expect(box.getByRole('button', { name: 'Create MP4' })).toBeDisabled();
+    await expect(box.getByRole('button', { name: /Drop your MP3/ })).toBeFocused();
+    await box.locator('input[type=file]').setInputFiles(audio);
+    await expect(box.getByRole('button', { name: 'Create MP4' })).toBeEnabled();
+    await expect(artwork).toHaveCount(0);
   } finally { rmSync(folder, { recursive: true, force: true }); }
 });

@@ -9,11 +9,12 @@
 .big-stitcher label { display: block; margin: 1rem 0 .5rem; font-weight: 700; }
 .big-stitcher input { width: 100%; box-sizing: border-box; padding: .8rem; font: inherit; }
 .santa-dashboard .big-stitcher input[type=file] { display: none; }
-.big-stitcher figure { margin: 1.25rem 0; }
-.big-stitcher canvas, .big-stitcher video { display: block; max-width: 100%; max-height: 420px; width: auto; height: auto; border-radius: 8px; margin-bottom: .75rem; }
+.big-stitcher__preview { position: relative; width: fit-content; max-width: 100%; margin-bottom: .75rem; }
+.big-stitcher__preview video { display: block; max-width: 100%; max-height: 420px; width: auto; height: auto; border-radius: 8px; }
+.santa-dashboard .big-stitcher__close { position: absolute; top: .5rem; right: .5rem; width: 44px; height: 44px; padding: 0; border: 1px solid #efcf79; border-radius: 50%; background: #153e32; color: #fff; font-size: 1.75rem; line-height: 1; }
 .big-stitcher audio { width: 100%; margin: .75rem 0; }
 .big-stitcher__actions { display: flex; gap: .75rem; margin-top: 1rem; }
-.big-stitcher__note, .big-stitcher figcaption { font-size: .9rem; color: #d2decf; }
+.big-stitcher__note { font-size: .9rem; color: #d2decf; }
 .big-stitcher__result a { display: inline-block; background: #17664f; color: white; padding: .85rem 1.25rem; border-radius: 8px; font-weight: bold; }
 .big-stitcher [role=alert] { color: #a71930; }
 
