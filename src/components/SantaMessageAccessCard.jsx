@@ -1,3 +1,4 @@
+import useTrackerNative from '../hooks/useTrackerNative.js';
 import { FREE_MARKETING_COPY } from '../lib/freeMessageMarketing.js';
 import { useId } from 'react';
 import { Link } from 'react-router-dom';
@@ -18,6 +19,7 @@ export default function SantaMessageAccessCard({
   pulseSubmit = false,
 }) {
   const id = useId();
+  const nativeTracker = useTrackerNative();
   const offer = variant === 'offer';
   const submitClassName = `btn-red santa-message-access__submit${pulseSubmit && !pending && !offer ? ' santa-message-access__submit--pulse' : ''}`;
   const fieldIds = {
@@ -84,10 +86,10 @@ export default function SantaMessageAccessCard({
         </div>
         <input type="hidden" name="locale" value="en" />
 
-        <label className="santa-message-access__marketing">
+        {nativeTracker ? <p className="santa-message-access__privacy">For a parent or grown-up. Your details are used to verify access to the free message maker, without signing you up for marketing. Read our <Link to="/privacy-policy#santa-tracker-android-privacy" onClick={onPrivacyNavigate}>privacy policy</Link>.</p> : <label className="santa-message-access__marketing">
           <input type="checkbox" name="marketingOptIn" defaultChecked={true} disabled={pending || !!verification} />
           <span>{FREE_MARKETING_COPY} <Link to="/privacy-policy" onClick={onPrivacyNavigate}>Privacy policy</Link>. <small>Optional — your free message is available either way.</small></span>
-        </label>
+        </label>}
         {verification && <div className="santa-message-access__field">
           <p className="santa-message-access__status" role="status">We’ve emailed a code to {fields.EMAIL}. Check your inbox and junk folder. It expires in 15 minutes.</p>
           <label htmlFor={`${id}-code`}>Six-digit email code</label>
@@ -113,7 +115,7 @@ export default function SantaMessageAccessCard({
       </form>
 
       {!offer && (pending || verification) && <p className="santa-message-access__privacy">
-        Confirm your email to unlock your free message. If you tick the box above, confirmation also signs you up for Santa Radio emails. Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
+        Confirm your email to unlock your free message. {!nativeTracker && 'If you tick the box above, confirmation also signs you up for Santa Radio emails.'} Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
       </p>}
     </section>
   );
