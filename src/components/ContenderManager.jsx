@@ -47,7 +47,8 @@ export default function ContenderManager({ownerToken,onPublish}) {
     try {
       if (body?.action === 'invite') {
         const entry = entries.find(item => item.id === body.id);
-        const { votingPicture } = await import(/* @vite-ignore */ '/contenders/render-picture.js');
+        const rendererUrl = '/contenders/render-picture.js';
+        const { votingPicture } = await import(/* @vite-ignore */ rendererUrl);
         const picture = await votingPicture(entry);
         const key = 'poster-' + crypto.randomUUID();
         await uploadFile(key, 'png', picture, () => {});
