@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import WorkshopSearchableChoices from './WorkshopSearchableChoices.jsx';
 import { workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './WorkshopDestinationPicker.css';
@@ -28,8 +28,6 @@ export default function WorkshopDestinationPicker({
   onSoundInteraction,
   wording = '',
 }) {
-  const [showRegions, setShowRegions] = useState(false);
-  const countryHeadingRef = useRef(null);
   const regionHeadingRef = useRef(null);
   const fantasy = category === 'fantasy';
   const visibleOptions = options.filter(option => workshopDestinationCategory(option) === category)
@@ -50,38 +48,38 @@ export default function WorkshopDestinationPicker({
     ? 'State and county choices are not available just yet. You can still choose this country.'
     : '';
 
-  const focusHeading = ref => {
-    window.requestAnimationFrame(() => {
-      const heading = ref.current;
-      if (!heading) return;
-      heading.focus({ preventScroll: true });
-      // Explicit view navigation may start from a button below the wheel.
-      // Reveal its new heading once, never from a search-input focus/change.
-      const clearance = (document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0) + 16;
-      const top = heading.getBoundingClientRect().top;
-      if (top < clearance || top > window.innerHeight - 140) {
-        window.scrollBy({ top: top - clearance, behavior: 'instant' });
-      }
-    });
-  };
-
-  const openRegions = () => {
-    setShowRegions(true);
-    focusHeading(regionHeadingRef);
-  };
-  const backToCountries = () => {
-    setShowRegions(false);
-    focusHeading(countryHeadingRef);
-  };
+  const regionKind = groupKey === 'usa-states' ? 'state' : 'county';
+  const regionPlural = regionKind === 'state' ? 'states' : 'counties';
   const useCountryOnly = () => {
     onRegionChange?.('');
-    setShowRegions(false);
-    focusHeading(countryHeadingRef);
+    regionHeadingRef.current?.focus({ preventScroll: true });
   };
-  const countryOnlyAction = selectedRegion && country && (
-    <button className="smw-destination-picker__country-only" type="button" onClick={useCountryOnly}>
-      Use {country.label} only
-    </button>
+  const regionSection = canChooseRegion && (
+    <section key={groupKey} className="smw-destination-picker__regional" aria-label={regionalHeadings[groupKey]}>
+      <h3 ref={regionHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
+        Choose a {regionKind} <span>(optional)</span>
+      </h3>
+      <p className="smw-destination-picker__regional-note">
+        Make their message more local, or leave this unselected to use {country.label} only.
+      </p>
+      <WorkshopSearchableChoices
+        key={groupKey} category="place" label={regionalHeadings[groupKey]}
+        options={availableRegions} value={region}
+        onChange={id => onRegionChange?.(String(id))}
+        onTick={onTick} onSoundInteraction={onSoundInteraction}
+        showWordingPreview={false}
+        selectionStatusLabel={selectedRegion ? `${selectedRegion.label}, ${country.label}` : ''}
+        searchLabel={`Search ${regionPlural} in ${country.label}`}
+        placeholder={`Search ${regionPlural} in ${country.label}`}
+        wheelFooter={selectedRegion && (
+          <div className="smw-destination-picker__regional-actions">
+            <button className="smw-destination-picker__country-only" type="button" onClick={useCountryOnly}>
+              Use {country.label} only
+            </button>
+          </div>
+        )}
+      />
+    </section>
   );
 
   return (
@@ -93,17 +91,12 @@ export default function WorkshopDestinationPicker({
         ].map(([key, label]) => (
           <button key={key} type="button" className={category === key ? 'is-selected' : ''}
             aria-pressed={category === key} onClick={() => {
-              if (category === key) {
-                if (key === 'countries' && showRegions) backToCountries();
-                return;
-              }
-              setShowRegions(false);
-              onCategoryChange?.(key);
+              if (category !== key) onCategoryChange?.(key);
             }}>{label}</button>
         ))}
       </div>
-      <div className="smw-destination-picker__country" hidden={showRegions}>
-        <h3 ref={countryHeadingRef} tabIndex={-1}
+      <div className="smw-destination-picker__country">
+        <h3 tabIndex={-1}
           className="smw-destination-picker__heading smw-destination-picker__heading--accessible-only">
           {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
         </h3>
@@ -122,53 +115,13 @@ export default function WorkshopDestinationPicker({
             searchLabel={fantasy ? 'Search fantasy and space destinations' : 'Search locations'}
             placeholder={fantasy ? 'Try a fantasy place or space destination' : 'Search countries and real places'}
             selectedText={selectedRegion?.label || country?.label || ''}
-            wheelFooter={country && groupKey && (
-              <>
-                {canChooseRegion && <div className="smw-destination-picker__actions">
-                  <button className="smw-destination-picker__region-action" type="button" onClick={openRegions}>
-                    Choose a {groupKey === 'usa-states' ? 'state' : 'county'}
-                  </button>
-                  {countryOnlyAction}
-                </div>}
-                {guidance && <div className="smw-destination-picker__region-prompt">
-                  <p>{guidance}</p>
-                </div>}
-              </>
-            )}
+            afterWheel={regionSection || (guidance && <div className="smw-destination-picker__region-prompt">
+              <p>{guidance}</p>
+            </div>)}
           />
         </div>
       </div>
 
-      {groupKey && canChooseRegion && (
-        <div className="smw-destination-picker__regional" hidden={!showRegions}>
-          <h3 ref={regionHeadingRef} tabIndex={-1}
-            className="smw-destination-picker__heading smw-destination-picker__heading--accessible-only">
-            {regionalHeadings[groupKey]}
-          </h3>
-          <div className="smw-destination-picker__searchable">
-            <WorkshopSearchableChoices
-              key={groupKey}
-              category="place"
-              label={regionalHeadings[groupKey]}
-              options={availableRegions}
-              value={region}
-              onChange={id => onRegionChange?.(String(id))}
-              invalid={invalid}
-              onTick={onTick}
-              onSoundInteraction={onSoundInteraction}
-              wording={wording}
-              selectedText={selectedRegion?.label || country?.label || ''}
-              searchLabel={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
-              placeholder={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
-              wheelFooter={countryOnlyAction && (
-                <div className="smw-destination-picker__regional-actions">
-                  {countryOnlyAction}
-                </div>
-              )}
-            />
-          </div>
-        </div>
-      )}
 
     </section>
   );
