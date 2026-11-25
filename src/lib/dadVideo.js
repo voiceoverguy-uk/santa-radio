@@ -30,14 +30,16 @@ export function dadTreatCaption(value){
 }
 const NAME_BADGE_START = 18;
 const AGE_CAPTION_SECONDS = 5;
-const DAD_FIXED_CAPTIONS = [
-  { id: 'age-prompt', text: 'So... How old are you now?', start: 19, end: 23, noFade: true },
-  { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', start: 53, end: 59, noFade: true },
-  { id: 'generosity-prompt', text: 'But, how generous are you?', start: 72, end: 78, noFade: true },
-  { id: 'approved', text: 'Nice List Approved… just!', start: 90, end: 97, noFade: true },
-  { id: 'forgotten-name', text: "DOH! I've forgotten your name!", start: 100, end: 106, noFade: true },
+// Place each caption relative to the next personalised audio clip. The
+// intervening narration is fixed, while the preceding answers vary in length.
+const DAD_NARRATION_CAPTIONS = [
+  { id: 'age-prompt', text: 'So... How old are you now?', nextClip: 'age', lead: 4, duration: 4 },
+  { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', nextClip: 'viewing', lead: 7, duration: 6 },
+  { id: 'generosity-prompt', text: 'But, how generous are you?', nextClip: 'treat', lead: 8, duration: 6 },
+  { id: 'approved', text: 'Nice List Approved… just!', nextClip: 'secondName', lead: 16, duration: 7 },
+  { id: 'forgotten-name', text: "DOH! I've forgotten your name!", nextClip: 'secondName', lead: 6, duration: 6 },
 ];
-const dadAgeStart = result => Math.max(result.clipStarts.age, DAD_FIXED_CAPTIONS[0].end);
+const dadAgeStart = result => Math.max(result.clipStarts.age, NAME_BADGE_START);
 
 export function dadTimeline(result){
  const s=result.clipStarts;
@@ -53,7 +55,14 @@ export function dadTimeline(result){
  {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:Math.min(s.secondName-1,s.treat+7)},
  {id:'christmas',noFade:true,text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
  {id:'christmas-extra',noFade:true,text:'Merry Christmas! and all that!',start:christmasStart+4}];
- const fitted = DAD_FIXED_CAPTIONS.reduce((rows, prompt) => rows.flatMap(caption => {
+ const narration = DAD_NARRATION_CAPTIONS.flatMap(({ id, text, nextClip, lead, duration }) => {
+   const next = s[nextClip];
+   if (!Number.isFinite(next)) return [];
+   const start = Math.max(NAME_BADGE_START, next - lead);
+   const end = Math.min(next, start + duration);
+   return end > start ? [{ id, text, start, end, noFade: true }] : [];
+ });
+ const fitted = narration.reduce((rows, prompt) => rows.flatMap(caption => {
    const end = caption.end ?? Infinity;
    if (end <= prompt.start || caption.start >= prompt.end) return [caption];
    const parts = [];
@@ -61,7 +70,7 @@ export function dadTimeline(result){
    if (end > prompt.end) parts.push({ ...caption, id: `${caption.id}-after-${prompt.id}`, start: prompt.end });
    return parts;
  }), captions);
- return [...fitted, ...DAD_FIXED_CAPTIONS].sort((left, right) => left.start - right.start);
+ return [...fitted, ...narration].sort((left, right) => left.start - right.start);
 }
 function frames(image,result){
  const width=1280,height=720;
