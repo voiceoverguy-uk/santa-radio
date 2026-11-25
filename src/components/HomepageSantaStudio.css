@@ -57,16 +57,20 @@
   margin-bottom: 0;
 }
 
+:is(.home-page, .bespoke-messages-page) .homepage-santa-studio__heading .homepage-section-heading__supporting {
+  font-weight: 700;
+}
+
 @supports (background-clip: text) {
   @media (prefers-reduced-motion: no-preference) {
     :is(.home-page, .bespoke-messages-page) .homepage-santa-studio__heading .bespoke-premium-glow {
       display: inline-block;
-      background: linear-gradient(110deg, #ffe497 42%, #fff9df 50%, #ffe497 58%) 100% center / 300% 100%;
+      background: linear-gradient(110deg, #e2bd66 38%, #fff2ba 46%, #fff 50%, #fff2ba 54%, #e2bd66 62%) 100% center / 300% 100%;
       background-clip: text;
       color: transparent;
       text-shadow: none;
       filter: drop-shadow(0 0 5px #f5d77b66);
-      animation: bespoke-premium-shine 5s ease-in-out infinite;
+      animation: bespoke-premium-shine 4s ease-in-out infinite;
     }
   }
 }
