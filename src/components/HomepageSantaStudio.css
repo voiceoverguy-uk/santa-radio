@@ -46,3 +46,13 @@
 .studio-entry-voucher { border: 1px solid #d4af3780; border-radius: 12px; padding: 20px; }
 .studio-entry-voucher summary { cursor: pointer; color: var(--gold-light); }
 .studio-entry-voucher form { margin-top: 20px; }
+
+.santa-message-section.bespoke-messages-page {
+  padding-block: clamp(32px, 5vw, 68px);
+  background: url("../pages/apps-wrap-tile.svg") center top / 192px 192px repeat, #0d1410;
+}
+
+.bespoke-messages-page .homepage-section-heading {
+  max-width: 37rem;
+  margin-bottom: 0;
+}

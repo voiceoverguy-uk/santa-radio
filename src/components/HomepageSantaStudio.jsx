@@ -13,7 +13,7 @@ export default function HomepageSantaStudio({ directEntry = false, dedicatedPage
   const previewName = selectedRecipient || messages.at(-1)?.name || null;
 
   return (
-    <section id="bespoke-santa-messages" className="santa-message-section homepage-santa-studio" aria-labelledby="homepage-santa-studio-title">
+    <section id="bespoke-santa-messages" className={`santa-message-section homepage-santa-studio${dedicatedPage ? " bespoke-messages-page" : ""}`} aria-labelledby="homepage-santa-studio-title">
       <div className="container homepage-santa-studio__layout">
         <HomepageSectionHeading
           eyebrow="A unique Christmas treat."
