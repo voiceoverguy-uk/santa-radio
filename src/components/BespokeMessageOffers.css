@@ -65,3 +65,27 @@
   background: #ffe4a0;
   color: #09291f;
 }
+
+@media (min-width: 681px) {
+  @supports (grid-template-rows: subgrid) {
+    .bespoke-offers { row-gap: 0; }
+    .bespoke-offer {
+      display: grid;
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+    }
+    .bespoke-offer__art { grid-row: 1; }
+    .bespoke-offer > .bespoke-kids-examples { grid-row: 2; }
+    .bespoke-offer__body {
+      display: grid;
+      grid-row: 3 / span 4;
+      grid-template-rows: subgrid;
+    }
+    .bespoke-offer__buy {
+      display: grid;
+      grid-row: 2 / span 2;
+      grid-template-rows: subgrid;
+      margin-top: 0;
+    }
+  }
+}
