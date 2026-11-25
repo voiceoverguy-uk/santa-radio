@@ -22,7 +22,10 @@
     }
   ],
   "functions": {
-    "api/message-demos.js": { "maxDuration": 120 },
+    "api/message-demos.js": {
+      "installCommand": "",
+      "maxDuration": 120
+    },
     "api/helper-submissions.js": {
       "installCommand": "",
       "maxDuration": 60
