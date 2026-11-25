@@ -1,0 +1,19 @@
+.mini-santa-dash { margin-top: 12px; color: #fff3d7; text-align: center; }
+.mini-santa-dash button { font: inherit; cursor: pointer; }
+.mini-santa-dash__start { display: block; width: 100%; padding: 0; border: 0; color: #f4d888; background: transparent; }
+.mini-santa-dash__start .homepage-santa-runner { margin-top: 0; }
+.mini-santa-dash__start > span { display: block; padding: 8px; font-size: .85rem; }
+.mini-santa-dash__game { overflow: hidden; border: 1px solid #ad9050; border-radius: 14px; background: #0b291fe8; }
+.mini-santa-dash__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; padding: 12px; font-variant-numeric: tabular-nums; }
+.mini-santa-dash__toolbar strong { margin-right: auto; color: #f4d888; }
+.mini-santa-dash__toolbar button, .mini-santa-dash__result button { min-height: 44px; padding: 8px 14px; color: #fff3d7; border: 1px solid #ad9050; border-radius: 6px; background: #173d2d; }
+.mini-santa-dash__arena { position: relative; display: block; width: 100%; height: 230px; overflow: hidden; padding: 0; border: 0; border-block: 1px solid #ad905060; background: linear-gradient(#102f3b55, #09231a88), url('../assets/home/santa-dash-aurora-background.webp') center 70% / cover; touch-action: manipulation; }
+.mini-santa-dash__arena::after { position: absolute; content: ''; bottom: 12px; left: 0; right: 0; height: 2px; background: #e5eee5a0; }
+.mini-santa-dash__santa { position: absolute; left: 16%; bottom: 12px; width: 60px; height: 64px; pointer-events: none; }
+.mini-santa-dash__santa img { display: block; width: 60px; height: 64px; object-fit: contain; }
+.mini-santa-dash__pie { position: absolute; width: 32px; height: 32px; object-fit: contain; transform: translate(-50%, 50%); pointer-events: none; }
+.mini-santa-dash__paused { position: absolute; inset: 0; display: grid; place-items: center; color: #ffe4a2; background: #071d17b8; font-size: 1.5rem; }
+.mini-santa-dash__game > p { margin: 0; padding: 12px 16px; font-size: .85rem; }
+.mini-santa-dash__result { padding: 32px 16px; }
+.mini-santa-dash button:focus-visible { outline: 3px solid #ffe4a2; outline-offset: -4px; }
+@media (max-width: 400px) { .mini-santa-dash__toolbar { gap: 8px; } .mini-santa-dash__toolbar strong { width: 100%; margin-right: 0; } }
