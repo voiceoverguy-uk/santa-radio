@@ -324,3 +324,17 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 @media (max-width: 600px) {
   .home-page .home-contenders__brand { flex-wrap: wrap; align-items: center; }
 }
+
+/* Equal breathing room around each section's content, including framed cards. */
+.home-page { --homepage-section-space: clamp(32px, 4vw, 56px); }
+.home-page.home-page > :is(.homepage-santa-studio, .tracker-banner,
+  .santa-dash-promo, .nn-widget, .christmas-pairs, .name-chart-section,
+  .soundboard, .mugshots-preview, .youtube-section, .partnership-strip,
+  .contact-section) {
+  padding-block: var(--homepage-section-space);
+  margin-block: 0;
+}
+.home-page.home-page > :is(.christmas-study-promo, .home-contenders) {
+  margin-block: var(--homepage-section-space);
+}
+.home-page.home-page > .tracker-banner > .relative { padding-block: 0; }

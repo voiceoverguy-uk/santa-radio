@@ -40,7 +40,6 @@ export default function Soundboard() {
           </span>
           <h2 className="soundboard-title" id="soundboard-title">Santa’s Soundboard</h2>
         </div>
-        <p className="soundboard-subtitle">A little Christmas magic. In Santa’s own voice.</p>
       </header>
 
       <div className="soundboard-panel">
