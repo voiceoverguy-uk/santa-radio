@@ -30,7 +30,9 @@
 /* Dedicated /free-santa-message arrangement */
 .message-layout--dedicated { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 28px; }
 .message-layout--dedicated > * { min-width: 0; }
-.message-free-logo-wrap { position: relative; width: 100%; max-width: 520px; margin: 0 auto 24px; }
+.message-free-logo-wrap,
+.fsm-personal-video { width: 100%; max-width: 520px; }
+.message-free-logo-wrap { position: relative; margin: 0 auto 24px; }
 .message-free-logo { display: block; width: 100%; height: auto; }
 .message-free-invitation { margin-top: 12px; }
 .message-free-sparkle { position: absolute; pointer-events: none; color: #fff4be; line-height: 1; font-size: clamp(12px, 2vw, 22px); text-shadow: 0 0 8px #ffd76b; animation: free-logo-sparkle 3.6s ease-in-out infinite; }
@@ -78,7 +80,19 @@
 .message-intro--signup .santa-message-heading { text-align: center; max-width: 460px; margin: 0 auto 16px; font-size: clamp(1.4rem, 2.3vw, 1.8rem); line-height: 1.35; }
 .message-intro--signup .message-free-intro { max-width: 420px; margin: 0 auto; line-height: 1.65; }
 
-.fsm-personal-video { width: 100%; max-width: 420px; margin: 20px auto 0; }
+.fsm-personal-video { margin: 20px auto 0; }
+.fsm-personal-video__ready > .santa-video-player--glow:not(.santa-video-player--expanded) {
+  box-shadow: 0 0 0 1px #efcd7a, 0 0 20px #e8b65485;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fsm-personal-video__ready > .santa-video-player--glow:not(.santa-video-player--expanded) {
+    animation: fsm-ready-video-glow 2.7s ease-in-out infinite;
+  }
+}
+@keyframes fsm-ready-video-glow {
+  0%, 100% { box-shadow: 0 0 0 1px #e8c879, 0 0 15px #e8b65455; }
+  50% { box-shadow: 0 0 0 2px #ffe19a, 0 0 29px 4px #e8b654a0; }
+}
 
 .free-bespoke-banner { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(120px, 1fr) minmax(230px, 1.6fr) minmax(120px, 1fr); align-items: center; gap: 18px; padding: 24px; border: 1px solid #d6b65d; border-radius: 18px; background: linear-gradient(115deg, #204d39, #0b2b20 55%, #3b3c22); color: #fff1cd; text-decoration: none; box-shadow: 0 0 20px #d6b65d25; }
 .free-bespoke-banner > img {
