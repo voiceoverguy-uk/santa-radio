@@ -4,4 +4,4 @@
 .demo-manager__list{padding:0;list-style:none}
 .demo-manager__list li{padding:.75rem 0;border-top:1px solid #9d895e66}
 .demo-manager__list button+button{margin-inline-start:.5rem}
-.demo-manager__list audio{width:min(100%,28rem)}
+.demo-manager__list video{width:min(100%,28rem)}

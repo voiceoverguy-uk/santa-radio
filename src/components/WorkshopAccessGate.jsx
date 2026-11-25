@@ -1,4 +1,3 @@
-import SantaMessageExample from './SantaMessageExample.jsx';
 import BespokeExamplePlayer from './BespokeExamplePlayer.jsx';
 import StudioVoucherSuccess from './StudioVoucherSuccess.jsx';
 import { scheduleExpiry } from '../lib/scheduleExpiry.js';
@@ -264,7 +263,6 @@ export default function WorkshopAccessGate({ children }) {
         <h1>Kids’ Message Maker Studio</h1>
         <p>Imagine their face when Santa knows their name.</p>
         <p>A magical, personalised message from Santa celebrating their achievements, their favourite things and the little details that make them special.</p>
-        <SantaMessageExample group="kids" />
       </header>
       <section className="smw-builder kids-welcome-layout" aria-label="Kids’ recording studio">
         <div className="smw-start-artwork kids-welcome-art">

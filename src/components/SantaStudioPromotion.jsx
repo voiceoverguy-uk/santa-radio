@@ -4,7 +4,7 @@ import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
-import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
+import SantaMessageVideoExample from './SantaMessageVideoExample.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized, showPremiumIntro = false }) {
   const liveNameTotal = useSantaNameTotal();
@@ -84,7 +84,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         </div>
       </div>
       <div className="santa-studio-promotion__examples">
-        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample compact onActiveExampleNameChange={setPaidExampleName} /></div>
+        <div className="santa-studio-promotion__audio"><SantaMessageVideoExample group="kids" onExampleNameChange={setPaidExampleName} /></div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">
           <button className="santa-studio-promotion__gift-toggle" type="button"

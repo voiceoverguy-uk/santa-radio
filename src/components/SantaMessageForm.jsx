@@ -7,7 +7,6 @@ import { trackMessageAction } from '../lib/messageEngagement.js';
 import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
-import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
 import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
@@ -410,13 +409,13 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <div className="message-intro-divider" aria-hidden="true">★</div>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+        {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageVideoExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         {!dedicatedLayout && <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>}
 
         </>}
         {dedicatedLayout && <>
-          {readyVideoKey !== messages.at(-1)?.key && <><SantaMessageVideoExample recipientName={name} /><SantaMessageExample onExampleNameChange={setActiveExampleName} /></>}
+          {readyVideoKey !== messages.at(-1)?.key && <SantaMessageVideoExample onExampleNameChange={setActiveExampleName} />}
           <div className="fsm-personal-video" ref={setVideoPreviewTarget} hidden={!messages.length || readyVideoKey !== messages.at(-1)?.key} />
         </>}
       </div>
@@ -566,7 +565,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {showCooldown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         </>}
       </div>
-       {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+       {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageVideoExample onExampleNameChange={setActiveExampleName} />}
       </div>
       {!nativeTracker && !dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />}
