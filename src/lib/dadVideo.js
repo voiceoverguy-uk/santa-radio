@@ -35,6 +35,7 @@ const DAD_FIXED_CAPTIONS = [
   { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', start: 53, end: 59, noFade: true },
   { id: 'generosity-prompt', text: 'But, how generous are you?', start: 72, end: 78, noFade: true },
   { id: 'approved', text: 'Nice List Approved… just!', start: 90, end: 97, noFade: true },
+  { id: 'forgotten-name', text: "DOH! I've forgotten your name!", start: 100, end: 106, noFade: true },
 ];
 const dadAgeStart = result => Math.max(result.clipStarts.age, DAD_FIXED_CAPTIONS[0].end);
 
