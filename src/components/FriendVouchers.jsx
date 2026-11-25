@@ -78,28 +78,30 @@ function VoucherList({ ownerToken }) {
   const [unsaved, setUnsaved] = useState(new Set());
 
   useEffect(() => {
-    const controller = new AbortController();
-    let pending = false;
+    let active = true;
+    let request;
     async function load() {
-      if (pending) return;
-      pending = true;
+      if (request) return;
+      request = new AbortController();
+      const timeout = setTimeout(() => request.abort(), 15000);
       setBusy(true);
       setLoadError('');
       try {
         const response = await fetch(`/api/message-statistics?view=shared-vouchers`, {
           headers: { Authorization: `Bearer studio-owner.${ownerToken}` },
           cache: 'no-store',
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+          signal: request.signal,
         });
         if (!response.ok) throw new Error();
         const data = await response.json();
         if (!Array.isArray(data.vouchers)) throw new Error();
-        if (!controller.signal.aborted) setRows(data.vouchers);
+        if (active) setRows(data.vouchers);
       } catch {
-        if (!controller.signal.aborted) setLoadError('Vouchers could not load. Please refresh to try again.');
+        if (active) setLoadError('Vouchers could not load. Please refresh to try again.');
       } finally {
-        pending = false;
-        if (!controller.signal.aborted) setBusy(false);
+        clearTimeout(timeout);
+        request = undefined;
+        if (active) setBusy(false);
       }
     }
     load();
@@ -109,7 +111,8 @@ function VoucherList({ ownerToken }) {
     return () => {
       clearInterval(timer);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
-      controller.abort();
+      active = false;
+      request?.abort();
     };
   }, [ownerToken, refresh]);
 
