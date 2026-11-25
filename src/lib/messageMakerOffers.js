@@ -1,3 +1,5 @@
+export const BESPOKE_MESSAGES_PATH = '/bespoke-santa-messages';
+
 export const kidsOffer = {
   id: 'kids-santa-message',
   title: 'Kids’ Message from Santa',

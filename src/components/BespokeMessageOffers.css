@@ -89,3 +89,36 @@
     }
   }
 }
+
+.bespoke-black-friday-price {
+  display: grid;
+  gap: 5px;
+  flex-basis: 100%;
+  margin-bottom: 8px;
+}
+
+.bespoke-black-friday-price__label,
+.bespoke-black-friday-price__code {
+  color: #f3d58b;
+  font: 700 14px/1.5 system-ui, sans-serif;
+}
+
+.bespoke-black-friday-price__label {
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.bespoke-black-friday-price del {
+  margin-right: .3em;
+  color: #dfd2b5;
+  font-size: .61em;
+}
+
+.bespoke-black-friday-price__code {
+  width: fit-content;
+  border: 1px solid #d2ad5c80;
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+
+.bespoke-offer.black-friday-paper .bespoke-offer__price { min-height: 158px; }

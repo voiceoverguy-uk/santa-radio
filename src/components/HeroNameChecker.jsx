@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { BESPOKE_MESSAGES_PATH } from '../lib/messageMakerOffers.js';
 import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { useEffect, useId, useRef, useState } from 'react';
 import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
@@ -5,7 +7,7 @@ import { selectSantaRecipient } from './useSantaRecipient.js';
 import { nameError } from '../naughty-or-nice/checkerLogic.js';
 import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 
-export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCheckNaughtyNice }) {
+export default function HeroNameChecker({ blackFriday = false, onContinue, onSelectedNameChange, onCheckNaughtyNice }) {
   const id = useId();
   const [name, setName] = useState('');
   const [selected, setSelected] = useState(null);
@@ -75,9 +77,10 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
   const describedBy = status || validation || search.blocked ? `${id}-status` : undefined;
 
   return <section className="hero-name-checker" aria-labelledby={`${id}-title`}>
-    <h2 id={`${id}-title`}>START WITH A <span className="hero-name-checker__free-glow">FREE MESSAGE</span> <br />FROM SANTA</h2>
+    <h2 id={`${id}-title`}>{blackFriday ? 'START WITH 50% OFF A MESSAGE FROM SANTA' : <>START WITH A <span className="hero-name-checker__free-glow">FREE MESSAGE</span> <br />FROM SANTA</>}</h2>
     <form noValidate onSubmit={event => {
       event.preventDefault();
+      if (blackFriday) return;
       interacted.current = true;
       if (search.blocked) {
         setSelected(null);
@@ -155,8 +158,9 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
         inputRef.current?.focus({ preventScroll: true });
         search.refresh();
       }}>Retry name search</button>}
-      <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>
-      {onCheckNaughtyNice && !nameError(name) && !search.blocked && <button
+      {blackFriday ? <Link className="btn-red hero-name-checker__submit" to={BESPOKE_MESSAGES_PATH}>CREATE YOUR SANTA MESSAGE</Link>
+        : <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>}
+      {!blackFriday && onCheckNaughtyNice && !nameError(name) && !search.blocked && <button
         className="hero-name-checker__nice" type="button" onClick={() => {
           setOpen(false);
           onCheckNaughtyNice(name.trim());

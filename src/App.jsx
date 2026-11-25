@@ -1,7 +1,7 @@
 import SantaReview from './pages/SantaReview.jsx';
 import MySantaMessages from './pages/MySantaMessages.jsx';
 import SantaDashboard from './pages/SantaDashboard.jsx';
-import { messageMakerOffers, messageOfferPath } from './lib/messageMakerOffers.js';
+import { BESPOKE_MESSAGES_PATH, messageMakerOffers, messageOfferPath } from './lib/messageMakerOffers.js';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
@@ -42,6 +42,7 @@ import StaticPageSeo from './seo/StaticPageSeo.jsx';
 import MarketingConsent from './components/MarketingConsent.jsx';
 import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
+import HomepageSantaStudio from './components/HomepageSantaStudio.jsx';
 import SantaMessageOffer from './components/SantaMessageOffer.jsx';
 import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
 import { RadioDockVisibilityProvider } from './components/RadioDockVisibility.jsx';
@@ -80,6 +81,7 @@ function WebsiteLayout() {
         <Route path="/christmas-artist/:slug" element={<SongDetail />} />
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
+        <Route path={BESPOKE_MESSAGES_PATH} element={<HomepageSantaStudio dedicatedPage />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
         <Route path="/dad-message-maker" element={<DadMessageStudio />} />
         <Route path={STUDIO_PATH} element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />

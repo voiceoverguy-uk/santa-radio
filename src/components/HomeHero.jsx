@@ -4,6 +4,7 @@ import { RadioButton } from './AudioPlayer.jsx';
 import NowPlayingArtwork from './NowPlayingArtwork.jsx';
 import Countdown from './Countdown.jsx';
 import SantaFlyby from './SantaFlyby.jsx';
+import { useBlackFridayOfferWindow } from './BlackFridayOffer.jsx';
 import HeroNameChecker from './HeroNameChecker.jsx';
 import HalloweenGreeting from './HalloweenGreeting.jsx';
 import '../pages/Home.css';
@@ -34,6 +35,7 @@ export function useHeroNameSelection() {
 export default function HomeHero({ preview = false, onContinue, onSelectedNameChange, onCheckNaughtyNice }) {
   const layoutRef = useRef(null);
   const titleRef = useRef(null);
+  const blackFriday = useBlackFridayOfferWindow() && !preview;
   const checkerRef = useRef(null);
 
   useEffect(() => {
@@ -105,19 +107,20 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
                 <span className="hero-name-preview__copy--wide">The World’s Best Christmas Radio Station · All year round</span>
                 <span className="hero-name-preview__copy--phone">The World’s Best Christmas Radio Station · 24/7 - 365 Days</span>
               </p>
-              <div id="christmas-countdown" className="hero-countdown"><Countdown /></div>
+              <div id="christmas-countdown" className="hero-countdown"><Countdown showBlackFriday={!preview} /></div>
             </div>
           </div>
           <div className="hero-name-preview__artwork-slot" aria-label="Now playing artwork">
             <NowPlayingArtwork />
           </div>
         </div>
-        <aside ref={checkerRef} className="hero-name-preview__checker" aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
+        <aside ref={checkerRef} className={`hero-name-preview__checker${blackFriday ? ' black-friday-paper' : ''}`} aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">
+            {blackFriday ? <span className="hero-name-preview__checker-kicker">BLACK FRIDAY</span> : <>
             <span className="hero-name-preview__seal" aria-hidden="true">SR</span>
-            <span className="hero-name-preview__checker-kicker">The North Pole</span>
+            <span className="hero-name-preview__checker-kicker">The North Pole</span></>}
           </div>
-          <HeroNameChecker onCheckNaughtyNice={onCheckNaughtyNice} onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />
+          <HeroNameChecker blackFriday={blackFriday} onCheckNaughtyNice={onCheckNaughtyNice} onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />
         </aside>
       </div>
     </section>

@@ -263,3 +263,18 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 @media (prefers-reduced-motion: reduce) { .home-page :is(.mugshots-gallery-button, .contact-btn), .home-page :is(.mugshots-gallery-button, .contact-btn)::after { animation: none; } }
 
 #bespoke-santa-messages { scroll-margin-top: 90px; }
+
+.hero-countdown .countdown-unit.black-friday-paper {
+  background:
+    url("./music-wrap-tile.svg") center / 92px 92px repeat,
+    linear-gradient(145deg, #17130e, #080807 70%, #22190e);
+  border-color: #c4a15c;
+}
+
+.black-friday-countdown-label {
+  margin: 10px 0 0;
+  color: #f3d58b;
+  font: 700 .85rem/1.4 'Cinzel', serif;
+  letter-spacing: .12em;
+  text-align: center;
+}

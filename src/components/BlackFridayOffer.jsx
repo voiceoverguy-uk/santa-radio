@@ -7,7 +7,7 @@ import './BlackFridayOffer.css';
 const SEEN_KEY = 'santa-radio-black-friday-2026-seen';
 const CODE = 'HALFPRICE';
 // UK time is GMT for both November date boundaries.
-const START = Date.parse('2026-11-26T18:00:00Z');
+export const BLACK_FRIDAY_START = Date.parse('2026-11-26T09:00:00Z');
 const END = Date.parse('2026-12-01T00:00:00Z');
 
 export function useBlackFridayOfferWindow() {
@@ -18,8 +18,8 @@ export function useBlackFridayOfferWindow() {
     function sync() {
       clearTimeout(timer);
       const now = Date.now();
-      setActive(now >= START && now < END);
-      const boundary = now < START ? START : END;
+      setActive(now >= BLACK_FRIDAY_START && now < END);
+      const boundary = now < BLACK_FRIDAY_START ? BLACK_FRIDAY_START : END;
       if (now < boundary) timer = setTimeout(sync, Math.min(boundary - now, 2_147_483_647));
     }
     sync();

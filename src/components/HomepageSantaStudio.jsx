@@ -7,7 +7,7 @@ import useSantaMessageHistory from './useSantaMessageHistory.js';
 import './SantaMessageForm.css';
 import './HomepageSantaStudio.css';
 
-export default function HomepageSantaStudio({ directEntry = false, onAuthorized, accessFeedback, children }) {
+export default function HomepageSantaStudio({ directEntry = false, dedicatedPage = false, onAuthorized, accessFeedback, children }) {
   const selectedRecipient = useSantaRecipient();
   const { messages } = useSantaMessageHistory();
   const previewName = selectedRecipient || messages.at(-1)?.name || null;
@@ -20,7 +20,7 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
           title="THE BESPOKE SANTA MESSAGES"
           supportingLine={<>OUR <span className="bespoke-premium-glow">PREMIUM</span> EXPERIENCE</>}
           titleId="homepage-santa-studio-title"
-          titleTag={directEntry ? 'h1' : 'h2'}
+          titleTag={directEntry || dedicatedPage ? 'h1' : 'h2'}
           className="homepage-santa-studio__heading"
         />
         {accessFeedback}

@@ -24,16 +24,19 @@
   outline-offset: 3px;
 }
 
-.black-friday-offer__paper {
-  position: relative;
-  isolation: isolate;
-  padding: clamp(2rem, 7vw, 3rem) clamp(1.35rem, 6vw, 3rem) clamp(2rem, 6vw, 2.6rem);
-  border-radius: calc(1.25rem - 2px);
+.black-friday-paper, .black-friday-offer__paper {
   background:
     radial-gradient(ellipse 75% 80% at 50% 51%, #080806f5 16%, #0b0a08d6 51%, transparent 100%),
     url("../pages/music-wrap-tile.svg") center / 166px 166px repeat,
     repeating-linear-gradient(122deg, #e4bb6b0c 0 1px, transparent 1px 4px),
     linear-gradient(142deg, #13110d, #211a10 37%, #080807 70%, #241a0e);
+}
+
+.black-friday-offer__paper {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(2rem, 7vw, 3rem) clamp(1.35rem, 6vw, 3rem) clamp(2rem, 6vw, 2.6rem);
+  border-radius: calc(1.25rem - 2px);
   text-align: center;
 }
 
@@ -205,4 +208,21 @@
 @media (forced-colors: active) {
   .black-friday-offer__sale span { color: CanvasText; }
   .black-friday-offer { border: 2px solid CanvasText; }
+}
+
+.hero-name-preview__checker.black-friday-paper,
+.bespoke-offer.black-friday-paper {
+  background-color: #080807;
+  background:
+    radial-gradient(ellipse at center, #080806eb 25%, #0b0a08a6 68%, transparent),
+    url("../pages/music-wrap-tile.svg") center / 166px 166px repeat,
+    linear-gradient(142deg, #13110d, #211a10 37%, #080807 70%, #241a0e);
+  border-color: #c4a15c;
+  box-shadow: inset 0 0 0 4px #0b0a08, inset 0 0 0 5px #c4a15c55;
+}
+
+.hero-name-preview__checker.black-friday-paper .hero-name-checker__submit {
+  display: block;
+  text-align: center;
+  text-decoration: none;
 }
