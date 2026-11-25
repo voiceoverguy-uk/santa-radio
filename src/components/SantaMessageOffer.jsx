@@ -5,6 +5,7 @@ import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import SantaOfferHolly from './SantaOfferHolly.jsx';
+import BlackFridayOffer, { useBlackFridayOfferWindow } from './BlackFridayOffer.jsx';
 import './SantaMessageOffer.css';
 import { isTrackerCapturePath } from '../privacy/trackerPrivacy.js';
 import { isStudioPath } from '../lib/studioRoute.js';
@@ -123,8 +124,20 @@ function OfferDialog({ onClose }) {
   );
 }
 
-// Lives outside Routes: navigation never resets the visible-browsing clock.
 export default function SantaMessageOffer() {
+  const { pathname } = useLocation();
+  const { ready, settingsOpen, storageWarning } = useCookieConsent();
+  const blackFriday = useBlackFridayOfferWindow();
+
+  if (blackFriday) {
+    const privatePage = /^\/(?:santa-dashboard|my-santa-messages|dad-message-maker|message-maker-checkout)(?:\/|$)/i.test(pathname);
+    return <BlackFridayOffer eligible={ready && !settingsOpen && !storageWarning && !excluded(pathname) && !privatePage} />;
+  }
+  return <FreeSantaMessageOffer />;
+}
+
+// Lives outside Routes: navigation never resets the visible-browsing clock.
+function FreeSantaMessageOffer() {
   const { pathname } = useLocation();
   const { hasAccess } = useSantaMessageAccess();
   const { ready, choice, settingsOpen, storageWarning } = useCookieConsent();
