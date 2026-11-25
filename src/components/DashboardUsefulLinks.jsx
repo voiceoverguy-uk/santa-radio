@@ -29,6 +29,14 @@ export default function DashboardUsefulLinks() {
     <section className="dashboard-links" aria-labelledby="dashboard-links-title">
       <h2 id="dashboard-links-title">Useful links</h2>
       <ul>
+        <li>
+          <div>
+            <strong>Black Friday social graphics</strong>
+            <a href="/downloads/santa-radio-black-friday-social-pack.zip" download>
+              Download all six square JPGs (ZIP)
+            </a>
+          </div>
+        </li>
         {links.map(({ label, path }) => {
           const url = `${ORIGIN}${path}`;
           const Icon = copied === url ? Check : Copy;
