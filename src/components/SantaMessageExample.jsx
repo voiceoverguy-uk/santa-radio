@@ -1,5 +1,5 @@
 import useMessageDemos from '../hooks/useMessageDemos.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import './SantaMessageExample.css';
 
@@ -15,6 +15,7 @@ function rememberDemo(group, id) {
 
 export default function SantaMessageExample({ onExampleNameChange, pulse = false, group = 'free' } = {}) {
   const demos = useMessageDemos(group);
+  const errorId = useId();
   const radio = useRadio();
   const audioRef = useRef(null);
   const sessionRef = useRef(null);
@@ -144,7 +145,7 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
       type="button"
       onClick={startOrStop}
       aria-busy={state === 'loading'}
-      aria-describedby={error ? 'santa-message-example-error' : undefined}
+      aria-describedby={error ? errorId : undefined}
     >
       <span className="santa-message-example__mark" aria-hidden="true">
         {state === 'idle' ? '▶' : '■'}
@@ -152,7 +153,7 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
       {state === 'idle' ? 'Hear an example audio message' : 'Stop example message'}
     </button>
     {state === 'loading' && <p className="santa-message-example__status" role="status">Loading Santa’s example…</p>}
-    {error && <p className="santa-message-example__error" id="santa-message-example-error" role="alert">{error}</p>}
+    {error && <p className="santa-message-example__error" id={errorId} role="alert">{error}</p>}
     <audio
       ref={audioRef}
       className="santa-message-example__audio"

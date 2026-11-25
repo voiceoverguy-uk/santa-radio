@@ -1,4 +1,3 @@
-import SantaMessageExample from '../components/SantaMessageExample.jsx';
 import StudioOfferBenefits from '../components/StudioOfferBenefits.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -105,7 +104,6 @@ export default function StudioCheckout() {
           <p className="studio-checkout__lead">Two bespoke messages, in Santa’s own voice.</p>
           <p className="studio-checkout__price">£6.50 <span>one-off payment</span></p>
           <StudioOfferBenefits />
-          <SantaMessageExample group="kids" />
           <p className="studio-checkout__small">Download your messages and gifts before leaving Studio. Your unused allowance is kept; recordings aren’t stored.</p>
         </div>
         <Link className="studio-checkout__back" to="/">← Back to Santa Radio</Link>
