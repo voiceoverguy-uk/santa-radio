@@ -58,15 +58,12 @@
 .studio-mini-dash .studio-mini-dash__santa{bottom:-12px;padding:0;border:0}
 .studio-mini-dash__item--gary{display:flex;align-items:flex-end}
 .studio-mini-dash__item--gary img{display:block;width:88px;height:auto;transform:translateY(8px)}
-.studio-mini-dash--finished{max-width:640px;margin:24px auto 0;padding:28px 20px;border:2px solid #e6ce86;border-radius:20px;background:radial-gradient(ellipse at top,#35583c,#0c3028 75%);box-shadow:inset 0 0 0 5px #e6ce8615;text-align:center}
+.studio-mini-dash--finished{max-width:640px;margin:24px auto 0;padding:28px 20px;border:2px solid #e6ce86;border-radius:20px;background:radial-gradient(ellipse at center,rgb(21 51 39 / 95%) 18%,rgb(12 48 40 / 58%) 100%),url('/images/bespoke-christmas-wallpaper.webp') center / 420px auto repeat,#0c3028;box-shadow:inset 0 0 0 5px #e6ce8615;text-align:center}
 .studio-mini-dash__reward{display:block;margin:0 auto 12px}
 .studio-mini-dash--finished>strong{font:700 clamp(26px,4vw,36px)/1.2 Georgia,serif;color:#ffe6a1}
 .studio-mini-dash--finished p{margin:12px 0}
 .studio-mini-dash__final-score{display:flex;flex-direction:column;gap:4px;margin:16px auto;color:#ffe6a1}
 .studio-mini-dash__final-score b{font-size:48px;line-height:1.1}
-.studio-mini-dash__download{display:inline-block;padding:14px 22px;border:2px solid #e6ce86;border-radius:12px;background:#a20f21;color:#fff8e7;font-weight:700;text-decoration:none}
-.studio-mini-dash__download small{font-size:12px;font-weight:400;margin-top:5px}
-.studio-mini-dash__download:focus-visible{outline:3px solid #ffe5a1;outline-offset:4px}
 
 /* A soft snow bank hides the bottom of Santa's tumble naturally. */
 .studio-mini-dash__lane{border-bottom:18px solid #e4f2f8;border-image:linear-gradient(to bottom,#fff 0%,#f6fcff 35%,#c5dfed 100%) 1}
@@ -92,7 +89,11 @@
   padding: 14px clamp(12px, 3vw, 26px);
   border: 1px solid #e6ce86;
   border-radius: 14px;
-  background: rgb(15 49 37 / 94%);
+  background:
+    linear-gradient(90deg, rgb(15 49 37 / 76%), rgb(15 49 37 / 97%) 26% 74%, rgb(15 49 37 / 74%)),
+    url('/images/studio-runners/classic-still.png') left 8px bottom 8px / 92px auto no-repeat,
+    url('/images/tracker/mince-pie.png') right 14px top 13px / 63px auto no-repeat,
+    #0f3125;
   color: #fff8e7;
   text-align: center;
   box-shadow: 0 5px 22px #081c1670;

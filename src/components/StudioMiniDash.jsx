@@ -177,9 +177,6 @@ function SantaDashGame({ onClose, finished }) {
     <strong>Congratulations!</strong>
     <p className="studio-mini-dash__collected">You collected {score / 10} mince {score === 10 ? 'pie' : 'pies'}!</p>
     <div className="studio-mini-dash__final-score"><span>Your mince pie score</span><b>{score}</b></div>
-    
-    <a className="studio-mini-dash__download" href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397" target="_blank" rel="noopener noreferrer">Download the full game <span aria-hidden="true">↗</span></a>
-    
   </section>;
   return <section className="studio-mini-dash" aria-label="Mini Santa Dash while your video is prepared">
     <div className="studio-mini-dash__heading"><strong>Santa Dash Mini</strong><span>Score: {score}</span></div>
