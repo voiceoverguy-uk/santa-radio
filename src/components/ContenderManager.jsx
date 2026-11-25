@@ -3,12 +3,45 @@ import { useState } from 'react';
 import { uploadPresigned } from '@vercel/blob/client';
 
 const formats = {mp3:'audio/mpeg',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
+function fileExtension(kind, file) {
+  const ext = file?.name.match(/\.([^.]+)$/)?.[1].toLowerCase().replace(/^jpeg$/, 'jpg');
+  const audio = kind === 'audio';
+  if (!file?.size || file.size > (audio ? 40 : 10) * 1024 * 1024 ||
+      !(audio ? ext === 'mp3' : ['jpg', 'png', 'webp'].includes(ext))) {
+    throw new Error(audio ? 'Choose an MP3 up to 40 MB.' : 'Choose a JPG, PNG or WebP up to 10 MB.');
+  }
+  return ext;
+}
+
 function ReviewLink({id}) {
   return <a href={`/christmas-contenders#${id}`} target="_blank" rel="noreferrer">Check artwork and listen to the song ↗</a>;
 }
-function Contact({entry,run,busy,replace}) {
-  const [file,setFile]=useState(null), [status,setStatus]=useState('');
+function ReplacementForm({entry, kind, busy, replace}) {
+  const [file, setFile] = useState(null);
+  const [status, setStatus] = useState('');
+  const audio = kind === 'audio';
+  async function submit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    try {
+      await replace(entry, kind, file, setStatus);
+      form.reset();
+      setFile(null);
+    } catch (error) {
+      setStatus(error.message);
+    }
+  }
+  return <form onSubmit={submit}>
+    <label>{audio ? 'Replacement MP3 (up to 40 MB)' : 'Replacement artwork (JPG, PNG or WebP, up to 10 MB)'}
+      <input type="file" accept={audio ? '.mp3' : '.jpg,.jpeg,.png,.webp'} disabled={busy} required
+        onChange={event => { setFile(event.target.files[0]); setStatus(''); }}/>
+    </label>
+    <button type="submit" disabled={busy || !file}>{audio ? 'Replace MP3' : 'Replace artwork'}</button>
+    <p role="status">{status}</p>
+  </form>;
+}
 
+function Contact({entry,run,busy,replace}) {
   const [name,setName]=useState(entry.name), [email,setEmail]=useState(entry.email);
   const [artist,setArtist]=useState(entry.artist), [title,setTitle]=useState(entry.title);
   const songChanged=artist.trim()!==entry.artist || title.trim()!==entry.title;
@@ -36,15 +69,9 @@ function Contact({entry,run,busy,replace}) {
       {entry.state==='sent' && <span> Sent {formatUkDate(entry.sentAt)}</span>}
       {entry.state==='sending' && <span> Delivery pending confirmation. Check Brevo’s transactional log.</span>}
     </form>
-    <form onSubmit={async event=>{
-      event.preventDefault();const form=event.currentTarget;
-      try {await replace(entry,file,setStatus);setFile(null);form.reset();}
-      catch(error){setStatus(error.message);}
-    }}>
-      <label>Replacement MP3 (up to 40 MB)<input type="file" accept=".mp3" required onChange={e=>setFile(e.target.files[0])}/></label>
-      <button disabled={busy || !file}>Replace MP3</button>
-      <p role="status">{status}</p>
-    </form><ReviewLink id={entry.id}/></details>;
+    <ReplacementForm entry={entry} kind="audio" busy={busy} replace={replace}/>
+    <ReplacementForm entry={entry} kind="artwork" busy={busy} replace={replace}/>
+    <ReviewLink id={entry.id}/></details>;
 }
 export default function ContenderManager({ownerToken,onPublish}) {
   const [tab,setTab]=useState(null);
@@ -83,16 +110,17 @@ export default function ContenderManager({ownerToken,onPublish}) {
             onUploadProgress:({percentage})=>progress(`Uploading ${file.name} — ${Math.round(percentage)}%`)
           });
   }
-  async function replace(entry,file,progress) {
-    if(!file || !/\.mp3$/i.test(file.name) || !file.size || file.size>40*1024*1024) throw new Error('Choose an MP3 up to 40 MB.');
+  async function replace(entry,kind,file,progress) {
+    const ext = fileExtension(kind, file);
+    const label = kind === 'audio' ? 'MP3' : 'artwork';
     setBusy(true);
     try {
       const key='song-'+crypto.randomUUID();
-      progress('Uploading replacement MP3…');
-      await uploadFile(key,'mp3',file,progress);
-      const result=await request({action:'replace-audio',id:entry.id,key,previous:entry.audio});
-      setEntries(rows=>rows.map(row=>row.id===entry.id?{...row,audio:result.audio}:row));
-      progress('Replacement MP3 published. Your votes are preserved. No email sent.');
+      progress(`Uploading replacement ${label}…`);
+      await uploadFile(key,ext,file,progress);
+      const result=await request({action:`replace-${kind}`,id:entry.id,key,ext,previous:entry[kind]});
+      setEntries(rows=>rows.map(row=>row.id===entry.id?{...row,[kind]:result[kind]}:row));
+      progress(`Replacement ${label} published.`);
     } finally {setBusy(false);}
   }
   async function publish(event) {
@@ -104,9 +132,7 @@ export default function ContenderManager({ownerToken,onPublish}) {
     setJob(upload);
     try {
       for(const key of ['audio','artwork']) {
-        const file=files[key], ext=file?.name.split('.').pop().toLowerCase().replace(/^jpeg$/,'jpg');
-        if(!file || !(key==='audio'?ext==='mp3':['jpg','png','webp'].includes(ext)) || !file.size || file.size>(key==='audio'?40:10)*1024*1024)
-          throw new Error(key==='audio'?'Choose an MP3 up to 40 MB.':'Choose a JPG, PNG or WebP up to 10 MB.');
+        const file=files[key], ext=fileExtension(key,file);
         if(upload.done[key]!==file) {
           setNotice(`Uploading ${file.name}…`);
           await uploadFile(upload.id,ext,file,setNotice);

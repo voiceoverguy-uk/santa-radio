@@ -19,7 +19,7 @@ async function uploadedMedia(key,ext) {
   return new URL(blob.url).hostname.endsWith('.private.blob.vercel-storage.com') ? mediaRoute(key,ext) : blob.url;
 }
 export async function manageContenders(body, pool=databasePool()) {
-  if (!body) return {entries:(await pool.query(`SELECT id,artist,title,audio,contact_name AS name,contact_email AS email,
+  if (!body) return {entries:(await pool.query(`SELECT id,artist,title,audio,artwork,contact_name AS name,contact_email AS email,
     invitation_state AS state, invitation_sent_at AS "sentAt" FROM christmas_contenders_entries WHERE ${live} ORDER BY artist,title`,[COMPETITION])).rows};
   const {action,id,ext} = body;
   if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id || '')) fail('Select a valid song.');
@@ -51,12 +51,18 @@ export async function manageContenders(body, pool=databasePool()) {
     if (!result.rowCount) fail('The song details have changed. Refresh and check them before saving.',409);
     return {ok:true};
   }
-  if(action==='replace-audio') {
-    if(!/^song-[a-f0-9-]{36}$/.test(body.key) || typeof body.previous!=='string') fail('Choose a replacement MP3.');
-    const audio=await uploadedMedia(body.key,'mp3');
-    const result=await pool.query(`UPDATE christmas_contenders_entries SET audio=$3 WHERE ${live} AND id=$2 AND audio IN ($3,$4)`,[COMPETITION,id,audio,body.previous]);
-    if(!result.rowCount) fail('The recording has changed. Refresh the list before replacing it.',409);
-    return {ok:true,audio};
+  if (action === 'replace-audio' || action === 'replace-artwork') {
+    const audio = action === 'replace-audio';
+    const column = audio ? 'audio' : 'artwork';
+    if (!/^song-[a-f0-9-]{36}$/.test(body.key) || typeof body.previous !== 'string' ||
+        (!audio && !['jpg', 'png', 'webp'].includes(ext))) {
+      fail(audio ? 'Choose a replacement MP3.' : 'Choose a replacement JPG, PNG or WebP.');
+    }
+    const url = await uploadedMedia(body.key, audio ? 'mp3' : ext);
+    const result = await pool.query(`UPDATE christmas_contenders_entries SET ${column}=$3
+      WHERE ${live} AND id=$2 AND ${column} IN ($3,$4)`, [COMPETITION, id, url, body.previous]);
+    if (!result.rowCount) fail(`The ${audio ? 'recording' : 'artwork'} has changed. Refresh the dashboard before replacing it.`, 409);
+    return {ok: true, [column]: url};
   }
   if(action!=='invite') fail('Unknown contender action.');
   if(!process.env.BREVO_API_KEY) fail('Brevo is not configured.',503);
