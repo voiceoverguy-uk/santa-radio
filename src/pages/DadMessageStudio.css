@@ -223,3 +223,6 @@
   0%, 99% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+.dad-age-preview { container-type: inline-size; }
+.dad-age-preview-caption { position: absolute; inset: 75% 12% 3%; display: grid; place-items: center; margin: 0; text-align: center; overflow-wrap: anywhere; color: #fff7df; font: bold clamp(12px, 4cqw, 46px)/1.1 Georgia, serif; }

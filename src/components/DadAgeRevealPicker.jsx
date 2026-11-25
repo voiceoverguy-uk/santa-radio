@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {DAD_AGE_REVEAL_SECONDS, DAD_AGE_THEMES, drawDadAgeReveal} from '../lib/dadAgeReveal.js';
 
-export default function DadAgeRevealPicker({artwork, age, value, onChange}) {
+export default function DadAgeRevealPicker({artwork, age, name, value, onChange}) {
   const [preview, setPreview] = useState(null);
   const [replay, setReplay] = useState(0);
 
@@ -25,6 +25,7 @@ export default function DadAgeRevealPicker({artwork, age, value, onChange}) {
     </div>
     {value && <div className="dad-age-preview">
       <img src={artwork.src} alt={artwork.label} />
+      {name && <p className="dad-age-preview-caption">We love you really, {name}!</p>}
       {preview && preview.theme === value && <img key={replay} className="dad-age-pop"
         style={{animationDuration: `${DAD_AGE_REVEAL_SECONDS}s`}}
         src={preview.image} alt={`Aged ${age} surrounded by ${DAD_AGE_THEMES.find(theme => theme.id === value).label.toLowerCase()}`} />}
