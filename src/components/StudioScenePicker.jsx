@@ -12,9 +12,9 @@ const sceneInset = {
   height: `${100 * STUDIO_SCENE_INSET.height / STUDIO_VIDEO_HEIGHT}%`,
 };
 
-export function StudioScenePicture({ scene, caption, alt = '', animate = false }) {
+export function StudioScenePicture({ scene, caption, alt = '', thumbnail = false, animate = false }) {
   return <span className="smw-scene-picture" style={{ backgroundImage: `url(${STUDIO_VIDEO_ARTWORK})` }}>
-    <img key={animate ? scene.src : undefined} className={`smw-scene-art${animate ? ' smw-scene-art--fade' : ''}`} src={scene.src} alt={alt} width="1280" height="540" style={sceneInset} />
+    <img key={animate ? scene.src : undefined} className={`smw-scene-art${animate ? ' smw-scene-art--fade' : ''}`} src={thumbnail ? scene.src.replace(/\.webp$/, '-thumb.webp') : scene.src} alt={alt} loading={thumbnail ? undefined : 'lazy'} decoding="async" width="1280" height="540" style={sceneInset} />
     {caption && <span className="smw-scene-caption">{caption}</span>}
   </span>;
 }
@@ -33,7 +33,7 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
         <button className="smw-scene-select" type="button"
           aria-label={`Select ${option.label}`} aria-pressed={selected === option.src}
           onClick={() => onSelect(option.src)}>
-          <StudioScenePicture scene={option} caption={option.label} />
+          <StudioScenePicture scene={option} caption={option.label} thumbnail />
         </button>
         <button className="smw-scene-zoom" type="button"
           aria-label={`Enlarge ${option.label}`} aria-haspopup="dialog" onClick={() => {

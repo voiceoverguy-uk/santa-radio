@@ -720,7 +720,7 @@ export default function SantaMessageWorkshop() {
                   : !audioEditingAllowed ? 'Use “Edit and regenerate once” on the review to make your one correction.' : 'You are editing your one correction.'}
               </p>}
                 {isNameAndAge && <div className="smw-start-artwork">
-                  <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
+                  <img className="smw-start-logo" src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1681" height="936" />
                   <StudioOpeningPicture initialIndex={openingSceneIndex}
                     caption={chosenName ? <span>A message for {chosenName.name}{selectedAge && <><br /><span style={{ whiteSpace: 'nowrap' }}>({selectedAge.label})</span></>}</span> : undefined} />
                 </div>}

@@ -2,7 +2,7 @@
 export const STUDIO_VIDEO_WIDTH = 1280;
 export const STUDIO_VIDEO_HEIGHT = 720;
 export const STUDIO_VIDEO_FPS = 12;
-export const STUDIO_VIDEO_ARTWORK = '/images/studio-santa-video-framed-v1.png';
+export const STUDIO_VIDEO_ARTWORK = '/images/studio-santa-video-framed-v1.webp';
 export const STUDIO_SCENE_INSET = { x: 13, y: 12, width: 1254, height: 505 };
 export const CAPTION_FADE = 0.75;
 export function studioAge(result) {
