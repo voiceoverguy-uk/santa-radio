@@ -158,12 +158,12 @@ export function wrapVideoCaption(context, text, maxWidth) {
   });
 }
 
-export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, shadowOffsetY = 0, maxLines = 2 } = {}) {
+export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, shadowOffsetY = 0, maxLines = 2, fontSize = 48 } = {}) {
   const canvas = makeCanvas(STUDIO_VIDEO_WIDTH, panelHeight);
   const text = canvas.getContext('2d');
   const incoming = caption.id === 'incoming';
   const maxWidth = 1000;
-  let size = 48;
+  let size = fontSize;
   let lines;
   while (true) {
     text.font = incoming ? `bold ${size}px "Courier New", monospace` : `bold ${size}px Georgia, serif`;

@@ -84,7 +84,8 @@ function frames(image,result){
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
  const recipientLayers=[{id:'name-badge',text:result.writtenName,start:NAME_BADGE_START,noFade:true,canvas:badge,y:430}];
- const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528,maxLines:caption.id.startsWith('christmas')?1:2}));
+ const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528, maxLines:caption.id === 'name' || caption.id.startsWith('christmas') ? 1 : 2,
+   ...(caption.id === 'name' && { fontSize: 96 })}));
  return {base,layers:[...recipientLayers,...layers]};
 }
 export async function dadPoster(result){
