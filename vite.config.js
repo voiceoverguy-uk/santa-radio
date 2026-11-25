@@ -165,6 +165,7 @@ export default defineConfig(async ({ isSsrBuild }) => ({
       await readFile(new URL('./server/names-demo/asset-manifest.json', import.meta.url), 'utf8')
     ).filename}`),
   },
+  build: isSsrBuild ? {} : { rollupOptions: { input: ['index.html', 'dashboard-tools.html'] } },
   publicDir: isSsrBuild ? false : 'public',
   ssr: {
     // Keep the runtime Tracker renderer self-contained. Vercel's package
