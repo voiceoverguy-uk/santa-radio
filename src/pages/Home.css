@@ -264,7 +264,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 
 #bespoke-santa-messages { scroll-margin-top: 90px; }
 
-.hero-countdown .countdown-unit.black-friday-paper {
+.hero-name-preview .hero-countdown .countdown-unit.black-friday-paper {
   background:
     url("./music-wrap-tile.svg") center / 92px 92px repeat,
     linear-gradient(145deg, #17130e, #080807 70%, #22190e);
