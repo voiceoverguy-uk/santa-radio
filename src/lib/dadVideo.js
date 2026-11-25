@@ -1,3 +1,4 @@
+import {DAD_AGE_REVEAL_SECONDS,DAD_AGE_REVEAL_Y,drawDadAgeReveal} from './dadAgeReveal.js';
 import {dadTreatWording} from './dadChoiceWording.js';
 import {
   drawVideoCaption, prepareSceneDissolve, studioSceneTransitions, studioTimelineArguments,
@@ -84,6 +85,12 @@ export async function prepareDadVideoFrames(image, result, duration, signal) {
   signal?.throwIfAborted();
 
   const included = [...scenes, ...captions];
+  const start = result.clipStarts.age;
+  if (Number.isFinite(start) && start >= 0 && start < duration) {
+    const reveal = await drawDadAgeReveal(result.ageTheme, result.age);
+    if (reveal) included.push({ id: 'dad-age-reveal', canvas: reveal, y: DAD_AGE_REVEAL_Y,
+      start, end: start + DAD_AGE_REVEAL_SECONDS, noFade: true, rise: 24 });
+  }
   const png = canvas => new Promise((resolve, reject) => {
     canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not draw the video')), 'image/png');
   });

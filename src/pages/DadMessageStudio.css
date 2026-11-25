@@ -199,3 +199,27 @@
 .dad-return-purchase summary{cursor:pointer;color:#fff8e7;font-weight:600}
 .dad-return-purchase p{margin:12px 0 16px}
 @media(max-width:480px){.dad-studio .dad-purchase-cta{font-size:18px;padding:16px}.dad-return-purchase{margin-top:36px}}
+
+.dad-age-picker { margin-top: 1.5rem; }
+.dad-age-picker h4 { margin: 0 0 .35rem; }
+.dad-age-choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; margin: .75rem 0; }
+.dad-age-choices button { display: grid; justify-items: center; gap: .25rem; padding: .4rem; min-width: 0; }
+.dad-age-thumbnail { display: block; width: min(100%, 110px); aspect-ratio: 3 / 2; object-fit: contain; border-radius: 5px; }
+@media (max-width: 480px) {
+  .dad-age-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.dad-age-choices button[aria-pressed="true"] { background: #175b36; color: white; border-color: #e8be6d; }
+.dad-age-preview { position: relative; overflow: hidden; }
+.dad-age-preview img { display: block; width: 100%; }
+.dad-age-preview .dad-age-pop { position: absolute; left: 0; top: 42.3611%; animation: dad-age-pop both; }
+@keyframes dad-age-pop {
+  0%, 100% { opacity: 0; transform: translateY(12%); }
+  6.25%, 93.75% { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dad-age-preview .dad-age-pop { animation-name: dad-age-appear; }
+}
+@keyframes dad-age-appear {
+  0%, 99% { opacity: 1; }
+  100% { opacity: 0; }
+}

@@ -243,7 +243,10 @@ export function studioTimelineArguments(layers, duration) {
     const fade = layer.blink || layer.noFade ? '' : `,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}`;
     const blink = layer.noFade ? `:enable='gte(t,${layer.start})${layer.end === undefined ? '' : `*lt(t,${layer.end})`}'` : layer.blink ? `:enable='gte(t,${layer.start})*lt(t,${layer.end})*lt(mod(t,1),0.7)'` : '';
     filters.push(`[${index + 1}:v]fps=${STUDIO_VIDEO_FPS},format=rgba${fade}[text${index}]`);
-    filters.push(`[${previous}][text${index}]overlay=0:${layer.y}:format=auto${blink}[frame${index}]`);
+    const y = layer.rise
+      ? `'${layer.y}+${layer.rise}*max(0,1-(t-${layer.start})/0.25)+${layer.rise}*max(0,1-(${layer.end}-t)/0.25)'`
+      : layer.y;
+    filters.push(`[${previous}][text${index}]overlay=0:${y}:format=auto${blink}[frame${index}]`);
     previous = `frame${index}`;
   });
   filters.push(`[${previous}]format=yuv420p[video]`);
