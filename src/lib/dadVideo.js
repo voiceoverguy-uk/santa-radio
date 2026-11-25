@@ -28,14 +28,19 @@ export function dadTreatCaption(value){
  if(/^a note asking me to /i.test(treat))return `You left Santa a note\nasking him to ${treat.replace(/^a note asking me to /i,'')}`;
  return `Thanks for leaving Santa\n${treat}… NOT!`;
 }
+const NAME_BADGE_START = 18;
+const AGE_CAPTION_SECONDS = 5;
+
 export function dadTimeline(result){
  const s=result.clipStarts;
  const recipient = result.writtenName.trim();
+ const ageStart = Math.max(s.age, NAME_BADGE_START);
+ const ageEnd = ageStart + AGE_CAPTION_SECONDS;
  const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
  return [{id:'incoming',text:recipient ? `Incoming message from Santa\nFor ${recipient}` : 'Incoming message from Santa',start:0,end:5,noFade:true},
- {id:'name',text:result.writtenName,start:s.name,end:Math.min(s.age,s.name+7)},
- {id:'age',text:`${result.writtenName}\nAged ${result.age}`,start:s.age,end:Math.min(s.habit,s.age+7)},
- {id:'habit',text:`You’re especially good at ${result.habit}`,start:s.habit,end:Math.min(s.viewing,s.habit+7)},
+ {id:'name',text:result.writtenName,start:Math.min(s.name, NAME_BADGE_START - 1),end:NAME_BADGE_START,noFade:true},
+ {id:'age',text:`Aged ${result.age}`,start:ageStart,end:ageEnd,noFade:true},
+ {id:'habit',text:`You’re especially good at ${result.habit}`,start:Math.max(s.habit, ageEnd),end:Math.min(s.viewing,s.habit+7)},
  {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:Math.min(s.treat,s.viewing+7)},
  {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:Math.min(s.secondName-1,s.treat+7)},
  {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
@@ -62,7 +67,7 @@ function frames(image,result){
   badgeCtx.fillStyle='#b21b2c';for(const [dx,dy]of [[-4,43],[4,43],[0,49]]){badgeCtx.beginPath();badgeCtx.arc(cx+dx,dy,4,0,Math.PI*2);badgeCtx.fill();}
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
- const recipientLayers=[{id:'name-badge',text:result.writtenName,start:result.clipStarts.habit,canvas:badge,y:430}];
+ const recipientLayers=[{id:'name-badge',text:result.writtenName,start:NAME_BADGE_START,noFade:true,canvas:badge,y:430}];
  const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528,maxLines:caption.id.startsWith('christmas')?1:2}));
  return {base,layers:[...recipientLayers,...layers]};
 }
@@ -85,7 +90,7 @@ export async function prepareDadVideoFrames(image, result, duration, signal) {
   signal?.throwIfAborted();
 
   const included = [...scenes, ...captions];
-  const start = result.clipStarts.age;
+  const start = Math.max(result.clipStarts.age, NAME_BADGE_START);
   if (Number.isFinite(start) && start >= 0 && start < duration) {
     const reveal = await drawDadAgeReveal(result.ageTheme, result.age);
     if (reveal) included.push({ id: 'dad-age-reveal', canvas: reveal, y: DAD_AGE_REVEAL_Y,
