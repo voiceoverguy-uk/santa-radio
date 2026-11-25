@@ -44,3 +44,24 @@
 .bespoke-offer__share .message-retry:hover { background: #d4af3712; }
 .bespoke-offer__share .message-retry:focus-visible { outline: 2px solid #f3d58b; outline-offset: 3px; }
 .bespoke-offer__share .message-share-link { justify-self: stretch; }
+
+.bespoke-kids-examples__choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+.bespoke-kids-examples__choices button {
+  border: 1px solid #d1ad59;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: #09291f;
+  color: #ffe4a0;
+  font: inherit;
+  cursor: pointer;
+}
+.bespoke-kids-examples__choices button[aria-pressed="true"] {
+  background: #ffe4a0;
+  color: #09291f;
+}

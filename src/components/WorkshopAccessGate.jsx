@@ -263,12 +263,12 @@ export default function WorkshopAccessGate({ children }) {
         <h1>Kids’ Message Maker Studio</h1>
         <p>Imagine their face when Santa knows their name.</p>
         <p>A magical, personalised message from Santa celebrating their achievements, their favourite things and the little details that make them special.</p>
-        <BespokeExamplePlayer kind="kids" />
       </header>
       <section className="smw-builder kids-welcome-layout" aria-label="Kids’ recording studio">
         <div className="smw-start-artwork kids-welcome-art">
           <img className="smw-start-logo" src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1200" height="668" />
           <StudioOpeningPicture caption="Ready to make some Christmas magic?" />
+          <BespokeExamplePlayer kind="kids" />
         </div>
         <div className="kids-welcome-panel">
           <p className="smw-start-kicker">The North Pole Recording Studio</p>
