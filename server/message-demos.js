@@ -1,16 +1,17 @@
 import express from 'express';
+import { isMp4Video } from './verify-demo-video.js';
 import { randomUUID } from 'node:crypto';
-import { del, list, put, issueSignedToken, presignUrl } from '@vercel/blob';
+import { BlobNotFoundError, copy, del, head, list, put, issueSignedToken, presignUrl } from '@vercel/blob';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { builtInDemos, demoGroups, maxDemoBytes } from '../src/lib/messageDemoCatalogue.js';
 
-const uploadId = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\.([A-Za-z0-9_-]{2,320})\.mp3$/;
-const prefix = group => 'message-example-audio/' + group + '/';
+const uploadId = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\.([A-Za-z0-9_-]{2,320})\.mp4$/;
+const prefix = group => 'message-example-video/' + group + '/';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
-const mime = 'audio/mpeg';
+const mime = 'video/mp4';
 
-export function createMessageDemos({ storage = { list, put, del, issueSignedToken, presignUrl }, owner = validOwnerToken } = {}) {
+export function createMessageDemos({ storage = { list, put, del, issueSignedToken, presignUrl }, owner = validOwnerToken, fetchMedia = fetch } = {}) {
   const app = express();
   app.use((req, res, next) => {
     res.set('Cache-Control', 'private, no-store').set('X-Robots-Tag', 'noindex');
@@ -59,12 +60,47 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
         const name = typeof body.name === 'string' ? body.name.trim().normalize('NFC') : '';
         if (!name || /[\x00-\x1f\x7f]/u.test(name) || name.length > 60) fail(400,'Enter a demo name of up to 60 characters.');
         const size = typeof body.size === 'string' && /^\d+$/.test(body.size) ? Number(body.size) : body.size;
-        if (!Number.isInteger(size) || size < 1 || size > maxDemoBytes) fail(400,'Choose an MP3 of up to 40 MB.');
-        const id = randomUUID() + '.' + Buffer.from(name).toString('base64url') + '.mp3';
-        const pathname = root + 'files/' + id;
+        if (!Number.isInteger(size) || size < 1 || size > maxDemoBytes) fail(400,'Choose an MP4 video of up to 100 MB.');
+        if (body.contentType !== mime) fail(400, 'Only MP4 videos are accepted.');
+        const id = randomUUID() + '.' + Buffer.from(name).toString('base64url') + '.mp4';
+        const pathname = 'message-example-incoming/' + group + '/' + id;
         const signed = await storage.issueSignedToken({pathname, operations:['put'], allowedContentTypes:[mime], maximumSizeInBytes:size, validUntil:Date.now() + 900000});
-        const {presignedUrl} = await storage.presignUrl(signed,{pathname, operation:'put', access:'private', addRandomSuffix:false, allowOverwrite:false});
+        const {presignedUrl} = await storage.presignUrl(signed,{pathname, operation:'put', access:'private', addRandomSuffix:false, allowOverwrite:false, ttlDays:1});
         return res.json({id, url:presignedUrl, headers:{'Content-Type':mime, 'x-content-type':mime, 'x-vercel-blob-access':'private', 'x-api-version':'13'}});
+      }
+      if (body.action === 'publish') {
+        if (typeof body.id !== 'string' || !uploadId.test(body.id)) fail(400,'Choose an uploaded MP4.');
+        const staged = 'message-example-incoming/' + group + '/' + body.id;
+        const live = root + 'files/' + body.id;
+        let info;
+        try { info = await storage.head(live); }
+        catch (error) { if (!(error instanceof BlobNotFoundError)) throw error; }
+        if (info) return res.json({ok:true});
+        info = await storage.head(staged);
+        if (info.contentType !== mime || !info.size || info.size > maxDemoBytes) fail(400,'Choose an MP4 video of up to 100 MB.');
+        const signed = await storage.issueSignedToken({pathname:staged, operations:['get'], validUntil:Date.now()+300000});
+        const {presignedUrl} = await storage.presignUrl(signed,{pathname:staged, operation:'get', access:'private'});
+        let cached = Buffer.alloc(0), at = -1;
+        async function read(start, length) {
+          if (at < 0 || start < at || start+length > at+cached.length) {
+            const end = Math.min(info.size,start + Math.max(length,8192)) - 1;
+            const response = await fetchMedia(presignedUrl,{headers:{Range:'bytes=' + start + '-' + end},signal:AbortSignal.timeout(15000)});
+            if (response.status !== 206 && !(response.ok && start === 0 && end+1 === info.size)) {
+              await response.body?.cancel(); throw new Error('Range read failed.');
+            }
+            cached = Buffer.from(await response.arrayBuffer()); at = start;
+            if (cached.length !== end-start+1) throw new Error('Incomplete media read.');
+          }
+          return cached.subarray(start-at,start-at+length);
+        }
+        if (!await isMp4Video(info.size,read)) {
+          await storage.del(staged);
+          fail(400,'This file does not contain an MP4 video track.');
+        }
+        await storage.copy(staged,live,{access:'private',contentType:mime,addRandomSuffix:false,allowOverwrite:false});
+        // Interrupted staging uploads expire automatically after one day.
+        await storage.del(staged).catch(() => {});
+        return res.json({ok:true});
       }
       if (body.action === 'delete') {
         if (typeof body.id !== 'string') fail(400,'Choose a demo.');

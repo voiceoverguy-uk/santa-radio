@@ -5,6 +5,7 @@ import { demoEndpoint, fetchDemos } from '../hooks/useMessageDemos.js';
 
 function DemoCollection({group, token, busy, setBusy}) {
   const input = useRef(null);
+  const pending = useRef(null);
   const [demos, setDemos] = useState(null);
   const [file, setFile] = useState(null);
   const [name, setName] = useState('');
@@ -32,14 +33,19 @@ function DemoCollection({group, token, busy, setBusy}) {
   async function upload(event) {
     event.preventDefault();
     if (busy || !file) return;
-    if (!/\.mp3$/i.test(file.name) || !file.size || file.size > maxDemoBytes) {
-      setNotice('Choose an MP3 of up to 40 MB.'); return;
+    if (!/\.mp4$/i.test(file.name) || !file.size || file.size > maxDemoBytes) {
+      setNotice('Choose an MP4 of up to 100 MB.'); return;
     }
     setBusy(true); setNotice('');
     try {
-      const target = await action({action:'upload', name:name.trim(), size:file.size});
-      const response = await fetch(target.url, {method:'PUT', headers:target.headers, body:file});
-      if (!response.ok) throw new Error('The upload failed. Please try again.');
+      if (pending.current?.file !== file || pending.current?.name !== name) {
+        const target = await action({action:'upload', name:name.trim(), size:file.size, contentType:'video/mp4'});
+        const response = await fetch(target.url, {method:'PUT', headers:target.headers, body:file});
+        if (!response.ok) throw new Error('The upload failed. Please try again.');
+        pending.current = {file, name, id:target.id};
+      }
+      await action({action:'publish', id:pending.current.id});
+      pending.current = null;
       if (input.current) input.current.value = '';
       setFile(null); setName('');
       setNotice('Demo published to ' + demoGroups[group] + '.');
@@ -59,20 +65,20 @@ function DemoCollection({group, token, busy, setBusy}) {
   }
   return <>
     <form onSubmit={upload}>
-      <label>MP3 audio · up to 40 MB<input ref={input} type="file" accept=".mp3,audio/mpeg" disabled={busy} onChange={event => {
+      <label>MP4 video · up to 100 MB<input ref={input} type="file" accept=".mp4,video/mp4" disabled={busy} onChange={event => {
         const selected = event.target.files[0]; setFile(selected || null);
-        setName(selected?.name.replace(/\.mp3$/i,'').slice(0,60) || ''); setNotice('');
+        setName(selected?.name.replace(/\.mp4$/i,'').slice(0,60) || ''); setNotice('');
       }}/></label>
       <label>Demo name<input value={name} maxLength={60} required disabled={busy} onChange={event => setName(event.target.value)} /></label>
       <button type="submit" disabled={!file || !name.trim() || busy}>{busy ? 'Working…' : 'Upload and publish'}</button>
     </form>
     {notice && <p role="status">{notice}</p>}
     {demos === null ? <button type="button" onClick={() => setRevision(n => n + 1)}>Reload demos</button> :
-      !demos.length ? <p>No audio examples yet.</p> : <ul className="demo-manager__list">{demos.map(row => <li key={row.id}>
+      !demos.length ? <p>No video examples yet.</p> : <ul className="demo-manager__list">{demos.map(row => <li key={row.id}>
         <strong>{row.name}</strong>
         <div><button type="button" onClick={() => setPlaying(playing === row.id ? null : row.id)}>{playing === row.id ? 'Close player' : 'Play'}</button>
         <button type="button" disabled={busy} onClick={() => setConfirm(row.id)}>Delete</button></div>
-        {playing === row.id && <audio src={row.src} controls autoPlay aria-label={'Play ' + row.name} />}
+        {playing === row.id && <video src={row.src} poster={row.poster} controls autoPlay playsInline aria-label={'Play ' + row.name} />}
         {confirm === row.id && <div role="group" aria-label="Confirm deletion"><p>Delete “{row.name}” from {demoGroups[group]} examples?</p>
           <button type="button" disabled={busy} onClick={() => remove(row)}>Yes, delete</button>
           <button type="button" disabled={busy} onClick={() => setConfirm(null)}>Cancel</button></div>}
@@ -82,7 +88,7 @@ function DemoCollection({group, token, busy, setBusy}) {
 export default function MessageDemoManager({ownerToken}) {
   const [group, setGroup] = useState('kids');
   const [busy, setBusy] = useState(false);
-  return <section className="demo-manager" id="message-demos"><h2>Message demo audio</h2>
+  return <section className="demo-manager" id="message-demos"><h2>Message demo videos</h2>
     <label>Publish examples to <select disabled={busy} value={group} onChange={event => setGroup(event.target.value)}>
       {Object.entries(demoGroups).map(([key, title]) => <option key={key} value={key}>{title}</option>)}
     </select></label>
