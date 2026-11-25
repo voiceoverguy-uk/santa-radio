@@ -30,12 +30,13 @@ export function dadTreatCaption(value){
 }
 const NAME_BADGE_START = 18;
 const AGE_CAPTION_SECONDS = 5;
-const DAD_PROMPT_CAPTIONS = [
+const DAD_FIXED_CAPTIONS = [
   { id: 'age-prompt', text: 'So... How old are you now?', start: 19, end: 23, noFade: true },
   { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', start: 53, end: 59, noFade: true },
   { id: 'generosity-prompt', text: 'But, how generous are you?', start: 72, end: 78, noFade: true },
+  { id: 'approved', text: 'Nice List Approved… just!', start: 90, end: 97, noFade: true },
 ];
-const dadAgeStart = result => Math.max(result.clipStarts.age, DAD_PROMPT_CAPTIONS[0].end);
+const dadAgeStart = result => Math.max(result.clipStarts.age, DAD_FIXED_CAPTIONS[0].end);
 
 export function dadTimeline(result){
  const s=result.clipStarts;
@@ -49,10 +50,9 @@ export function dadTimeline(result){
  {id:'habit',text:`You’re especially good at ${result.habit}`,start:Math.max(s.habit, ageEnd),end:Math.min(s.viewing,s.habit+7)},
  {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:Math.min(s.treat,s.viewing+7)},
  {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:Math.min(s.secondName-1,s.treat+7)},
- {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
  {id:'christmas',noFade:true,text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
  {id:'christmas-extra',noFade:true,text:'Merry Christmas! and all that!',start:christmasStart+4}];
- const fitted = DAD_PROMPT_CAPTIONS.reduce((rows, prompt) => rows.flatMap(caption => {
+ const fitted = DAD_FIXED_CAPTIONS.reduce((rows, prompt) => rows.flatMap(caption => {
    const end = caption.end ?? Infinity;
    if (end <= prompt.start || caption.start >= prompt.end) return [caption];
    const parts = [];
@@ -60,7 +60,7 @@ export function dadTimeline(result){
    if (end > prompt.end) parts.push({ ...caption, id: `${caption.id}-after-${prompt.id}`, start: prompt.end });
    return parts;
  }), captions);
- return [...fitted, ...DAD_PROMPT_CAPTIONS].sort((left, right) => left.start - right.start);
+ return [...fitted, ...DAD_FIXED_CAPTIONS].sort((left, right) => left.start - right.start);
 }
 function frames(image,result){
  const width=1280,height=720;
