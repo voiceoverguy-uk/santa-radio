@@ -78,12 +78,26 @@
 .studio-mini-dash__heading>span{color:#e6ce86;font-weight:700}
 .studio-mini-dash--finished .studio-mini-dash__collected{font-size:clamp(20px,2.5vw,24px);font-weight:600;line-height:1.4;margin:16px 0}
 
-.studio-mini-dash--instructions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px 24px;
+.studio-mini-dash__intro {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: rgb(8 28 21 / 30%);
 }
-.studio-mini-dash--instructions p { margin: 6px 0 0; }
-.studio-mini-dash--instructions button { cursor: pointer; }
+.studio-mini-dash__instructions {
+  max-width: 28rem;
+  padding: 14px clamp(12px, 3vw, 26px);
+  border: 1px solid #e6ce86;
+  border-radius: 14px;
+  background: rgb(15 49 37 / 94%);
+  color: #fff8e7;
+  text-align: center;
+  box-shadow: 0 5px 22px #081c1670;
+}
+.studio-mini-dash__instructions strong { color: #ffe6a1; font-size: 1.15rem; }
+.studio-mini-dash__instructions p { margin: 6px 0 10px; font-size: .9rem; line-height: 1.4; }
+.studio-mini-dash__instructions button { min-height: 44px; padding-block: 8px; cursor: pointer; }
+.studio-mini-dash .studio-mini-dash__santa:disabled { opacity: 1; }
