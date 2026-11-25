@@ -4,17 +4,10 @@ import './BespokeMessageOffers.css';
 const time = value => `${Math.floor((value || 0)/60)}:${String(Math.floor((value || 0)%60)).padStart(2,'0')}`;
 export default function BespokeExamplePlayer({ kind }) {
   const demos = useMessageDemos(kind === 'dad' ? 'dads' : 'kids');
-  const [selected, setSelected] = useState(null);
-  const [kidsSample] = useState(Math.random);
-  const example = kind === 'dad'
-    ? (demos.find(demo => demo.id === selected) ?? demos[0])
-    : demos[Math.floor(kidsSample * demos.length)];
+  const [sample] = useState(Math.random);
+  const example = demos[Math.floor(sample * demos.length)];
   if (!example) return null;
   return <div className="bespoke-kids-examples">
-    {kind === 'dad' && demos.length > 1 && <div className="bespoke-kids-examples__choices" role="group" aria-label="Choose a Dad sample video">
-      {demos.map(demo => <button key={demo.id} type="button" aria-pressed={demo.id === example.id}
-        onClick={() => setSelected(demo.id)}>{demo.shortName || demo.name}</button>)}
-    </div>}
     <ExampleVideo key={example.id} kind={kind} src={example.src} poster={example.poster}
       cues={example.cues} label={example.label || example.name} />
   </div>;
