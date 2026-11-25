@@ -168,11 +168,17 @@
   cursor: pointer;
 }
 
+.black-friday-offer__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .5rem;
+  width: min(100%, 21rem);
+  margin: .8rem auto 0;
+}
+
 .black-friday-offer__cta {
   display: grid;
-  width: min(100%, 21rem);
   min-height: 50px;
-  margin: .8rem auto 0;
   padding: .55rem;
   place-items: center;
   border-radius: .55rem;

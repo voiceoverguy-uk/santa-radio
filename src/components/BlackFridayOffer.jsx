@@ -72,6 +72,8 @@ export default function BlackFridayOffer({ eligible }) {
     };
   }, [open, eligible]);
 
+  const close = () => dialog.current?.close();
+
   async function copyCode() {
     try {
       await navigator.clipboard.writeText(CODE);
@@ -104,9 +106,10 @@ export default function BlackFridayOffer({ eligible }) {
             <button type="button" onClick={copyCode} aria-label="Copy voucher code">{copyState === 'Copied' ? 'Copied' : 'Copy'}</button>
           </div>
         </fieldset>
-        <Link className="black-friday-offer__cta" to={STUDIO_CHECKOUT_PATH} onClick={() => dialog.current?.close()}>
-          Create a Santa message
-        </Link>
+        <div className="black-friday-offer__actions">
+          <Link className="black-friday-offer__cta" to={STUDIO_CHECKOUT_PATH} onClick={close}>Kids’ Message</Link>
+          <Link className="black-friday-offer__cta" to="/dad-message-maker" onClick={close}>Dad’s Message</Link>
+        </div>
         <div className="black-friday-offer__status" role="status">{copyState}</div>
       </div>
     </dialog>, document.body,
