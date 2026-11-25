@@ -416,7 +416,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
 
         </>}
         {dedicatedLayout && <>
-          {readyVideoKey !== messages.at(-1)?.key && <SantaMessageVideoExample recipientName={name} />}
+          {readyVideoKey !== messages.at(-1)?.key && <><SantaMessageVideoExample recipientName={name} /><SantaMessageExample onExampleNameChange={setActiveExampleName} /></>}
           <div className="fsm-personal-video" ref={setVideoPreviewTarget} hidden={!messages.length || readyVideoKey !== messages.at(-1)?.key} />
         </>}
       </div>

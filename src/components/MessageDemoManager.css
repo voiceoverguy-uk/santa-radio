@@ -1,0 +1,7 @@
+.demo-manager form,.demo-manager label,.demo-manager__list,.demo-manager__list li{display:grid;gap:.5rem}
+.demo-manager form{margin:1rem 0;max-width:32rem}
+.demo-manager button,.demo-manager select{width:fit-content}
+.demo-manager__list{padding:0;list-style:none}
+.demo-manager__list li{padding:.75rem 0;border-top:1px solid #9d895e66}
+.demo-manager__list button+button{margin-inline-start:.5rem}
+.demo-manager__list audio{width:min(100%,28rem)}

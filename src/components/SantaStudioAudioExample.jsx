@@ -1,28 +1,6 @@
+import useMessageDemos from '../hooks/useMessageDemos.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SantaStudioAudioExample.css';
-
-const EXAMPLES = [
-  {
-    name: 'Charlotte',
-    src: '/audio/examples/santa-studio-charlotte.mp3',
-    cues: [9, 18, 29, 38, 44, 54, 64, 80],
-  },
-  {
-    name: 'Harry',
-    src: '/audio/examples/santa-studio-harry.mp3',
-    cues: [9, 18, 29, 38, 45, 54, 64, 79],
-  },
-  {
-    name: 'Edward',
-    src: '/audio/examples/santa-studio-edward.mp3',
-    cues: [9, 18, 29, 38, 45, 54, 64, 79],
-  },
-  {
-    name: 'Arabella',
-    src: '/audio/examples/santa-studio-arabella.mp3',
-    cues: [9, 18, 29, 38, 45, 54, 64, 79],
-  },
-];
 
 function getActiveCue(time, cues) {
   return cues.find(start => time >= start && time < start + 2) ?? null;
@@ -44,8 +22,8 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange, com
   const startedRef = useRef(false);
   const startingRef = useRef(false);
   const selectedExampleRef = useRef(null);
-  const [selectedExampleIndex, setSelectedExampleIndex] = useState(null);
-  const example = selectedExampleIndex === null ? null : EXAMPLES[selectedExampleIndex];
+  const demos = useMessageDemos('kids');
+  const [example, setExample] = useState(null);
   const [playbackState, setPlaybackState] = useState('idle');
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -89,10 +67,11 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange, com
 
     const resume = startedRef.current && playbackState === 'paused';
     if (!resume) {
-      const index = Math.min(EXAMPLES.length - 1, Math.floor(Math.random() * EXAMPLES.length));
-      const selectedExample = EXAMPLES[index];
+      if (!demos.length) return;
+      const index = Math.floor(Math.random() * demos.length);
+      const selectedExample = demos[index];
       selectedExampleRef.current = selectedExample;
-      setSelectedExampleIndex(index);
+      setExample(selectedExample);
       startingRef.current = true;
       audio.src = selectedExample.src;
       try {
@@ -166,6 +145,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange, com
   const highlightCue = getActiveHighlightCue(currentTime, selectedExampleRef.current?.cues ?? []);
   const personalisedPlaying = playbackState === 'playing' && highlightCue !== null;
 
+  if (!demos.length) return null;
   return (
     <section className="santa-studio-audio-example" aria-labelledby="santa-studio-audio-title">
       <h4 id="santa-studio-audio-title">
