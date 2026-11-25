@@ -278,3 +278,49 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   letter-spacing: .12em;
   text-align: center;
 }
+
+.home-page {
+  --homepage-content-width: 1160px;
+  --homepage-gutter: 16px;
+}
+
+/* Full-bleed scenery, with one shared content edge below the hero. */
+.home-page.home-page :is(.homepage-santa-studio, .santa-dash-promo, .nn-widget,
+  .christmas-pairs, .name-chart-section, .soundboard, .mugshots-preview,
+  .youtube-section, .partnership-strip, .contact-section) {
+  padding-inline: var(--homepage-gutter);
+}
+
+.home-page.home-page :is(.homepage-santa-studio__layout, .santa-dash-promo__inner,
+  .nn-widget-inner, .christmas-pairs__inner, .name-chart-section > .nc-chart,
+  .soundboard-container, .mugshots-preview-inner, .youtube-section > .container,
+  .partnership-strip__inner, .contact-section .contact-scene) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--homepage-content-width);
+  margin-inline: auto;
+}
+
+.home-page.home-page :is(.homepage-santa-studio__layout, .mugshots-preview-inner,
+  .youtube-section > .container) {
+  padding-inline: 0;
+}
+
+.home-page.home-page :is(.homepage-lifetime-stats, .home-contenders, .christmas-study-promo,
+  .tracker-banner > .relative) {
+  box-sizing: border-box;
+  width: min(var(--homepage-content-width), calc(100% - 2 * var(--homepage-gutter)));
+  max-width: var(--homepage-content-width);
+  margin-inline: auto;
+}
+
+.home-page.home-page :is(.homepage-lifetime-stats, .tracker-banner > .relative) {
+  padding-inline: 0;
+}
+
+/* Widen the workshop frame; retain the game's own card and control sizing. */
+.home-page.home-page .christmas-pairs__game { width: 100%; }
+
+@media (max-width: 600px) {
+  .home-page .home-contenders__brand { flex-wrap: wrap; align-items: center; }
+}
