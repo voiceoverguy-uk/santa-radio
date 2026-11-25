@@ -30,14 +30,20 @@ export function dadTreatCaption(value){
 }
 const NAME_BADGE_START = 18;
 const AGE_CAPTION_SECONDS = 5;
+const DAD_PROMPT_CAPTIONS = [
+  { id: 'age-prompt', text: 'So... How old are you now?', start: 19, end: 23, noFade: true },
+  { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', start: 53, end: 59, noFade: true },
+  { id: 'generosity-prompt', text: 'But, how generous are you?', start: 72, end: 78, noFade: true },
+];
+const dadAgeStart = result => Math.max(result.clipStarts.age, DAD_PROMPT_CAPTIONS[0].end);
 
 export function dadTimeline(result){
  const s=result.clipStarts;
  const recipient = result.writtenName.trim();
- const ageStart = Math.max(s.age, NAME_BADGE_START);
+ const ageStart = dadAgeStart(result);
  const ageEnd = ageStart + AGE_CAPTION_SECONDS;
  const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
- return [{id:'incoming',text:recipient ? `Incoming message from Santa\nFor ${recipient}` : 'Incoming message from Santa',start:0,end:5,noFade:true},
+ const captions = [{id:'incoming',text:recipient ? `Incoming message from Santa\nFor ${recipient}` : 'Incoming message from Santa',start:0,end:5,noFade:true},
  {id:'name',text:result.writtenName,start:Math.min(s.name, NAME_BADGE_START - 1),end:NAME_BADGE_START,noFade:true},
  {id:'age',text:`Aged ${result.age}`,start:ageStart,end:ageEnd,noFade:true},
  {id:'habit',text:`You’re especially good at ${result.habit}`,start:Math.max(s.habit, ageEnd),end:Math.min(s.viewing,s.habit+7)},
@@ -46,6 +52,15 @@ export function dadTimeline(result){
  {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
  {id:'christmas',noFade:true,text:'Merry Christmas!',start:christmasStart,end:christmasStart+4},
  {id:'christmas-extra',noFade:true,text:'Merry Christmas! and all that!',start:christmasStart+4}];
+ const fitted = DAD_PROMPT_CAPTIONS.reduce((rows, prompt) => rows.flatMap(caption => {
+   const end = caption.end ?? Infinity;
+   if (end <= prompt.start || caption.start >= prompt.end) return [caption];
+   const parts = [];
+   if (caption.start < prompt.start) parts.push({ ...caption, end: prompt.start });
+   if (end > prompt.end) parts.push({ ...caption, id: `${caption.id}-after-${prompt.id}`, start: prompt.end });
+   return parts;
+ }), captions);
+ return [...fitted, ...DAD_PROMPT_CAPTIONS].sort((left, right) => left.start - right.start);
 }
 function frames(image,result){
  const width=1280,height=720;
@@ -90,7 +105,7 @@ export async function prepareDadVideoFrames(image, result, duration, signal) {
   signal?.throwIfAborted();
 
   const included = [...scenes, ...captions];
-  const start = Math.max(result.clipStarts.age, NAME_BADGE_START);
+  const start = dadAgeStart(result);
   if (Number.isFinite(start) && start >= 0 && start < duration) {
     const reveal = await drawDadAgeReveal(result.ageTheme, result.age);
     if (reveal) included.push({ id: 'dad-age-reveal', canvas: reveal, y: DAD_AGE_REVEAL_Y,
