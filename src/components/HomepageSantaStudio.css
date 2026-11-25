@@ -56,3 +56,22 @@
   max-width: 37rem;
   margin-bottom: 0;
 }
+
+@supports (background-clip: text) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bespoke-messages-page .bespoke-premium-glow {
+      display: inline-block;
+      background: linear-gradient(110deg, #ffe497 42%, #fff9df 50%, #ffe497 58%) 100% center / 300% 100%;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 0 5px #f5d77b66);
+      animation: bespoke-premium-shine 5s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes bespoke-premium-shine {
+  0%, 18% { background-position: 100% center; }
+  50%, 100% { background-position: 0% center; }
+}
