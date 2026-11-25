@@ -207,10 +207,10 @@ export async function drawStudioVideoFrames(image, result, customTimeline) {
   });
   return { base, layers };
 }
-export function studioSceneTransitions(opening, scenes, revealAt) {
-  if (!scenes.some(({ src }) => src === opening) || !Number.isFinite(revealAt) || revealAt <= 0) return [];
+export function studioSceneTransitions(opening, scenes, endAt) {
+  if (!scenes.some(({ src }) => src === opening) || !Number.isFinite(endAt) || endAt <= 0) return [];
   const rest = scenes.filter(({ src }) => src !== opening);
-  const interval = Math.min(14, revealAt / scenes.length);
+  const interval = Math.min(14, endAt / scenes.length);
   const fadeIn = Math.min(1, interval / 2);
 
   return rest.map(({ src }, index) => ({
@@ -272,12 +272,12 @@ export async function prepareNiceListReveal(result, start) {
   } finally { URL.revokeObjectURL(url); }
 }
 
-async function prepareStudioScene(transition, signal) {
+export async function prepareSceneDissolve(transition, signal, bounds = STUDIO_SCENE_INSET) {
   const image = new Image();
   image.src = transition.src;
   await image.decode();
   signal?.throwIfAborted();
-  const { x, y, width, height } = STUDIO_SCENE_INSET;
+  const { x, y, width, height } = bounds;
   const canvas = makeCanvas(width, height);
   canvas.getContext('2d').drawImage(image, 0, 0, width, height);
   return { ...transition, canvas, x, y };
@@ -290,7 +290,7 @@ export async function prepareStudioVideoFrames(image, result, duration, scenes =
   const reveal = captions.find(layer => layer.id === 'approved');
   const transitions = studioSceneTransitions(result.artwork, scenes, reveal?.start ?? duration);
   const included = [
-    ...await Promise.all(transitions.map(transition => prepareStudioScene(transition, signal))),
+    ...await Promise.all(transitions.map(transition => prepareSceneDissolve(transition, signal))),
     ...captions,
   ];
   signal?.throwIfAborted();

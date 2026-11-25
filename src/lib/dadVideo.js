@@ -1,5 +1,8 @@
 import {dadTreatWording} from './dadChoiceWording.js';
-import {drawVideoCaption, studioTimelineArguments} from './studioVideoTimeline.js';
+import {
+  drawVideoCaption, prepareSceneDissolve, studioSceneTransitions, studioTimelineArguments,
+  STUDIO_VIDEO_WIDTH, STUDIO_VIDEO_HEIGHT,
+} from './studioVideoTimeline.js';
 import {createSantaVideo} from './createSantaVideo.js';
 export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v2.png'},{id:'diy',label:'Assembly required',src:'/images/dad-diy-framed-v2.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v2.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v2.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v2.png'},{id:'lights',label:'All tangled up',src:'/images/dad-lights-framed-v2.png'}];
 export const dadVideoFilename = result => `dad-message-from-santa-to-${result.writtenName.trim().replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '').replace(/\s+/g, '-')}.mp4`;
@@ -71,12 +74,36 @@ export async function dadPoster(result){
  base.getContext('2d').drawImage(caption.canvas,0,caption.y);
  return base.toDataURL('image/png');
 }
-function createDadVideoVariant(result,options,shareCover=false){return createSantaVideo({...options,onStatus:message=>options?.onStatus?.(message.startsWith('Adding Santa’s voice')?'Hang on! So much to do! Nearly there...':message),audio:result.audioBlob,name:result.writtenName,artwork:result.artwork,prepareFrames:async(image,duration)=>{
- const {base,layers}=frames(image,result),included=layers.filter(l=>l.start<duration&&(!l.end||l.end>l.start));
- const png=c=>new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error('Could not draw captions')),'image/png'));
- const files=[{name:'image.png',blob:await png(base)}];for(const layer of included)files.push({name:`${layer.id}.png`,blob:await png(layer.canvas)});
- return {files,args:studioTimelineArguments(included,duration)};
-}});}
+const DAD_SCENE_BOUNDS = { x: 0, y: 0, width: STUDIO_VIDEO_WIDTH, height: STUDIO_VIDEO_HEIGHT };
 
-export const createDadVideo=(result,options)=>createDadVideoVariant(result,options);
-export const createDadShareVideo=(result,options)=>createDadVideoVariant(result,options,true);
+export async function prepareDadVideoFrames(image, result, duration, signal) {
+  const { base, layers } = frames(image, result);
+  const captions = layers.filter(layer => layer.start < duration && (!layer.end || layer.end > layer.start));
+  const transitions = studioSceneTransitions(result.artwork, DAD_ARTWORK, duration);
+  const scenes = await Promise.all(transitions.map(transition => prepareSceneDissolve(transition, signal, DAD_SCENE_BOUNDS)));
+  signal?.throwIfAborted();
+
+  const included = [...scenes, ...captions];
+  const png = canvas => new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not draw the video')), 'image/png');
+  });
+  const files = [{ name: 'image.png', blob: await png(base) }];
+  for (const layer of included) {
+    signal?.throwIfAborted();
+    files.push({ name: `${layer.id}.png`, blob: await png(layer.canvas) });
+  }
+  return { files, args: studioTimelineArguments(included, duration) };
+}
+
+export function createDadVideo(result, options) {
+  return createSantaVideo({
+    ...options,
+    encodingStatus: 'Hang on! So much to do! Nearly there...',
+    audio: result.audioBlob,
+    name: result.writtenName,
+    artwork: result.artwork,
+    prepareFrames: (image, duration) => prepareDadVideoFrames(image, result, duration, options?.signal),
+  });
+}
+
+export const createDadShareVideo = createDadVideo;
