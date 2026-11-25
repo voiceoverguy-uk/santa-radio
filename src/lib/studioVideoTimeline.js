@@ -1,4 +1,4 @@
-// Paid exports use a 720p canvas, caption strips and a single prepared Nice List reveal.
+// Paid exports use a 720p canvas, caption strips, scene dissolves and a prepared Nice List reveal.
 export const STUDIO_VIDEO_WIDTH = 1280;
 export const STUDIO_VIDEO_HEIGHT = 720;
 export const STUDIO_VIDEO_FPS = 12;
@@ -207,12 +207,38 @@ export async function drawStudioVideoFrames(image, result, customTimeline) {
   });
   return { base, layers };
 }
+export function studioSceneTransitions(opening, scenes, revealAt) {
+  if (!scenes.some(({ src }) => src === opening) || !Number.isFinite(revealAt) || revealAt <= 0) return [];
+  const rest = scenes.filter(({ src }) => src !== opening);
+  const interval = Math.min(14, revealAt / scenes.length);
+  const fadeIn = Math.min(1, interval / 2);
+
+  return rest.map(({ src }, index) => ({
+    id: `scene-${index + 2}`,
+    src,
+    start: interval * (index + 1),
+    fadeIn,
+    activeUntil: index + 1 < rest.length ? interval * (index + 2) + fadeIn : undefined,
+  }));
+}
+
 export function studioTimelineArguments(layers, duration) {
   const args = ['-loop', '1', '-framerate', '1', '-i', 'image.png'];
-  for (const layer of layers) args.push('-loop', '1', '-framerate', '1', '-i', `${layer.id}.png`);
+  for (const layer of layers) {
+    if (layer.fadeIn === undefined) args.push('-loop', '1');
+    args.push('-framerate', '1', '-i', `${layer.id}.png`);
+  }
   args.push('-i', 'audio.mp3');
   const filters = [`[0:v]fps=${STUDIO_VIDEO_FPS}[base]`]; let previous = 'base';
   layers.forEach((layer, index) => {
+    if (layer.fadeIn !== undefined) {
+      // Cache one decoded still and blend only while the scene is visible.
+      const until = layer.activeUntil === undefined ? '' : `*lt(t,${layer.activeUntil})`;
+      filters.push(`[${index + 1}:v]loop=loop=-1:size=1:start=0,fps=${STUDIO_VIDEO_FPS},format=rgba,fade=t=in:st=${layer.start}:d=${layer.fadeIn}:alpha=1[text${index}]`);
+      filters.push(`[${previous}][text${index}]overlay=${layer.x}:${layer.y}:format=auto:enable='gte(t,${layer.start})${until}'[frame${index}]`);
+      previous = `frame${index}`;
+      return;
+    }
     const fadeOut = layer.end === undefined ? '' : `,fade=t=out:st=${layer.end - CAPTION_FADE}:d=${CAPTION_FADE}:alpha=1`;
     const fade = layer.blink || layer.noFade ? '' : `,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}`;
     const blink = layer.noFade ? `:enable='gte(t,${layer.start})${layer.end === undefined ? '' : `*lt(t,${layer.end})`}'` : layer.blink ? `:enable='gte(t,${layer.start})*lt(t,${layer.end})*lt(mod(t,1),0.7)'` : '';
@@ -246,11 +272,28 @@ export async function prepareNiceListReveal(result, start) {
   } finally { URL.revokeObjectURL(url); }
 }
 
-export async function prepareStudioVideoFrames(image, result, duration) {
+async function prepareStudioScene(transition, signal) {
+  const image = new Image();
+  image.src = transition.src;
+  await image.decode();
+  signal?.throwIfAborted();
+  const { x, y, width, height } = STUDIO_SCENE_INSET;
+  const canvas = makeCanvas(width, height);
+  canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+  return { ...transition, canvas, x, y };
+}
+
+export async function prepareStudioVideoFrames(image, result, duration, scenes = [], signal) {
   const { base, layers } = await drawStudioVideoFrames(image, result);
   // Short recordings do not need layers whose cue is beyond the audio.
-  const included = layers.filter(layer => !duration || layer.start < duration);
-  const reveal = included.find(layer => layer.id === 'approved');
+  const captions = layers.filter(layer => !duration || layer.start < duration);
+  const reveal = captions.find(layer => layer.id === 'approved');
+  const transitions = studioSceneTransitions(result.artwork, scenes, reveal?.start ?? duration);
+  const included = [
+    ...await Promise.all(transitions.map(transition => prepareStudioScene(transition, signal))),
+    ...captions,
+  ];
+  signal?.throwIfAborted();
   if (reveal) included.push(await prepareNiceListReveal(result, reveal.start));
   const files = [{ name: 'image.png', blob: await png(base) }];
   for (const layer of included) files.push({ name: `${layer.id}.png`, blob: await png(layer.canvas) });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {studioVideoTimeline, studioCaptionOpacity, studioTimelineArguments, studioAge} from '../src/lib/studioVideoTimeline.js';
+import {studioVideoTimeline, studioCaptionOpacity, studioTimelineArguments, studioAge, studioSceneTransitions} from '../src/lib/studioVideoTimeline.js';
 const lowerCaptions = lines => lines.filter(c => !['incoming', 'name', 'age', 'name-badge'].includes(c.id));
 const result={writtenName:'Harry',gift:{details:{age:'7 years old',talent:'Football',activity:'Teamwork',achievement:'Helping at home',treats:'mince pies',destination:'Yorkshire, England'}}};
 test('paid captions use the saved selections and requested cue times',()=>{
@@ -105,4 +105,20 @@ test('the name badge fades out with the Nice List reveal and the final greeting 
   assert.equal(studioCaptionOpacity(badge, reveal.start + 1), 0);
   assert.equal(captions.find(c => c.id === 'christmas').text, writtenName ? `Merry Christmas, ${writtenName}!` : 'Merry Christmas!');
  }
+});
+
+
+test('a Kids video shows the selected scene first and the remaining five once', () => {
+  const scenes = ['train', 'cookies', 'ribbon', 'list', 'loo', 'reindeer'].map(src => ({ src }));
+  const transitions = studioSceneTransitions('ribbon', scenes, 100);
+  assert.deepEqual(transitions.map(scene => scene.src), ['train', 'cookies', 'list', 'loo', 'reindeer']);
+  assert.deepEqual(transitions.map(scene => scene.start), [14, 28, 42, 56, 70]);
+  assert.equal(transitions[0].fadeIn, 1);
+  assert.equal(transitions[0].activeUntil, 29);
+  assert.equal(transitions.at(-1).activeUntil, undefined);
+
+  const shorter = studioSceneTransitions('ribbon', scenes, 60);
+  assert.deepEqual(shorter.map(scene => scene.start), [10, 20, 30, 40, 50]);
+  assert.deepEqual(studioSceneTransitions('legacy', scenes, 100), []);
+  assert.deepEqual(studioSceneTransitions('ribbon', scenes, 0), []);
 });
