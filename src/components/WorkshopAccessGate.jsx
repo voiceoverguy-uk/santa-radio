@@ -1,4 +1,5 @@
 import SantaMessageExample from './SantaMessageExample.jsx';
+import BespokeExamplePlayer from './BespokeExamplePlayer.jsx';
 import StudioVoucherSuccess from './StudioVoucherSuccess.jsx';
 import { scheduleExpiry } from '../lib/scheduleExpiry.js';
 import { useCallback, useEffect, useState } from 'react';
@@ -269,6 +270,7 @@ export default function WorkshopAccessGate({ children }) {
         <div className="smw-start-artwork kids-welcome-art">
           <img className="smw-start-logo" src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1200" height="668" />
           <StudioOpeningPicture caption="Ready to make some Christmas magic?" />
+          <BespokeExamplePlayer kind="kids" />
         </div>
         <div className="kids-welcome-panel">
           <p className="smw-start-kicker">The North Pole Recording Studio</p>
