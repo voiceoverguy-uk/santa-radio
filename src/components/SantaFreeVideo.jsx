@@ -11,6 +11,7 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
   const readyCallback = useRef(onReady);
   readyCallback.current = onReady;
   const [hideProgress, setHideProgress] = useState(false);
+  const [hasPlayed, setHasPlayed] = useState(false);
   const [url, setUrl] = useState('');
   const [poster, setPoster] = useState('');
   const [videoBlob, setVideoBlob] = useState(null);
@@ -23,6 +24,7 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
     if (cancelled) return;
     const controller = new AbortController();
     let objectUrl;
+    setHasPlayed(false);
     setHideProgress(false); setUrl(''); setPoster(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
     const name = santaNameDisplay(message.name);
     Promise.all([
@@ -49,13 +51,13 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
     const timer = setTimeout(() => setHideProgress(true), 3000);
     return () => clearTimeout(timer);
   }, [url]);
-  const player = <SantaVideoPlayer poster={poster} src={url} preload="auto" glow label={`Santa’s video message for ${message.name}`} onPlay={onPlay} onPause={onEnded} onEnded={onEnded} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} />;
+  const player = <SantaVideoPlayer poster={poster} src={url} preload="auto" glow label={`Santa’s video message for ${message.name}`} onPlay={event => { setHasPlayed(true); onPlay?.(event); }} onPause={onEnded} onEnded={onEnded} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} />;
   const filename = `Santa-message-for-${message.name.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'you'}.mp4`;
   return <div className="santa-free-video">
     {!error && !cancelled && !hideProgress && <div className="santa-free-video__progress"><progress aria-label="MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div>}
     {!hideProgress && <p role="status" aria-live="polite">{cancelled ? 'Video preparation cancelled. You can try again below.' : status}</p>}
     {url && !cancelled && <>
-      {previewTarget ? createPortal(player, previewTarget) : player}
+      {previewTarget ? createPortal(<div className={hasPlayed ? undefined : 'fsm-personal-video__ready'}>{player}</div>, previewTarget) : player}
       <div className="santa-free-video__actions">
       <a className="btn-red santa-free-video__download" href={url} download={filename} onClick={() => {
         trackMessageAction(message.statisticsReceipt, 'mp4-download');
