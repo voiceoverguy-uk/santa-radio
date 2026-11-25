@@ -12,7 +12,7 @@ export default function DadEarlyAccess({launchAt,children}) {
   const timeout=setTimeout(()=>controller.abort(),20000);
   try {
    await fetch('/api/santa-workshop-access',{credentials:'same-origin',cache:'no-store',signal:controller.signal});
-   const response=await fetch('/api/santa-workshop-access',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code.trim()}),signal:controller.signal});
+   const response=await fetch('/api/santa-workshop-access',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code.trim(),...(/^SANTA-GIFT-/i.test(code.trim())?{maker:'dads'}:{})}),signal:controller.signal});
    const data=await response.json();
    if(!response.ok||data.authorized!==true)throw Error(data.error||'That voucher could not be accepted. Please check the code.');
    const access=await fetch('/api/dad-studio-message',{credentials:'same-origin',cache:'no-store',signal:controller.signal});

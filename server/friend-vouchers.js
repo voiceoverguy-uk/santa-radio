@@ -74,21 +74,27 @@ async function claimForBrowser(req, res, key, update) {
   return { id: row.issue, expiresAt };
 }
 
-export function claimFixedGift(req, res, normalized, pool, key) {
+export const sharedVoucherMatches = code => /^SANTA-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(code);
+
+export function claimFixedGift(req, res, normalized, pool, key, maker) {
+  const shared = sharedVoucherMatches(normalized);
   // The full code, including its Studio prefix, is part of the stored digest.
   return claimForBrowser(req, res, key, claimant => pool.query(`UPDATE public.santa_fixed_gift_vouchers
     SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
     WHERE code_sha256=$1 AND valid_until > clock_timestamp()
       AND (redeemed_at IS NULL OR claimant_sha256=$2)
-    RETURNING 'gift-' || code_sha256 AS issue, valid_until AS expires_at`, [digest(normalized), claimant]));
+      AND (NOT $3 OR redeemed_at IS NULL OR redeemed_at > clock_timestamp()-interval '720 hours')
+    RETURNING 'gift-' || code_sha256 AS issue,
+      CASE WHEN $3 THEN LEAST(valid_until, redeemed_at + interval '720 hours') ELSE valid_until END AS expires_at`,
+    [digest(normalized), shared ? digest(`${maker}:${claimant}`) : claimant, shared]));
 }
 
 export async function redeemFriendVoucher(req, res, code, { pool = databasePool(), key = secret() } = {}) {
   const normalized = code.trim().toUpperCase();
-  const fixedGift = /^FRIEND-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
+  const fixedGift = sharedVoucherMatches(normalized) || /^FRIEND-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
   if (!fixedGift && !/^FRIEND-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
   const grant = fixedGift
-    ? await claimFixedGift(req, res, normalized, pool, key)
+    ? await claimFixedGift(req, res, normalized, pool, key, 'kids')
     : await claimForBrowser(req, res, key, claimant => pool.query(`UPDATE public.santa_friend_vouchers
       SET redeemed_at=COALESCE(redeemed_at,clock_timestamp()), claimant_sha256=COALESCE(claimant_sha256,$2)
       WHERE code=$1 AND (redeemed_at IS NULL OR claimant_sha256=$2)

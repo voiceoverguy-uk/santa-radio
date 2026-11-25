@@ -1,5 +1,5 @@
 import { redeemDadVoucher } from './dad-vouchers.js';
-import { friendSession, friendClaim, redeemFriendVoucher, adminVoucherMatches, issueAdminVoucher } from './friend-vouchers.js';
+import { friendSession, friendClaim, redeemFriendVoucher, adminVoucherMatches, issueAdminVoucher, sharedVoucherMatches } from './friend-vouchers.js';
 import express from 'express';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
@@ -131,6 +131,17 @@ export function createWorkshopAccessHandler({
         if (!limit.allowed) return res.status(429).json({ error: 'Please wait before starting another admin test.' });
         if (friend?.admin && req.body?.another !== true) return res.json({ authorized: true, expiresAt: friend.expiresAt });
         return res.json(issueAdminVoucher(req, res, friend?.admin ? { expiresAt: friend.expiresAt } : undefined));
+      }
+      if (req.method === 'POST' && typeof req.body?.code === 'string' && sharedVoucherMatches(req.body.code.trim().toUpperCase())) {
+        const { code, maker = 'kids' } = req.body;
+        if (!['kids', 'dads'].includes(maker) || Object.keys(req.body).some(field => !['code', 'maker'].includes(field))) {
+          return res.status(400).json({ error: 'Invalid voucher request.' });
+        }
+        const limit = await consumeAttempt(req, config, now());
+        if (!limit.allowed) return res.status(429).json({ error: 'Too many code attempts. Please try again in a few minutes.' });
+        const redeem = maker === 'dads' ? redeemDadVoucher : redeemFriendVoucher;
+        const result = await redeem(req, res, code);
+        return result ? res.json(result) : res.status(410).json({ error: 'This voucher is invalid, expired or already used.' });
       }
       if (req.method === 'POST' && typeof req.body?.code === 'string' && /^DAD-/i.test(req.body.code.trim())) {
         if (Object.keys(req.body).length !== 1 || req.body.code.length > 80) return res.status(400).json({ error: 'Enter a valid Dad voucher code.' });
