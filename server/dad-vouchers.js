@@ -12,10 +12,26 @@ export function dadVoucherSession(req, key = process.env.SESSION_SECRET, now = D
   const cookies = raw.split(';').map(s => s.trim()).filter(s => s.startsWith(`${COOKIE}=`));
   if (cookies.length !== 1) return null;
   const [id, expiry, signature, extra] = cookies[0].slice(COOKIE.length + 1).split('.');
-  const voucherId = /^[a-f0-9-]{36}$/.test(id || '') || /^gift-[a-f0-9]{64}$/.test(id || '');
+  const voucherId = /^[a-f0-9-]{36}$/.test(id || '') || /^(gift|shared)-[a-f0-9]{64}$/.test(id || '');
   if (extra !== undefined || !voucherId || !/^\d{13}$/.test(expiry || '') || +expiry <= now || !/^[A-Za-z0-9_-]{43}$/.test(signature || '')) return null;
   if (!timingSafeEqual(Buffer.from(signature), Buffer.from(sign(`${id}.${expiry}`, key)))) return null;
-  return { key: digest(`dad-voucher:${id}`), expiresAt: +expiry };
+  if (id.startsWith('shared-')) return sharedDadIdentity(id.slice(7), +expiry);
+  return { key: digest(`dad-voucher:${id}`), expiresAt: +expiry,
+    ...(id.startsWith('gift-') ? { giftHash: id.slice(5) } : {}) };
+}
+
+function sharedDadIdentity(hash, expiresAt) {
+  return { key: digest(`friend-voucher:gift-${hash}`), expiresAt: new Date(expiresAt),
+    legacyDadKey: digest(`dad-voucher:gift-${hash}`), maker: 'dads' };
+}
+
+export async function dadVoucherAllowanceIdentity(voucher, pool) {
+  if (!voucher.giftHash) return voucher;
+  const { rows } = await (pool ?? databasePool()).query(
+    'SELECT 1 FROM public.santa_fixed_gift_vouchers WHERE code_sha256=$1 AND shared_code IS NOT NULL',
+    [voucher.giftHash],
+  );
+  return rows.length ? sharedDadIdentity(voucher.giftHash, voucher.expiresAt) : voucher;
 }
 async function transaction(pool, work) {
   const client = await pool.connect();
@@ -64,7 +80,7 @@ export async function redeemDadVoucher(req, res, code, { pool = databasePool(), 
   if (!fixedGift && !/^DAD-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
   if (typeof key !== 'string' || key.length < 32) throw Error('DAD_VOUCHER_SIGNING_UNAVAILABLE');
   const grant = fixedGift
-    ? await claimFixedGift(req, res, normalized, pool, key, 'dads')
+    ? await claimFixedGift(req, res, normalized, pool, key)
     : await claimDashboardVoucher(req, res, normalized, pool, key);
   if (!grant) return false;
   const { id, expiresAt } = grant;

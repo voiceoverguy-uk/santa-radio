@@ -21,7 +21,8 @@ export async function studioAllowanceIdentity(req, {
   // particular, an exhausted purchase must not fall through to an unlimited
   // voucher or acquire a fresh per-visitor allowance.
   const friend = friendSession(req);
-  if (friend) return { key: friend.generationKey, expiresAt: new Date(friend.expiresAt) };
+  if (friend) return { key: friend.generationKey, expiresAt: new Date(friend.expiresAt),
+    ...(friend.legacyDadKey ? { legacyDadKey: friend.legacyDadKey } : {}) };
   const live = production();
   const claim = live ? null : sandboxClaim(req);
   const purchase = live ? await livePurchase(req)
@@ -37,6 +38,25 @@ export const allowanceStatus = row => ({
   limit: 2, successes: row?.operations?.length || 0,
   remaining: 2 - (row?.operations?.length || 0), pending: !!row?.pending,
 });
+
+function sharedStatus(row, identity, legacyDad) {
+  const successes = (row?.operations?.length || 0) + (legacyDad?.successes || 0);
+  const dadUsed = row?.dad_completed || legacyDad?.successes > 0;
+  const pending = Boolean(row?.pending || legacyDad?.pending);
+  if (identity.maker === 'dads') {
+    const remaining = dadUsed || successes >= 2 ? 0 : 1;
+    return { limit: 1, successes: Number(Boolean(dadUsed)), remaining, pending };
+  }
+  return { limit: 2, successes, remaining: Math.max(0, 2 - successes), pending };
+}
+
+async function legacyDadAllowance(client, identity) {
+  if (!identity.legacyDadKey) return null;
+  const { rows: [row] } = await client.query(`SELECT cardinality(operations) AS successes,
+    reserved_until > clock_timestamp() AS pending FROM public.santa_dad_creation_allowances
+    WHERE access_key=$1 AND expires_at > clock_timestamp()`, [identity.legacyDadKey]);
+  return row;
+}
 
 export async function studioAllowanceReady(pool = databasePool()) {
   await pool.query(`SELECT access_key,operations,reservation,operation,reserved_until,expires_at
@@ -67,10 +87,12 @@ export function createStudioAllowanceStore(pool = databasePool()) {
   };
   return {
     async status(identity) {
-      const result = await pool.query(`SELECT operations, reserved_until > clock_timestamp() AS pending
+      const result = await pool.query(`SELECT operations, dad_completed, reserved_until > clock_timestamp() AS pending
         FROM public.santa_studio_creation_allowances
         WHERE access_key=$1 AND (expires_at IS NULL OR expires_at > clock_timestamp())`, [identity.key]);
-      return allowanceStatus(result.rows[0]);
+      return identity.legacyDadKey
+        ? sharedStatus(result.rows[0], identity, await legacyDadAllowance(pool, identity))
+        : allowanceStatus(result.rows[0]);
     },
     async reserve(identity, operation) {
       return transaction(async client => {
@@ -83,8 +105,11 @@ export function createStudioAllowanceStore(pool = databasePool()) {
         // Replays are NOT re-rendered. With no archive a committed operation
         // can only report its outcome, never manufacture unlimited recordings.
         if (row.operations.includes(operation)) throw problem('This creation already completed. Recordings are not saved; check the open Studio page before starting a different creation.');
-        if (row.operations.length >= 2) throw problem('Both creations have been used. Your current recording and gifts can still be downloaded while this page remains open.');
-        if (row.pending) throw problem('A message is already being prepared for this access. Please wait and check again.');
+        const legacyDad = await legacyDadAllowance(client, identity);
+        const status = identity.legacyDadKey ? sharedStatus(row, identity, legacyDad) : allowanceStatus(row);
+        if (identity.maker === 'dads' && !status.remaining) throw problem('There is no Dad creation left on this voucher.');
+        if (status.remaining <= 0) throw problem('Both creations have been used. Your current recording and gifts can still be downloaded while this page remains open.');
+        if (status.pending) throw problem('A message is already being prepared for this access. Please wait and check again.');
         const reservation = randomUUID();
         await client.query(`UPDATE public.santa_studio_creation_allowances SET reservation=$2,
           operation=$3, reserved_until=clock_timestamp()+interval '150 seconds' WHERE access_key=$1`,
@@ -93,11 +118,22 @@ export function createStudioAllowanceStore(pool = databasePool()) {
       });
     },
     async succeed(identity, reservation) {
-      const result = await pool.query(`UPDATE public.santa_studio_creation_allowances
-        SET operations=array_append(operations,operation), reservation=NULL, operation=NULL, reserved_until=NULL
+      const result = await pool.query(`WITH completed AS (
+        UPDATE public.santa_studio_creation_allowances
+        SET operations=array_append(operations,operation), dad_completed=dad_completed OR $3,
+        last_completed_at=clock_timestamp(), reservation=NULL, operation=NULL, reserved_until=NULL
         WHERE access_key=$1 AND reservation=$2 AND reserved_until > clock_timestamp()
         AND (expires_at IS NULL OR expires_at > clock_timestamp()) AND cardinality(operations)<2
-        RETURNING access_key`, [identity.key, reservation]);
+        AND (NOT $3 OR NOT dad_completed)
+        AND cardinality(operations) + COALESCE((
+          SELECT cardinality(operations) FROM public.santa_dad_creation_allowances
+          WHERE access_key=$4 AND expires_at > clock_timestamp()
+        ),0) < 2
+        RETURNING access_key
+      ), support AS (
+        UPDATE public.santa_dad_recording_support s SET recording_completed_at=now()
+        FROM completed c WHERE $3 AND s.access_key=c.access_key
+      ) SELECT access_key FROM completed`, [identity.key, reservation, identity.maker === 'dads', identity.legacyDadKey ?? null]);
       if (!result.rowCount) throw problem('This preparation expired. Check Studio before trying again.');
     },
     async release(identity, reservation) {

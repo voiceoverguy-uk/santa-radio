@@ -1,3 +1,4 @@
+import { copySharedVoucher, listSharedVouchers } from './shared-voucher-dashboard.js';
 import { dadSupportReport, recordDadReplacement } from './dad-recording-support.js';
 import { androidInstallReport } from './android-install-statistics.js';
 import { manageContenders, signContenderUpload } from './contender-management.js';
@@ -23,7 +24,7 @@ import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboardTodos, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
   androidInstalls=androidInstallReport, appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers, dadVouchers=listDadVouchers, copyVoucher=markVoucherCopied }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers, dadVouchers=listDadVouchers, copyVoucher=markVoucherCopied, sharedVouchers=listSharedVouchers, copyShared=copySharedVoucher }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -80,6 +81,12 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
       if(req.query?.view==='todos') {
         try { return res.json(await todos(req.method==='PATCH'?req.body:undefined)); }
         catch(error) { if([400,404].includes(error.status))return res.status(error.status).json({error:error.message}); throw error; }
+      }
+      if (req.query?.view === 'shared-vouchers') {
+        if (req.method === 'GET') return res.json(await sharedVouchers());
+        if (req.body?.action !== 'copy') return res.status(400).json({error:'Choose a voucher action.'});
+        const result = await copyShared(req.body.code);
+        return result.error ? res.status(result.status).json({error:result.error}) : res.json(result);
       }
       if (req.method === 'PATCH' && ['friends','dad-vouchers'].includes(req.query?.view)) {
         if (req.body?.action !== 'copy') return res.status(400).json({error:'Choose a voucher action.'});

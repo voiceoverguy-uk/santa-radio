@@ -5,17 +5,20 @@ import './FriendVouchers.css';
 
 const PAGE_SIZE = 5;
 
-async function voucherImage(code, isDad) {
-  const logo = new Image();
-  logo.src = isDad ? '/images/dad-message-logo-v4.webp' : '/images/kids-message-logo-v1.webp';
-  await logo.decode();
+async function voucherImage(code) {
+  const logos = ['/images/dad-message-logo-v4.webp', '/images/kids-message-logo-v1.webp'].map(src => {
+    const logo = new Image();
+    logo.src = src;
+    return logo;
+  });
+  await Promise.all(logos.map(logo => logo.decode()));
 
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 1200;
   const ctx = canvas.getContext('2d');
   const gold = '#efcf79', cream = '#fff6e5', dark = '#0d2d23';
   const background = ctx.createLinearGradient(0, 0, 0, 1200);
-  background.addColorStop(0, isDad ? '#611b29' : '#19533c');
+  background.addColorStop(0, '#19533c');
   background.addColorStop(1, dark);
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, 1200, 1200);
@@ -31,70 +34,39 @@ async function voucherImage(code, isDad) {
   }
 
   line('SANTA RADIO', 112, 'bold 32px sans-serif', gold);
-  ctx.drawImage(logo, 275, 130, 650, 362);
+  logos.forEach((logo, index) => {
+    const width = 450;
+    const height = width * logo.naturalHeight / logo.naturalWidth;
+    ctx.drawImage(logo, 130 + index * 490, 310 - height / 2, width, height);
+  });
   line('Christmas Gift Voucher', 557, 'bold 65px Georgia');
-  line(isDad ? 'One personalised video for Dad' : 'Two personalised videos for one child', 624, 'bold 35px sans-serif', gold);
-  line(isDad ? 'Includes Dad’s OFFISHAL Nice-ish List certificate' : 'Includes a Nice List certificate, Santa letter and festive picture', 674, '27px sans-serif');
+  line('Two Kids’ messages or one Kids’ and one Dads’ message', 624, 'bold 35px sans-serif', gold);
+  line('Use the same code in either Message Maker', 674, '27px sans-serif');
   ctx.fillStyle = dark;
   ctx.fillRect(130, 720, 940, 148);
   ctx.strokeRect(130, 720, 940, 148);
   line('YOUR VOUCHER CODE', 774, 'bold 24px sans-serif', gold);
   line(code, 834, 'bold 40px monospace');
-  line(`SantaRadio.co.uk${isDad ? '/dad-message-maker' : STUDIO_PATH}`, 945, 'bold 30px sans-serif');
+  line('SantaRadio.co.uk', 945, 'bold 30px sans-serif');
   line('Open “Friend or Guest?” and enter your code.', 1011, '30px sans-serif');
-  line('Create your message in the same browser after claiming.', 1073, '27px sans-serif', gold);
+  line('Use both creations in the browser where you claim the code.', 1073, '27px sans-serif', gold);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Image export failed')), 'image/png');
   });
 }
-const tabs = [
-  { label: 'Dads', view: 'dad-vouchers' },
-  { label: 'Kids', view: 'friends' },
-];
 export default function FriendVouchers({ ownerToken }) {
-  const [selected, setSelected] = useState(0);
-
-  function navigateTabs(event, index) {
-    const next = {
-      ArrowLeft: (index + tabs.length - 1) % tabs.length,
-      ArrowRight: (index + 1) % tabs.length,
-      Home: 0,
-      End: tabs.length - 1,
-    }[event.key];
-    if (next === undefined) return;
-    event.preventDefault();
-    event.currentTarget.parentElement.children[next].focus();
-    setSelected(next);
-  }
-
   return (
     <section className="dashboard-themed dashboard-themed--gifts" aria-labelledby="voucher-heading">
       <header className="dashboard-themed__header">
-        <div className="dashboard-themed__gifts" aria-hidden="true">🎁 ✨ 🎁</div>
-        <h2 id="voucher-heading">Friends &amp; family vouchers</h2>
+        <h2 id="voucher-heading">Dads &amp; Kids Vouchers</h2>
       </header>
-      <div role="tablist" className="voucher-tabs" aria-label="Voucher type">
-        {tabs.map(({ label, view }, index) => (
-          <button key={view} type="button" role="tab" id={`tab-${view}`}
-            aria-controls={`panel-${view}`} aria-selected={selected === index}
-            tabIndex={selected === index ? 0 : -1} onClick={() => setSelected(index)}
-            onKeyDown={event => navigateTabs(event, index)}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {tabs.map(({ view }, index) => (
-        <div key={view} role="tabpanel" id={`panel-${view}`} aria-labelledby={`tab-${view}`} hidden={selected !== index}>
-          {selected === index && <VoucherList key={ownerToken} view={view} ownerToken={ownerToken} />}
-        </div>
-      ))}
+      <VoucherList key={ownerToken} ownerToken={ownerToken} />
     </section>
   );
 }
 
-function VoucherList({ view, ownerToken }) {
-  const isDad = view === 'dad-vouchers';
+function VoucherList({ ownerToken }) {
   const [rows, setRows] = useState(null);
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [refresh, setRefresh] = useState(0);
@@ -114,7 +86,7 @@ function VoucherList({ view, ownerToken }) {
       setBusy(true);
       setLoadError('');
       try {
-        const response = await fetch(`/api/message-statistics?view=${view}`, {
+        const response = await fetch(`/api/message-statistics?view=shared-vouchers`, {
           headers: { Authorization: `Bearer studio-owner.${ownerToken}` },
           cache: 'no-store',
           signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
@@ -139,7 +111,7 @@ function VoucherList({ view, ownerToken }) {
       document.removeEventListener('visibilitychange', refreshWhenVisible);
       controller.abort();
     };
-  }, [view, ownerToken, refresh]);
+  }, [ownerToken, refresh]);
 
   async function copy(row, asImage = false) {
     const { code } = row;
@@ -151,7 +123,7 @@ function VoucherList({ view, ownerToken }) {
     try {
       if (asImage) {
         try {
-          image = await voucherImage(code, isDad);
+          image = await voucherImage(code);
         } catch {
           setCopyError('The voucher image could not be made. Try again or copy the code.');
           return;
@@ -165,7 +137,7 @@ function VoucherList({ view, ownerToken }) {
           return;
         }
       }
-      const response = await fetch(`/api/message-statistics?view=${view}`, {
+      const response = await fetch(`/api/message-statistics?view=shared-vouchers`, {
         method: 'PATCH', keepalive: true,
         headers: { Authorization: `Bearer studio-owner.${ownerToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'copy', code }),
@@ -184,7 +156,7 @@ function VoucherList({ view, ownerToken }) {
           const url = URL.createObjectURL(image);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `Santa-Radio-${isDad ? 'Dad' : 'Kids'}-Voucher.png`;
+          link.download = 'Santa-Radio-Dads-and-Kids-Voucher.png';
           document.body.append(link);
           link.click();
           link.remove();
@@ -210,13 +182,8 @@ function VoucherList({ view, ownerToken }) {
 
   return (
     <>
-      {isDad ? (
-        <p>Each code unlocks one message at <a href="/dad-message-maker">Dad’s Message Maker</a>. The dashboard keeps a pool of 15 codes.</p>
-      ) : (
-        <p>Each of the 20 single-use codes unlocks two premium messages for one child at <a href={STUDIO_PATH}>Santa’s Message Maker Studio</a>. Download the recordings and gifts before leaving the Studio.</p>
-      )}
-      <p>A green tick means the code has been copied or its image downloaded. When the recipient claims it, it shows as <strong>Used</strong> for 24 hours. A fresh code then takes its place.</p>
-      <p>Recipients have 30 days from claiming a code to create their {isDad ? 'message' : 'messages'} in the same browser.</p>
+      <p>Each voucher includes two messages, with up to one in <a href="/dad-message-maker">Dads’ Message Maker</a>. Use the same code in <a href={STUDIO_PATH}>Kids’ Message Maker</a> for any remaining creation.</p>
+      <p>Recipients have 30 days from claiming to use both creations in the same browser. A green tick shows the code has been copied or its image downloaded.</p>
       <button type="button" disabled={busy} onClick={() => setRefresh(n => n + 1)}>
         {busy ? 'Checking vouchers…' : 'Refresh vouchers'}
       </button>
@@ -229,19 +196,18 @@ function VoucherList({ view, ownerToken }) {
           <div className="santa-dashboard__table">
             <table>
               <thead><tr>
-                {!isDad && <th scope="col">#</th>}
-                <th scope="col">Code</th><th scope="col">Status</th>
+                <th scope="col">Code</th><th scope="col">Status</th><th scope="col">Messages left</th>
                 <th scope="col">Claimed · UK time</th><th scope="col">Copy</th><th scope="col">Image</th>
               </tr></thead>
               <tbody>
                 {rows.slice(0, visible).map(row => (
                   <tr key={row.code}>
-                    {!isDad && <td>{row.slot}</td>}
                     <td><code>{row.code}</code></td>
-                    <td>{row.redeemedAt ? <strong className="voucher-claimed">Used</strong>
+                    <td>{row.redeemedAt ? <strong className="voucher-claimed">{row.remaining > 0 ? "Claimed" : "Closed"}</strong>
                       : row.copiedAt ? <strong className="voucher-copied"><span aria-hidden="true">✓ </span>Copied</strong>
                       : unsaved.has(row.code) ? <strong>Tick unsaved</strong>
                       : <strong className="voucher-available">Available</strong>}</td>
+                    <td>{row.remaining}{row.remaining === 1 && row.dadUsed ? ' (Kids only)' : ''}</td>
                     <td>{row.redeemedAt ? formatUkDateTime(row.redeemedAt) : 'Unclaimed'}</td>
                     <td>{!row.redeemedAt && (
                       <button type="button" onClick={() => copy(row)} disabled={Boolean(copying)}
