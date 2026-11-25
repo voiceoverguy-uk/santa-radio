@@ -1,4 +1,5 @@
-import BespokeExamplePlayer from './BespokeExamplePlayer.jsx';
+import useSantaRecipient from './useSantaRecipient.js';
+import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import StudioVoucherSuccess from './StudioVoucherSuccess.jsx';
 import { scheduleExpiry } from '../lib/scheduleExpiry.js';
 import { useCallback, useEffect, useState } from 'react';
@@ -29,6 +30,7 @@ function accessMessage(status, data) {
 }
 
 export default function WorkshopAccessGate({ children }) {
+  const recipient = useSantaRecipient();
   const location = useLocation();
   const returningFromCheckout = new URLSearchParams(location.search).get('checkout') === 'return';
   const [accessKind, setAccessKind] = useState('tester');
@@ -267,8 +269,9 @@ export default function WorkshopAccessGate({ children }) {
       <section className="smw-builder kids-welcome-layout" aria-label="Kids’ recording studio">
         <div className="smw-start-artwork kids-welcome-art">
           <img className="smw-start-logo" src="/images/kids-message-logo-v1.webp" alt="Kids’ Message from Santa" width="1200" height="668" />
-          <StudioOpeningPicture caption="Ready to make some Christmas magic?" />
-          <BespokeExamplePlayer kind="kids" />
+          <StudioOpeningPicture still caption={recipient
+            ? `Ready to make Christmas magic for ${santaNameDisplay(recipient)}?`
+            : "Ready to make some Christmas magic?"} />
         </div>
         <div className="kids-welcome-panel">
           <p className="smw-start-kicker">The North Pole Recording Studio</p>
