@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
-import { claimFixedGift, friendClaim } from './friend-vouchers.js';
+import { claimFixedGift, friendClaim, sharedVoucherMatches } from './friend-vouchers.js';
 const COOKIE = 'santa-dad-voucher';
 const MONTH = 30 * 86400000;
 const digest = value => createHash('sha256').update(value).digest('hex');
@@ -60,11 +60,11 @@ async function claimDashboardVoucher(req, res, normalized, pool, key) {
 export async function redeemDadVoucher(req, res, code, { pool = databasePool(), key = process.env.SESSION_SECRET } = {}) {
   if (typeof code !== 'string') return false;
   const normalized = code.trim().toUpperCase();
-  const fixedGift = /^DAD-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
+  const fixedGift = sharedVoucherMatches(normalized) || /^DAD-GIFT-(?:[A-F0-9]{5}-){3}[A-F0-9]{5}$/.test(normalized);
   if (!fixedGift && !/^DAD-[A-F0-9]{10}-[A-F0-9]{10}$/.test(normalized)) return false;
   if (typeof key !== 'string' || key.length < 32) throw Error('DAD_VOUCHER_SIGNING_UNAVAILABLE');
   const grant = fixedGift
-    ? await claimFixedGift(req, res, normalized, pool, key)
+    ? await claimFixedGift(req, res, normalized, pool, key, 'dads')
     : await claimDashboardVoucher(req, res, normalized, pool, key);
   if (!grant) return false;
   const { id, expiresAt } = grant;
