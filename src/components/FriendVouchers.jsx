@@ -4,6 +4,50 @@ import { STUDIO_PATH } from '../lib/studioRoute.js';
 import './FriendVouchers.css';
 
 const PAGE_SIZE = 5;
+
+async function voucherImage(code, isDad) {
+  const logo = new Image();
+  logo.src = isDad ? '/images/dad-message-logo-v4.webp' : '/images/kids-message-logo-v1.webp';
+  await logo.decode();
+
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 1200;
+  const ctx = canvas.getContext('2d');
+  const gold = '#efcf79', cream = '#fff6e5', dark = '#0d2d23';
+  const background = ctx.createLinearGradient(0, 0, 0, 1200);
+  background.addColorStop(0, isDad ? '#611b29' : '#19533c');
+  background.addColorStop(1, dark);
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, 1200, 1200);
+  ctx.strokeStyle = gold;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(36, 36, 1128, 1128);
+  ctx.textAlign = 'center';
+
+  function line(text, y, font, colour = cream) {
+    ctx.font = font;
+    ctx.fillStyle = colour;
+    ctx.fillText(text, 600, y, 1040);
+  }
+
+  line('SANTA RADIO', 112, 'bold 32px sans-serif', gold);
+  ctx.drawImage(logo, 275, 130, 650, 362);
+  line('Christmas Gift Voucher', 557, 'bold 65px Georgia');
+  line(isDad ? 'One personalised video for Dad' : 'Two personalised videos for one child', 624, 'bold 35px sans-serif', gold);
+  line(isDad ? 'Includes Dad’s OFFISHAL Nice-ish List certificate' : 'Includes a Nice List certificate, Santa letter and festive picture', 674, '27px sans-serif');
+  ctx.fillStyle = dark;
+  ctx.fillRect(130, 720, 940, 148);
+  ctx.strokeRect(130, 720, 940, 148);
+  line('YOUR VOUCHER CODE', 774, 'bold 24px sans-serif', gold);
+  line(code, 834, 'bold 40px monospace');
+  line(`SantaRadio.co.uk${isDad ? '/dad-message-maker' : STUDIO_PATH}`, 945, 'bold 30px sans-serif');
+  line('Open “Friend or Guest?” and enter your code.', 1011, '30px sans-serif');
+  line('Create your message in the same browser after claiming.', 1073, '27px sans-serif', gold);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Image export failed')), 'image/png');
+  });
+}
 const tabs = [
   { label: 'Dads', view: 'dad-vouchers' },
   { label: 'Kids', view: 'friends' },
@@ -97,14 +141,23 @@ function VoucherList({ view, ownerToken }) {
     };
   }, [view, ownerToken, refresh]);
 
-  async function copy(row) {
+  async function copy(row, asImage = false) {
     const { code } = row;
-    const needsSave = unsaved.has(code);
+    const needsSave = !asImage && unsaved.has(code);
+    let image;
     setCopying(code);
     setCopyError('');
     setNotice('');
     try {
-      if (!needsSave) {
+      if (asImage) {
+        try {
+          image = await voucherImage(code, isDad);
+        } catch {
+          setCopyError('The voucher image could not be made. Try again or copy the code.');
+          return;
+        }
+      }
+      if (!asImage && !needsSave) {
         try {
           await navigator.clipboard.writeText(code);
         } catch {
@@ -127,6 +180,16 @@ function VoucherList({ view, ownerToken }) {
         setRows(current => current?.map(item => item.code === code ? { ...item, copiedAt } : item));
         if (alreadyCopied && !row.copiedAt && !needsSave) {
           setCopyError('This code was already marked as copied. Check who it was sent to before sharing it again.');
+        } else if (image) {
+          const url = URL.createObjectURL(image);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Santa-Radio-${isDad ? 'Dad' : 'Kids'}-Voucher.png`;
+          document.body.append(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 30_000);
+          setNotice('Voucher image downloaded.');
         } else {
           setNotice(needsSave ? 'Copied tick saved.' : 'Voucher copied.');
         }
@@ -134,6 +197,10 @@ function VoucherList({ view, ownerToken }) {
       setUnsaved(current => { const next = new Set(current); next.delete(code); return next; });
       setRefresh(n => n + 1);
     } catch {
+      if (asImage) {
+        setCopyError('The voucher image could not be downloaded. Please try again.');
+        return;
+      }
       setUnsaved(current => new Set(current).add(code));
       setCopyError('The code is on your clipboard, but its tick could not be saved. Select Save tick before sending it.');
     } finally {
@@ -148,7 +215,7 @@ function VoucherList({ view, ownerToken }) {
       ) : (
         <p>Each of the 20 single-use codes unlocks two premium messages for one child at <a href={STUDIO_PATH}>Santa’s Message Maker Studio</a>. Download the recordings and gifts before leaving the Studio.</p>
       )}
-      <p>A green tick means the code has been copied. When the recipient claims it, it shows as <strong>Used</strong> for 24 hours. A fresh code then takes its place.</p>
+      <p>A green tick means the code has been copied or its image downloaded. When the recipient claims it, it shows as <strong>Used</strong> for 24 hours. A fresh code then takes its place.</p>
       <p>Recipients have 30 days from claiming a code to create their {isDad ? 'message' : 'messages'} in the same browser.</p>
       <button type="button" disabled={busy} onClick={() => setRefresh(n => n + 1)}>
         {busy ? 'Checking vouchers…' : 'Refresh vouchers'}
@@ -164,7 +231,7 @@ function VoucherList({ view, ownerToken }) {
               <thead><tr>
                 {!isDad && <th scope="col">#</th>}
                 <th scope="col">Code</th><th scope="col">Status</th>
-                <th scope="col">Claimed · UK time</th><th scope="col">Copy</th>
+                <th scope="col">Claimed · UK time</th><th scope="col">Copy</th><th scope="col">Image</th>
               </tr></thead>
               <tbody>
                 {rows.slice(0, visible).map(row => (
@@ -182,6 +249,8 @@ function VoucherList({ view, ownerToken }) {
                         {copying === row.code ? 'Saving…' : unsaved.has(row.code) ? 'Save tick' : row.copiedAt ? 'Copy again' : 'Copy'}
                       </button>
                     )}</td>
+                    <td>{!row.redeemedAt && <button type="button" disabled={Boolean(copying)} onClick={() => copy(row, true)}
+                      aria-label={`Download voucher image for ${row.code}`}>Download image</button>}</td>
                   </tr>
                 ))}
               </tbody>

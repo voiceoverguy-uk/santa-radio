@@ -29,6 +29,7 @@ export default function DashboardUsefulLinks() {
     <section className="dashboard-links" aria-labelledby="dashboard-links-title">
       <h2 id="dashboard-links-title">Useful links</h2>
       <ul>
+        <li><a href="#voucher-heading">Download a Dad or Kids’ voucher image</a></li>
         <li>
           <div>
             <strong>Black Friday social graphics</strong>
