@@ -907,7 +907,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
     inset: 0;
     pointer-events: none;
     background: linear-gradient(110deg, transparent 35%, rgb(255 218 143 / 14%) 45%, rgb(255 241 199 / 36%) 50%, transparent 65%);
-    animation: studio-purchase-sheen 4s ease-in-out infinite;
+    animation: studio-purchase-sheen 8s ease-in-out infinite;
   }
 
   @keyframes studio-purchase-sheen {
