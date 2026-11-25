@@ -5,10 +5,13 @@ const time = value => `${Math.floor((value || 0)/60)}:${String(Math.floor((value
 export default function BespokeExamplePlayer({ kind }) {
   const demos = useMessageDemos(kind === 'dad' ? 'dads' : 'kids');
   const [selected, setSelected] = useState(null);
-  const example = demos.find(demo => demo.id === selected) ?? demos[0];
+  const [kidsSample] = useState(Math.random);
+  const example = kind === 'dad'
+    ? (demos.find(demo => demo.id === selected) ?? demos[0])
+    : demos[Math.floor(kidsSample * demos.length)];
   if (!example) return null;
   return <div className="bespoke-kids-examples">
-    {demos.length > 1 && <div className="bespoke-kids-examples__choices" role="group" aria-label={kind === 'dad' ? 'Choose a Dad sample video' : 'Choose a Kids’ sample video'}>
+    {kind === 'dad' && demos.length > 1 && <div className="bespoke-kids-examples__choices" role="group" aria-label="Choose a Dad sample video">
       {demos.map(demo => <button key={demo.id} type="button" aria-pressed={demo.id === example.id}
         onClick={() => setSelected(demo.id)}>{demo.shortName || demo.name}</button>)}
     </div>}
