@@ -59,7 +59,7 @@
 
 @supports (background-clip: text) {
   @media (prefers-reduced-motion: no-preference) {
-    .bespoke-messages-page .bespoke-premium-glow {
+    :is(.home-page, .bespoke-messages-page) .homepage-santa-studio__heading .bespoke-premium-glow {
       display: inline-block;
       background: linear-gradient(110deg, #ffe497 42%, #fff9df 50%, #ffe497 58%) 100% center / 300% 100%;
       background-clip: text;
