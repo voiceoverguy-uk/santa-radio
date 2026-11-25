@@ -451,9 +451,9 @@ export default function ChristmasContenders() {
       <section className="contenders-hero starry-bg">
         <div className="contenders-hero__inner">
           <p className="contenders-kicker">Christmas Contenders · 2026</p>
-          <h1>Help shape the sound of Christmas</h1>
+          <h1>Five artists will join our Christmas playlist</h1>
           <p className="contenders-intro">
-            Help your favourite artist earn a place on Santa Radio this December. Listen, select a song and confirm your vote by email.
+            Who would you love to hear on Santa Radio in the run-up to Christmas? Listen below, pick your favourite and confirm your vote by email. Then share their song and get the votes in!
           </p>
           {votingState !== 'unavailable' && <div className={`contenders-countdown contenders-countdown--${votingState}`} role="timer" aria-live="off">
             {statusCopy}
@@ -608,7 +608,7 @@ export default function ChristmasContenders() {
               <li>Only screened, family-friendly Christmas songs are considered.</li>
               <li>One vote per person during November. Multiple accounts, automated voting and other attempts to manipulate the result are not allowed; suspicious votes may be removed.</li>
               <li>Voting closes {dateLabel(settings.closesAt)} (UK time).</li>
-              <li>Votes inform December playlist consideration, but do not guarantee airplay; Santa Radio makes the final editorial decision.</li>
+              <li>Santa Radio will choose five artists for the Christmas playlist. Listener votes help us decide which songs to play.</li>
             </ul>
             <p>Artists: use your song’s Share button to invite your fans to listen and vote. A strong response helps us discover what listeners love.</p>
             <p>Have a recording for the team to consider? Send it through the existing <Link to="/submit-a-song?mode=song">SONG submission form</Link>. Submissions are reviewed before publication and are not automatically added here.</p>
