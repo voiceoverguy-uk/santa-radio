@@ -892,3 +892,26 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   0%, 100% { box-shadow: 0 0 9px rgb(247 196 98 / 30%); }
   50% { box-shadow: 0 0 23px 4px rgb(247 196 98 / 54%); }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .kids-welcome-panel .santa-studio-promotion__purchase,
+  .dad-studio .dad-purchase-cta {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kids-welcome-panel .santa-studio-promotion__purchase:enabled::after,
+  .dad-studio .dad-purchase-cta:enabled::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 35%, rgb(255 218 143 / 14%) 45%, rgb(255 241 199 / 36%) 50%, transparent 65%);
+    animation: studio-purchase-sheen 4s ease-in-out infinite;
+  }
+
+  @keyframes studio-purchase-sheen {
+    0% { transform: translateX(-100%); }
+    40%, 100% { transform: translateX(100%); }
+  }
+}
