@@ -1,7 +1,7 @@
 import express from 'express';
 import { isMp4Video } from './verify-demo-video.js';
 import { randomUUID } from 'node:crypto';
-import { BlobNotFoundError, copy, del, head, list, put, issueSignedToken, presignUrl } from '@vercel/blob';
+import { BlobNotFoundError, copy, del, get, head, list, put, issueSignedToken, presignUrl } from '@vercel/blob';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { builtInDemos, demoGroups, maxDemoBytes } from '../src/lib/messageDemoCatalogue.js';
@@ -11,7 +11,7 @@ const prefix = group => 'message-example-video/' + group + '/';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const mime = 'video/mp4';
 
-export function createMessageDemos({ storage = { list, put, del, issueSignedToken, presignUrl }, owner = validOwnerToken, fetchMedia = fetch } = {}) {
+export function createMessageDemos({ storage = { list, put, del, get, head, copy, issueSignedToken, presignUrl }, owner = validOwnerToken, fetchMedia = fetch } = {}) {
   const app = express();
   app.use((req, res, next) => {
     res.set('Cache-Control', 'private, no-store').set('X-Robots-Tag', 'noindex');
@@ -38,13 +38,14 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
           const {presignedUrl} = await storage.presignUrl(signed, {pathname, operation:'get', access:'private'});
           return res.redirect(307, presignedUrl);
         }
-        const hidden = new Set(), additions = [];
+        const hidden = new Set(), additions = [], edited = new Set();
         let cursor;
         do {
           const page = await storage.list({prefix:root, cursor, limit:1000});
           for (const blob of page.blobs) {
             const relative = blob.pathname.slice(root.length);
             if (relative.startsWith('hidden/')) hidden.add(relative.slice(7));
+            if (relative.startsWith('moments/')) edited.add(relative.slice(8));
             if (!relative.startsWith('files/')) continue;
             const id = relative.slice(6), match = uploadId.exec(id);
             if (match) additions.push({id, name:Buffer.from(match[1],'base64url').toString('utf8'), src:'/api/message-demos?group=' + group + '&play=' + id, added:new Date(blob.uploadedAt).getTime()});
@@ -52,7 +53,13 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
           cursor = page.hasMore ? page.cursor : undefined;
         } while (cursor);
         additions.sort((a,b) => b.added - a.added || a.id.localeCompare(b.id));
-        return res.json({demos:[...additions, ...builtInDemos[group].filter(demo => !hidden.has(demo.id))]});
+        const demos = [...additions, ...builtInDemos[group].filter(demo => !hidden.has(demo.id))];
+        return res.json({demos:await Promise.all(demos.map(async demo => {
+          if (!edited.has(demo.id)) return demo;
+          const saved = await storage.get(root + 'moments/' + demo.id, {access:'private', useCache:false});
+          if (!saved?.stream) return demo;
+          return {...demo, cues:await new Response(saved.stream).json()};
+        }))});
       }
 
       const body = req.body ?? {};
@@ -67,6 +74,25 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
         const signed = await storage.issueSignedToken({pathname, operations:['put'], allowedContentTypes:[mime], maximumSizeInBytes:size, validUntil:Date.now() + 900000});
         const {presignedUrl} = await storage.presignUrl(signed,{pathname, operation:'put', access:'private', addRandomSuffix:false, allowOverwrite:false, ttlDays:1});
         return res.json({id, url:presignedUrl, headers:{'Content-Type':mime, 'x-content-type':mime, 'x-vercel-blob-access':'private', 'x-api-version':'13'}});
+      }
+      let cues;
+      if (body.action === 'moments' || (body.action === 'publish' && body.cues !== undefined)) {
+        if (group === 'free' || !Array.isArray(body.cues) || body.cues.length > 200 ||
+            body.cues.some(t => !Number.isSafeInteger(t) || t < 0 || t > 359999)) {
+          fail(400,'Enter up to 200 valid personalisation times.');
+        }
+        cues = [...new Set(body.cues)].sort((a,b) => a-b);
+      }
+      const saveMoments = () => storage.put(root + 'moments/' + body.id, JSON.stringify(cues), {
+        access:'private', allowOverwrite:true, addRandomSuffix:false, contentType:'application/json'
+      });
+      if (body.action === 'moments') {
+        if (!builtInDemos[group].some(demo => demo.id === body.id)) {
+          if (typeof body.id !== 'string' || !uploadId.test(body.id)) fail(400,'Choose an example from this category.');
+          await storage.head(root + 'files/' + body.id);
+        }
+        await saveMoments();
+        return res.json({ok:true});
       }
       if (body.action === 'publish') {
         if (typeof body.id !== 'string' || !uploadId.test(body.id)) fail(400,'Choose an uploaded MP4.');
@@ -97,6 +123,7 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
           await storage.del(staged);
           fail(400,'This file does not contain an MP4 video track.');
         }
+        if (cues) await saveMoments();
         await storage.copy(staged,live,{access:'private',contentType:mime,addRandomSuffix:false,allowOverwrite:false});
         // Interrupted staging uploads expire automatically after one day.
         await storage.del(staged).catch(() => {});
@@ -108,6 +135,7 @@ export function createMessageDemos({ storage = { list, put, del, issueSignedToke
           await storage.put(root+'hidden/'+body.id, '1', {access:'private',allowOverwrite:true,addRandomSuffix:false});
         } else if (uploadId.test(body.id)) {
           await storage.del(root+'files/'+body.id);
+          await storage.del(root+'moments/'+body.id);
         } else fail(400,'Choose a demo from this category.');
         return res.json({ok:true});
       }
