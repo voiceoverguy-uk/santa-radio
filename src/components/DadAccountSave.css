@@ -1,0 +1,10 @@
+.dad-account-save { margin-top: 28px; padding-top: 24px; border-top: 1px solid #b99b4f80; }
+.dad-account-save > h3 { margin: 0 0 12px; }
+.dad-account-save__steps { display: grid; gap: 16px; margin: 20px 0; }
+.dad-account-save__step { padding: clamp(16px, 3vw, 24px); border: 1px solid #b99b4f80; border-radius: 12px; background: #153c2e; }
+.dad-account-save__step h4 { margin: 0 0 10px; color: #f4d888; font-size: 1.1rem; }
+.dad-account-save__step p { margin: 0 0 16px; }
+.dad-studio .dad-account-save .dad-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; max-width: 100%; padding: 12px 18px; white-space: normal; text-align: center; font-size: 1rem; line-height: 1.4; }
+.dad-account-save .dad-account-save__hint { margin: 12px 0 0; font-size: .9rem; line-height: 1.6; color: #e5e9dd; }
+.dad-account-save__status { padding: 14px 16px; border-left: 3px solid #f4d888; background: #244b39; font-weight: 600; }
+@media (max-width: 480px) { .dad-studio .dad-account-save .dad-primary { width: 100%; } }
