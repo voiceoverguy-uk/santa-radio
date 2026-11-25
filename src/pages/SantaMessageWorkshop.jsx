@@ -677,7 +677,7 @@ export default function SantaMessageWorkshop() {
           <div className="smw-builder-head">
             <div>
               <h2 id="smw-builder-title" ref={stageHeading} tabIndex="-1">
-                {isReview ? ({ review: 'Review Time', scene: 'Choose the scene', result: 'Your Santa message' })[deliveryStep] : stage.heading}
+                {isReview ? ({ review: 'Review Time', scene: 'Choose the starting scene', result: 'Your Santa message' })[deliveryStep] : stage.heading}
               </h2>
             </div>
             {!isReview && <button className="smw-header-continue" type="button" onClick={continueToNext} disabled={!audioEditingAllowed || !canContinue}

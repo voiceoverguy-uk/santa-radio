@@ -28,7 +28,7 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
     (current + direction + STUDIO_VIDEO_SCENES.length) % STUDIO_VIDEO_SCENES.length);
 
   return <>
-    <div className="smw-scene-options" role="group" aria-label="Choose a picture">
+    <div className="smw-scene-options" role="group" aria-label="Choose the starting scene">
       {STUDIO_VIDEO_SCENES.map((option, position) => <div className="smw-scene-option" key={option.src}>
         <button className="smw-scene-select" type="button"
           aria-label={`Select ${option.label}`} aria-pressed={selected === option.src}
@@ -68,7 +68,7 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
         <button type="button" className="smw-button smw-button-next" onClick={() => {
           onSelect(scene.src);
           dialogRef.current.close();
-        }}>Use this picture →</button>
+        }}>Start with this scene →</button>
       </div>
     </dialog>
   </>;

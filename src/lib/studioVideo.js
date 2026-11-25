@@ -21,5 +21,5 @@ export async function createStudioVideoPoster(result) {
 }
 export function createStudioVideo(result, options) {
   return createSantaVideo({ ...options, audio: result.audioBlob, name: result.writtenName,
-    prepareFrames: (image, duration) => prepareStudioVideoFrames(image, result, duration), artwork: result.artwork || STUDIO_VIDEO_ARTWORK });
+    prepareFrames: (image, duration) => prepareStudioVideoFrames(image, result, duration, STUDIO_VIDEO_SCENES, options?.signal), artwork: result.artwork || STUDIO_VIDEO_ARTWORK });
 }
