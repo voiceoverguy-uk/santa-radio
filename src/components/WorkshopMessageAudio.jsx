@@ -31,6 +31,7 @@ export default function WorkshopMessageAudio({
   const urlRef = useRef(null);
   const triggerRef = useRef(null);
   const finishedRef = useRef(null);
+  const recordingSections = useRef(new Map());
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
   const spellingRef = useRef(spelling);
@@ -50,10 +51,9 @@ export default function WorkshopMessageAudio({
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const finishedWrittenName = results.at(-1)?.writtenName || writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
-  const showRecording = () => {
-    const finished = finishedRef.current;
+  const showRecording = (finished = finishedRef.current) => {
     const download = finished?.querySelector('.smw-download-actions');
-    if (!finished || !download) return;
+    if (!finished) return;
     // Focus without native scrolling (or the builder's keyboard-control
     // scrolling), then make one explicit move for the whole playable result.
     finished.focus({ preventScroll: true });
@@ -71,7 +71,7 @@ export default function WorkshopMessageAudio({
     if (dock?.height && dock.right > bounds.left && dock.left < bounds.right && dock.bottom > topEdge) {
       bottomEdge = Math.min(bottomEdge, dock.top - 16);
     }
-    const requiredHeight = download.getBoundingClientRect().bottom - bounds.top;
+    const requiredHeight = download ? download.getBoundingClientRect().bottom - bounds.top : bounds.height;
     const destinationTop = Math.max(topEdge, bottomEdge - requiredHeight);
     window.scrollTo({
       top: Math.max(0, window.scrollY + bounds.top - destinationTop),
@@ -321,6 +321,14 @@ export default function WorkshopMessageAudio({
       ) : <button type="button" className="smw-button smw-button-next"
         disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message <span aria-hidden="true">→</span></button>}
     </>}
+    {deliveryStep === 'result' && results.length > 1 && results.every(result => result.artwork) &&
+      <div className="smw-gift-selector" role="group" aria-label="View your video recordings">
+        <p>Your video recordings</p>
+        {results.map((result, index) => <button key={result.url} type="button"
+          onClick={() => showRecording(recordingSections.current.get(result.url))}>
+          {index === 0 ? '1st' : '2nd'} video for {result.writtenName}
+        </button>)}
+      </div>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       keepsakes={index === results.length - 1 ? keepsakes : null}
@@ -339,7 +347,11 @@ export default function WorkshopMessageAudio({
         resultsRef.current = resultsRef.current.map(saved => saved.url === result.url ? { ...saved, requested: true } : saved);
         setResults(resultsRef.current);
       }}
-      sectionRef={index === results.length - 1 ? finishedRef : undefined} />).reverse()}
+      sectionRef={node => {
+        if (node) recordingSections.current.set(result.url, node);
+        else recordingSections.current.delete(result.url);
+        if (index === results.length - 1) finishedRef.current = node;
+      }} />).reverse()}
     </div>
   );
   return <>
