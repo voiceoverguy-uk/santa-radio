@@ -1,3 +1,4 @@
+import SongMediaField from '../components/SongMediaField.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
@@ -23,6 +24,7 @@ export default function SubmitASong() {
   });
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
+  const [uploading,setUploading]=useState(false);
   const [pending, setPending] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const formRef = useRef(null);
@@ -101,7 +103,7 @@ export default function SubmitASong() {
   };
   const onSubmit = async event => {
     event.preventDefault();
-    if (requestRef.current || accepted) return;
+    if (requestRef.current || uploading || accepted) return;
     const validation = validateSongFields(fields, mode);
     setErrors(validation);
     setError('');
@@ -166,7 +168,7 @@ export default function SubmitASong() {
           value={/^\d{4}-\d{2}-\d{2}$/.test(fields[name]) ? formatUkDate(fields[name]) : fields[name]}
           onChange={event => onChange(name, event.target.value.replace(/^(\d{2})\/(\d{2})\/(\d{4})$/, '$3-$2-$1'))} />
         <label className="song-date-picker"><span aria-hidden="true">📅</span>
-          <input type="date" lang="en-GB" aria-label="Choose from calendar" disabled={pending}
+          <input type="date" lang="en-GB" aria-label="Choose from calendar" disabled={pending || uploading}
             min={options.min} max={options.max} value={/^\d{4}-\d{2}-\d{2}$/.test(fields[name]) ? fields[name] : ''}
             onChange={event => onChange(name, event.target.value)} />
         </label>
@@ -181,7 +183,7 @@ export default function SubmitASong() {
         <div className="submit-hero-content">
           <h1 className="submit-title gold-text">{isSong ? 'Submit a song to Santa Radio' : isSponsorship ? 'Christmas sponsorship enquiry' : 'Get in touch with Santa Radio'}</h1>
           <div className="submit-body" onFocusCapture={keepFocusVisible}>
-            <fieldset className="contact-modes" disabled={pending}>
+            <fieldset className="contact-modes" disabled={pending || uploading}>
               <legend>What are you contacting us about?</legend>
               <div className="contact-mode-options">
                 <label><input type="radio" name="contact-mode" value="general" checked={mode === 'general'}
@@ -193,21 +195,21 @@ export default function SubmitASong() {
               </div>
             </fieldset>
             {isSong ? <>
-            <p>Have a Christmas recording you’d like us to consider? Send your details and a listening link below. No audio upload is needed.</p>
+            <p>Have a Christmas recording you’d like us to consider? Upload your MP3 and artwork below, or paste a secure link for either.</p>
             <section className="song-requirements" aria-labelledby="song-requirements-title">
               <h2 id="song-requirements-title">Before you send your song</h2>
-              <p>Please include <strong>all five items</strong> in your message before submitting:</p>
+              <p>Please include <strong>the following details</strong> before submitting:</p>
               <ul id="song-requirements-checklist">
                 <li>Artist name</li>
                 <li>Song title</li>
-                <li>A link to the song (YouTube, SoundCloud, Spotify etc.)</li>
+                <li>Your MP3 or a listening link</li>
                 <li>A short bio or description</li>
                 <li>A link to any promotion of Santa Radio</li>
               </ul>
               <p>Keep the complete serialized message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
-            <p>We manually screen full lyrics for explicit content and family suitability before approving any entry. Secure media and document links only: no file uploads or automatic public appearance. Any competition submission cutoff will be shown on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
+            <p>We manually screen full lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide whether to feature the song. Any competition submission cutoff will be shown on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
             </> : isSponsorship ? <>
               <p>For Christmas-related brands—including gifts, decorations, festive food and attractions—ask about joining Santa Radio’s Christmas 2026 campaign.</p>
               <section className="sponsorship-offer" aria-labelledby="sponsorship-offer-title">
@@ -263,17 +265,17 @@ export default function SubmitASong() {
               </> : <>
                 {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
                 <p className="song-guidance" id="song-message-help">{isSong
-                  ? 'Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.'
+                  ? 'Include the artist name, song title, a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check your links work.'
                   : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
                 <p className="song-character-count" id="song-message-count" role={isSong && buildSongMessage(fields).length > 500 ? 'alert' : undefined}>{isSong ? buildSongMessage(fields).length : fields.SONG_REQUEST.length} / 500 characters{isSong && ' in the complete message sent to Brevo'}</p>
               </>}
               {isSong && <>
-                <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending}
+                <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending || uploading}
                   onChange={event => onChange('instrumental', event.target.checked)} /> This is instrumental, with no sung or spoken lyrics</label>
                 {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
-                {field('audioLink', 'Secure audio file or listening link', { type:'url',limit:400,placeholder:'https://…' })}
-                {field('artworkLink', 'Secure artwork link', { type:'url',limit:400,placeholder:'https://…' })}
-                <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending}
+                {['audioLink','artworkLink'].map(name=><SongMediaField key={name} audio={name==='audioLink'} value={fields[name]}
+                  onChange={value=>onChange(name,value)} busy={pending || uploading} onBusy={setUploading} error={errors[name]}/>)}
+                <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending || uploading}
                   required aria-invalid={Boolean(errors.hostPermission)} aria-describedby={errors.hostPermission ? 'song-permission-error' : undefined}
                   onChange={event => onChange('hostPermission', event.target.checked)} /> I have permission for Santa Radio to host and broadcast this recording and use its artwork</label>
                 {errors.hostPermission && <p id="song-permission-error" className="song-field-error">{errors.hostPermission}</p>}
@@ -283,7 +285,7 @@ export default function SubmitASong() {
                   <input id="song-criteriaMet" name="criteriaMet" type="checkbox"
                     checked={fields.criteriaMet === true}
                     onChange={event => onChange('criteriaMet', event.target.checked)}
-                    required disabled={pending} aria-invalid={Boolean(errors.criteriaMet)}
+                    required disabled={pending || uploading} aria-invalid={Boolean(errors.criteriaMet)}
                     aria-describedby={`song-requirements-checklist${errors.criteriaMet ? ' song-criteriaMet-error' : ''}`} />
                   <span>Have you met the criteria?</span>
                 </label>
@@ -296,12 +298,12 @@ export default function SubmitASong() {
               </div>
               <input type="hidden" name="locale" value="en" />
               <p className="song-privacy">{isSong
-                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately to Brevo to handle your song submission. Use shareable review links, not private credentials or personal documents.'
+                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately to Brevo to handle your song submission. Uploaded files are stored privately and can be downloaded by anyone with their review link.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent to Brevo as your enquiry.'
                   : 'Your name, email and message are sent to Brevo to handle your enquiry.'} This does not give consent for marketing. Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
               {error && <p className="song-form-alert" role="alert">{error}</p>}
-              <button className="song-submit-button" type="submit" disabled={pending}>{pending
+              <button className="song-submit-button" type="submit" disabled={pending || uploading}>{pending
                 ? (isSong ? 'Submitting your song…' : isSponsorship ? 'Sending your sponsorship enquiry…' : 'Sending your enquiry…')
                 : (isSong ? 'Submit song' : isSponsorship ? 'Send sponsorship enquiry' : 'Send enquiry')}</button>
               {pending && <p className="song-pending" role="status">Waiting for Brevo to confirm acceptance. Please don’t submit again.</p>}
