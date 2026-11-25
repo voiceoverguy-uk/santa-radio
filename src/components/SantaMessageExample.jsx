@@ -1,38 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import useMessageDemos from '../hooks/useMessageDemos.js';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import './SantaMessageExample.css';
 
-const ROTATION_KEY = 'santa-radio-example-last';
-const EXAMPLES = [
-  { key: 'boy', name: 'Harry', src: '/audio/examples/santa-message-boy.mp3' },
-  { key: 'girl', name: 'Arabella', src: '/audio/examples/santa-message-girl.mp3' },
-  { key: 'ayla', name: 'Ayla', src: '/audio/examples/santa-message-ayla.mp3' },
-  { key: 'mohani', name: 'Mohani', src: '/audio/examples/santa-message-mohani.mp3' },
-  { key: 'charlotte', name: 'Charlotte', src: '/audio/examples/santa-message-charlotte.mp3' },
-];
-
-let lastSuccessfulExample = null;
-
-function getLastSuccessfulExample() {
-  try {
-    const stored = window.sessionStorage.getItem(ROTATION_KEY);
-    if (EXAMPLES.some(example => example.key === stored)) return stored;
-  } catch {
-    // Private browsing and locked-down storage use the in-memory rotation.
-  }
-  return lastSuccessfulExample || EXAMPLES[EXAMPLES.length - 1].key;
+const lastSuccessful = new Map();
+function lastDemo(group) {
+  try { return sessionStorage.getItem('santa-radio-example-last' + (group === 'free' ? '' : '-' + group)) || lastSuccessful.get(group); }
+  catch { return lastSuccessful.get(group); }
+}
+function rememberDemo(group, id) {
+  lastSuccessful.set(group, id);
+  try { sessionStorage.setItem('santa-radio-example-last' + (group === 'free' ? '' : '-' + group), id); } catch { /* Use memory when storage is unavailable. */ }
 }
 
-function rememberSuccessfulExample(key) {
-  lastSuccessfulExample = key;
-  try {
-    window.sessionStorage.setItem(ROTATION_KEY, key);
-  } catch {
-    // Keep the rotation for this page session even when storage is unavailable.
-  }
-}
-
-export default function SantaMessageExample({ onExampleNameChange, pulse = false } = {}) {
+export default function SantaMessageExample({ onExampleNameChange, pulse = false, group = 'free' } = {}) {
+  const demos = useMessageDemos(group);
+  const errorId = useId();
   const radio = useRadio();
   const audioRef = useRef(null);
   const sessionRef = useRef(null);
@@ -65,7 +48,7 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
   const markStarted = session => {
     if (sessionRef.current !== session || session.started) return;
     session.started = true;
-    rememberSuccessfulExample(session.example.key);
+    rememberDemo(group, session.example.id);
     setState('playing');
   };
 
@@ -118,15 +101,16 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
     }
 
     setError('');
-    const previous = getLastSuccessfulExample();
-    const index = EXAMPLES.findIndex(item => item.key === previous);
-    const example = EXAMPLES[(index + 1) % EXAMPLES.length];
+    if (!demos.length) return;
+    const previous = lastDemo(group);
+    const index = demos.findIndex(item => item.id === previous);
+    const example = demos[(index + 1) % demos.length];
     const audio = audioRef.current;
     if (!audio) return;
 
     const resumeRadio = radio?.pauseForMessage?.() || null;
 
-    for (const otherAudio of document.querySelectorAll('audio')) {
+    for (const otherAudio of document.querySelectorAll('audio, video')) {
       if (otherAudio !== audio) otherAudio.pause();
     }
     document.dispatchEvent(new CustomEvent('santa-radio:example-start'));
@@ -154,13 +138,14 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
     }
   };
 
+  if (!demos.length) return null;
   return <div className="santa-message-example">
     <button
       className={`santa-message-example__button${pulse && state === 'idle' ? ' santa-message-example__button--pulse' : ''}`}
       type="button"
       onClick={startOrStop}
       aria-busy={state === 'loading'}
-      aria-describedby={error ? 'santa-message-example-error' : undefined}
+      aria-describedby={error ? errorId : undefined}
     >
       <span className="santa-message-example__mark" aria-hidden="true">
         {state === 'idle' ? '▶' : '■'}
@@ -168,7 +153,7 @@ export default function SantaMessageExample({ onExampleNameChange, pulse = false
       {state === 'idle' ? 'Hear an example audio message' : 'Stop example message'}
     </button>
     {state === 'loading' && <p className="santa-message-example__status" role="status">Loading Santa’s example…</p>}
-    {error && <p className="santa-message-example__error" id="santa-message-example-error" role="alert">{error}</p>}
+    {error && <p className="santa-message-example__error" id={errorId} role="alert">{error}</p>}
     <audio
       ref={audioRef}
       className="santa-message-example__audio"

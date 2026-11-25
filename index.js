@@ -6,6 +6,7 @@ import dadCheckout from './api/dad-studio-checkout.js';
 import dadReturn from './api/dad-studio-return.js';
 import santaReviews from './server/santa-reviews.js';
 import nameChart from './server/name-chart.js';
+import messageDemos from './server/message-demos.js';
 import nameRecordingUploads from './server/name-recording-uploads.js';
 import messageAccount from './server/message-account.js';
 import { createServer } from 'node:http';
@@ -102,6 +103,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/name-chart') return await nameChart(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-mobile') return await santaMobile(req, res);
+    if (pathname === '/api/message-demos') return messageDemos(req, res);
     if (pathname === '/api/name-recording-uploads') return await nameRecordingUploads(req,res);
     if (pathname === '/api/my-santa-messages') return await messageAccount(req, res);
     if (pathname === '/api/santa-studio-message') return await studioMessage(req, res);

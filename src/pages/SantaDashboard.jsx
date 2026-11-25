@@ -1,3 +1,4 @@
+import MessageDemoManager from '../components/MessageDemoManager.jsx';
 import { formatUkDate, formatUkDateTime } from '../lib/ukDates.js';
 import AppStoreReports from '../components/AppStoreReports.jsx';
 import ContenderManager from '../components/ContenderManager.jsx';
@@ -81,6 +82,7 @@ export default function SantaDashboard() {
       <DashboardTodos ownerToken={token.current} />
       <ReviewInbox ownerToken={token.current} />
       <FriendVouchers ownerToken={token.current} />
+      <MessageDemoManager ownerToken={token.current} />
       <DadRecordingSupport ownerToken={token.current} />
       <section><h2>Website emails · last 30 days</h2><div className="santa-dashboard__cards">{[['total','Recorded sends'],['studioAccess','Studio access emails'],['nameUpdates','Name availability updates']].map(([key,label])=><section key={key}><strong>{data.websiteEmails?.[key]?.toLocaleString() ?? 'Unavailable'}</strong><span>{label}</span></section>)}</div><p>Successful sends recorded by the website. This does not confirm inbox delivery. Voting codes, account sign-in emails and marketing campaigns are not included. Missing figures are unavailable, not zero.</p></section>
       <section className="dashboard-themed dashboard-themed--messages"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">✉️ 📅 ✉️</div><p>MAGIC SENT FROM THE NORTH POLE</p><h2>Daily free-message usage · last 30 days</h2></header>{table(['UK date','Created','Listened','Download clicks','MP4 downloads','Shared'],freeDays.slice(0,freeDaysVisible).map(r=>[formatUkDate(r.day),r.creations,r.listens||0,r.downloads,r.mp4Downloads||0,r.shares||0]),['Total · last 30 days',...freeTotals])}{freeDaysVisible<freeDays.length&&<button type="button" onClick={()=>setFreeDaysVisible(count=>count+4)}>Load more</button>}</section>
