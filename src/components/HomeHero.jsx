@@ -96,7 +96,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
       </picture>
       <div className="hero-aurora" aria-hidden="true" />
       <SantaFlyby />
-      <div ref={layoutRef} className="hero-layout hero-name-preview__layout">
+      <div ref={layoutRef} className="hero-layout hero-name-preview__layout hero-unified">
         <div className="hero-content hero-name-preview__intro">
           {preview && <div className="hero-name-preview__flag" aria-label="Preview only">
             <span className="hero-name-preview__flag-mark" aria-hidden="true" />
@@ -112,9 +112,6 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
         </div>
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">
-            <p className="hero-description hero-name-preview__description">
-              Festive treats, free apps, games, a Naughty and Nice List checker, Santa Tracker and FREE personalised messages from Santa. 100% Christmas Radio
-            </p>
             <div className="hero-name-preview__listening">
               <div className="hero-name-preview__player-row">
                 <div className="hero-actions hero-name-preview__actions">
