@@ -12,7 +12,7 @@ export const DAD_AGE_THEMES = [
 
 const SUPERHERO_THEME = {
   id: 'superheroes', label: 'Superheroes', colour: '#163965', centre: [0.51, 0.57],
-  artwork: '/images/studio-scenes/age-superheroes.webp',
+  artwork: '/images/studio-scenes/age-superheroes-v2.webp',
 };
 export const KIDS_AGE_THEMES = DAD_AGE_THEMES.map(theme => theme.id === 'flowers' ? SUPERHERO_THEME : theme);
 
