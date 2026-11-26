@@ -23,7 +23,7 @@
     "check:vercel-packaging": "npm exec --yes --package=@vercel/node@28.0.0 -- node scripts/check-vercel-packaging.mjs",
     "generate:section-share-images": "node scripts/generate-section-share-images.mjs",
     "prebuild": "npm run check:dependency-portability",
-    "build": "node scripts/prepare-names-demo.mjs && node scripts/prepare-santa-audio.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/build-public-pages.mjs",
+    "build": "node scripts/prepare-names-demo.mjs && node scripts/prepare-santa-audio.mjs && node scripts/prepare-dad-fixed-audio.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/build-public-pages.mjs",
     "check:studio-readiness": "node scripts/check-studio-release.mjs",
     "check:studio-live-readiness": "node scripts/check-studio-live-release.mjs",
     "test:studio-live": "node --test scripts/studio-live.test.mjs scripts/studio-live-setup.test.mjs",

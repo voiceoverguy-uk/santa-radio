@@ -1,4 +1,5 @@
 server/santa-audio/prepared/
+/server/dad-fixed-audio/
 /generated-artifacts/
 /artifacts/*/.expo/
 /artifacts/*/node_modules/

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { dadSupportStatus, recordDadFailure } from './dad-recording-support.js';
 import { dadVoucherAllowanceIdentity, dadVoucherSession } from './dad-vouchers.js';
+import {existsSync} from 'node:fs';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -67,7 +68,20 @@ export function createDadMessageHandler({identity=dadIdentity,library=blobDadLib
  const choices={},fixed=[];
  for(const [key,row]of Object.entries(selected)){choices[key]=join(directory,`${key}.flac`);await library.download(row.file,choices[key],inventory.release,controller.signal);}
  if(inventory.catalogue.fixed.length!==7)throw Error('Incomplete script');
- for(const [i,file]of inventory.catalogue.fixed.entries()){const path=join(directory,`fixed-${i}.flac`);await library.download(file,path,inventory.release,controller.signal);fixed.push(path);}
+ for (const [index, file] of inventory.catalogue.fixed.entries()) {
+   controller.signal.throwIfAborted();
+   const hash = inventory.records?.get(file)?.sha256;
+   const bundled = /^[a-f0-9]{64}$/.test(hash || '')
+     ? fileURLToPath(new URL(`./dad-fixed-audio/${hash}.flac`, import.meta.url))
+     : null;
+   if (bundled && existsSync(bundled)) {
+     fixed.push(bundled);
+     continue;
+   }
+   const path = join(directory, `fixed-${index}.flac`);
+   await library.download(file, path, inventory.release, controller.signal);
+   fixed.push(path);
+ }
  stage = 'render';
  const {audio,clipStarts,clipEnds}=await render({name,choices,fixed,directory,signal:controller.signal});controller.signal.throwIfAborted();
  stage = 'commit-credit';

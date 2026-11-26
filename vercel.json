@@ -115,7 +115,7 @@
     "api/dad-studio-message.js": {
       "installCommand": "",
       "maxDuration": 120,
-      "includeFiles": "{server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
+      "includeFiles": "{server/dad-fixed-audio/*.flac,server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
     },
     "api/dad-studio-checkout.js": {
       "installCommand": "",
