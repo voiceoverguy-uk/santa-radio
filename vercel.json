@@ -22,6 +22,11 @@
     }
   ],
   "functions": {
+    "api/catalogue-artwork.js": {
+      "installCommand": "",
+      "maxDuration": 30,
+      "includeFiles": "{dist/artist-artwork/catalogue.json,node_modules/ffmpeg-static/**}"
+    },
     "api/message-demos.js": {
       "installCommand": "",
       "maxDuration": 120
@@ -184,6 +189,18 @@
     {
       "src": "/(styt)(/)?",
       "dest": "/api/public-page?__sr_route=/$1$2"
+    },
+    {
+      "src": "/assets/radio-catalogue\\.js",
+      "dest": "/api/catalogue-artwork?mobile=1"
+    },
+    {
+      "src": "/artist-artwork/catalogue\\.json",
+      "dest": "/api/catalogue-artwork?feed=1"
+    },
+    {
+      "src": "/artist-artwork/upload-([a-f0-9]{64})\\.webp",
+      "dest": "/api/catalogue-artwork?image=$1"
     },
     {
       "src": "/artist-artwork/(.*)",

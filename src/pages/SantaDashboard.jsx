@@ -1,3 +1,4 @@
+import CatalogueArtworkManager from '../components/CatalogueArtworkManager.jsx';
 import MessageDemoManager from '../components/MessageDemoManager.jsx';
 import { formatUkDate, formatUkDateTime } from '../lib/ukDates.js';
 import AppStoreReports from '../components/AppStoreReports.jsx';
@@ -82,6 +83,7 @@ export default function SantaDashboard() {
       <DashboardTodos ownerToken={token.current} />
       <ReviewInbox ownerToken={token.current} />
       <FriendVouchers ownerToken={token.current} />
+      <CatalogueArtworkManager ownerToken={token.current} />
       <MessageDemoManager ownerToken={token.current} />
       <DadRecordingSupport ownerToken={token.current} />
       <section><h2>Website emails · last 30 days</h2><div className="santa-dashboard__cards">{[['total','Recorded sends'],['studioAccess','Studio access emails'],['nameUpdates','Name availability updates']].map(([key,label])=><section key={key}><strong>{data.websiteEmails?.[key]?.toLocaleString() ?? 'Unavailable'}</strong><span>{label}</span></section>)}</div><p>Successful sends recorded by the website. This does not confirm inbox delivery. Voting codes, account sign-in emails and marketing campaigns are not included. Missing figures are unavailable, not zero.</p></section>

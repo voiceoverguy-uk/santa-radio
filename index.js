@@ -6,6 +6,7 @@ import dadCheckout from './api/dad-studio-checkout.js';
 import dadReturn from './api/dad-studio-return.js';
 import santaReviews from './server/santa-reviews.js';
 import nameChart from './server/name-chart.js';
+import catalogueArtwork, { catalogueArtworkRoute } from './server/catalogue-artwork.js';
 import messageDemos from './server/message-demos.js';
 import nameRecordingUploads from './server/name-recording-uploads.js';
 import messageAccount from './server/message-account.js';
@@ -82,6 +83,10 @@ const server = createServer(async (req, res) => {
     if (['/message-test','/message-test/','/api/message-test'].includes(pathname)) return messageTest(req,res);
     if (pathname === auditionPath || pathname.startsWith(`${auditionPath}/`)) {
       return unavailableAudition(req, res, () => res.writeHead(404).end('Audition unavailable.'));
+    }
+    if (pathname === '/api/catalogue-artwork') return catalogueArtwork(req, res);
+    if (pathname === '/assets/radio-catalogue.js' || pathname === '/artist-artwork/catalogue.json' || /^\/artist-artwork\/upload-[a-f0-9]{64}\.webp$/.test(pathname)) {
+      return catalogueArtworkRoute(req, res);
     }
     artworkHeaders(req, res, () => {});
     if (res.writableEnded) return;
