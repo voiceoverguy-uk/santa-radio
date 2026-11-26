@@ -13,6 +13,9 @@ for (const track of durations) {
   index.set(id, index.has(id) && index.get(id) !== track.seconds ? null : track.seconds);
 }
 export function songDuration(track) {
+  if (Number.isFinite(track?.durationSeconds) && track.durationSeconds > 0 && track.durationSeconds <= 86400) {
+    return track.durationSeconds;
+  }
   const corrected = websiteNowPlayingTrack(track);
   return corrected ? index.get(key(corrected)) || 210 : 210;
 }
@@ -27,8 +30,10 @@ export function observeSong(previous, track, now) {
 
 export function upcomingSchedule(metadata, now = Date.now()) {
   if (metadata?.upcomingStatus !== 'ready') return [];
-  let next = metadata.currentStatus === 'ready' && Number.isFinite(metadata.currentStartedAt)
-    ? metadata.currentStartedAt + (songDuration(metadata.current) + 5) * 1000 : null;
+  const startedAt = Number.isFinite(metadata.current?.startedAt)
+    ? metadata.current.startedAt : metadata.currentStartedAt;
+  let next = metadata.currentStatus === 'ready' && Number.isFinite(startedAt) && startedAt <= now
+    ? startedAt + (songDuration(metadata.current) + 5) * 1000 : null;
   // A late or interrupted feed must not leave old clock times on screen.
   if (next <= now) next = null;
   return (metadata.upcoming || []).slice(0, 3).map(track => {

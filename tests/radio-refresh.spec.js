@@ -130,6 +130,8 @@ test('five-second current and queue polling follow playback and visibility indep
   await page.clock.runFor(10000);
   expect(requests).toEqual(hidden);
   title = 'Playback Start Song';
+  const offerClose = page.getByRole('button', { name: 'Close Santa message offer', exact: true });
+  if (await offerClose.isVisible()) await offerClose.click();
   await dock.locator('.radio-play').click();
   await expect(dock).toContainText(title);
   expect(requests.current).toBe(hidden.current + 1);

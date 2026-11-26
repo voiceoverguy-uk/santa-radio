@@ -65,20 +65,31 @@ not precise synchronization with a listener's buffered stream.
 
 The homepage shows up to three upcoming songs below the play button while playing.
 The existing desktop Music-page upcoming cards share the same schedule through
-RadioProvider. Titles appear immediately; times wait until the browser observes a
-current-song identity change. Opening a page midway through a track never assigns
-that track a new start time. The provider survives internal navigation.
+RadioProvider. Titles appear immediately. When Radiologik supplies timing, estimates also appear
+on the first visit, using the published start rather than page-load time. Legacy
+feeds still wait for an observed current-song identity change. The provider
+survives internal navigation.
+
+The parser accepts both `Artist - Title` and
+`Artist - Title - M:SS - YYYY-MM-DD HH:MM:SS`. It strips the timing suffix from
+titles and returns optional `durationSeconds` and `startedAt` (Unix milliseconds)
+on each track. Start timestamps are interpreted as Europe/London station time,
+including BST. Invalid dates and ambiguous autumn clock-change times are omitted.
+Durations accept seconds, M:SS or H:MM:SS; invalid values are omitted.
 
 Each estimate adds the current recording's duration plus five seconds for a
-jingle, then repeats for the upcoming queue. `src/data/radio-song-durations.json`
+jingle, then repeats for the upcoming queue. Published duration and start time
+take precedence over catalogue durations and browser-observed starts. `src/data/radio-song-durations.json`
 contains the 154 audio-file records used for the reference spreadsheet. Missing
 title tags use filenames. Missing artists and ambiguous recording matches use
 the 210-second fallback, as do songs absent from the list. Extend this JSON with
 artist, title and duration in seconds when more recordings are supplied.
 
-Times use Europe/London and reset on each detected transition. Observations over
+Times use Europe/London. Supplied start times update immediately; legacy estimates
+reset on each detected transition. Observations over
 15 seconds apart cannot establish a start; after a long interruption the browser
-waits for a fresh transition. Unavailable/stale queues and elapsed estimates do
+waits for a fresh transition unless the feed supplies a start time. Future start
+times for the current track are not used. Unavailable/stale queues and elapsed estimates do
 not display predicted clock times. No additional feed requests are introduced.
 
 Checks: `node --test scripts/radio-schedule.test.mjs` and the Playwright test

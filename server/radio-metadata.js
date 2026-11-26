@@ -1,4 +1,5 @@
 import { trackIdentity } from '../src/lib/radio-track-identity.js';
+import { parseTrackDetails } from './radio-feed-timing.js';
 
 const ROOT = 'https://stagcommunications.com/santaradio/';
 const MAX_BYTES = 8192;
@@ -10,10 +11,10 @@ export function parseEntries(text) {
   return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim()).map(line => {
     const separator = line.indexOf(' - ');
     const artist = line.slice(0, separator).trim();
-    const title = line.slice(separator + 3).trim();
+    const details = parseTrackDetails(line.slice(separator + 3).trim());
     // Automation announcements can have a title but no artist.
-    if (separator < 0 || !title || line.length > 1000) throw new Error('Invalid track');
-    return { artist, title };
+    if (separator < 0 || !details.title || line.length > 1000) throw new Error('Invalid track');
+    return { artist, ...details };
   });
 }
 export const isRadioSong = ({ artist, title }) => Boolean(artist) && !/^santa radio\b/i.test(artist) && !/^santa radio\b/i.test(title);
