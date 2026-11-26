@@ -23,6 +23,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query(await readFile(new URL('../database/dad-studio.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/dad-vouchers.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/friend-voucher-issues.sql', import.meta.url), 'utf8'));
+    await client.query(await readFile(new URL('../database/catalogue-artwork.sql', import.meta.url), 'utf8'));
     await seedFriendVouchers(client);
     await client.query('COMMIT');
     console.log('Name-request schema verified; existing requests preserved.');

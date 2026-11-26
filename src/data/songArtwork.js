@@ -111,16 +111,24 @@ export const songPortraits = Object.freeze({
   }),
 });
 
-export function songArtworkCandidates(song, overrides = songPortraits) {
-  const artist = typeof song?.artist === 'string' ? song.artist : '';
-  const override = Object.hasOwn(overrides, song?.id) ? overrides[song.id] : null;
-  const verified = override && artist && typeof song?.song === 'string' &&
-    normalizeArtistName(artist) === normalizeArtistName(override.artist) &&
-    normalizeTrackText(song.song) === normalizeTrackText(override.title);
+function recordingPath(song, assignments) {
+  const entry = assignments && Object.hasOwn(assignments, song?.id) && assignments[song.id];
+  if (entry && typeof song.artist === 'string' && typeof song.song === 'string' &&
+      normalizeArtistName(song.artist) === normalizeArtistName(entry.artist) &&
+      normalizeTrackText(song.song) === normalizeTrackText(entry.title)) return entry.path;
+  return null;
+}
+
+export function artistArtworkCandidates(artist, managed) {
+  const key = normalizeArtistName(artist);
+  return [...new Set([managed?.artists?.[key], artistArtwork(artist), fallbackArtwork].filter(Boolean))];
+}
+
+export function songArtworkCandidates(song, overrides = songPortraits, managed) {
   return [...new Set([
-    verified ? override.path : null,
-    artistArtwork(artist),
-    fallbackArtwork,
+    recordingPath(song, managed?.recordings),
+    recordingPath(song, overrides),
+    ...artistArtworkCandidates(typeof song?.artist === 'string' ? song.artist : '', managed),
   ].filter(Boolean))];
 }
 

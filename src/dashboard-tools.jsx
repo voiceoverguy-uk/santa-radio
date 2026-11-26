@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import CatalogueArtworkManager from './components/CatalogueArtworkManager.jsx';
 import ContenderManager from './components/ContenderManager.jsx';
 import DadRecordingSupport from './components/DadRecordingSupport.jsx';
 import DashboardUsefulLinks from './components/DashboardUsefulLinks.jsx';
@@ -35,7 +36,7 @@ function DashboardTool() {
   return <main className="santa-dashboard">
     {tool === 'contenders' && <ContenderManager ownerToken={token} onPublish={() => {}} />}
     {tool === 'dad-support' && <DadRecordingSupport ownerToken={token} />}
-    {tool === 'useful-links' && <DashboardUsefulLinks />}
+    {tool === 'useful-links' && <><DashboardUsefulLinks /><CatalogueArtworkManager ownerToken={token} /></>}
     {(tool === 'vouchers' || tool === 'useful-links') && <FriendVouchers ownerToken={token} />}
   </main>;
 }

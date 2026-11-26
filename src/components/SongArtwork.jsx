@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { fallbackArtwork } from '../data/artistArtwork.js';
 import { songArtworkCandidates } from '../data/songArtwork.js';
+import { useCatalogueArtwork } from '../hooks/useCatalogueArtwork.js';
 import { artworkAlt } from '../seo/catalogue.js';
 
 const fallbackAlt = 'Santa Radio branded artwork: Santa with music notes';
 
 export default function SongArtwork({ song, alt, onError, ...imageProps }) {
   const artworkSong = song || { artist: '' };
-  const candidates = songArtworkCandidates(artworkSong);
+  const managed = useCatalogueArtwork();
+  const candidates = songArtworkCandidates(artworkSong, undefined, managed);
   const signature = [
     artworkSong.id ?? '',
     artworkSong.song ?? '',
@@ -17,7 +19,9 @@ export default function SongArtwork({ song, alt, onError, ...imageProps }) {
   const [position, setPosition] = useState({ signature, index: 0 });
   const index = position.signature === signature ? position.index : 0;
   const src = candidates[index] || fallbackArtwork;
-  const defaultAlt = artworkAlt(artworkSong);
+  const defaultAlt = src.startsWith('/artist-artwork/upload-')
+    ? `Artwork for ${artworkSong.song ? artworkSong.song + ' by ' : ''}${artworkSong.artist}`
+    : artworkAlt(artworkSong);
 
   useEffect(() => {
     setPosition({ signature, index: 0 });
@@ -27,7 +31,7 @@ export default function SongArtwork({ song, alt, onError, ...imageProps }) {
     <img
       {...imageProps}
       src={src}
-      alt={src === fallbackArtwork ? fallbackAlt : index === 0
+      alt={src === fallbackArtwork ? fallbackAlt : index === 0 || src.startsWith('/artist-artwork/upload-')
         ? (alt || defaultAlt) : artworkAlt({ artist: artworkSong.artist })}
       onError={event => {
         onError?.(event);
