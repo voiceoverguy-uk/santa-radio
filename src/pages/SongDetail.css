@@ -355,3 +355,13 @@
   background: #103225; color: #f5e9ca; text-align: center;
 }
 .song-artwork-caption strong { color: #f0d785; font-size: 1.15rem; }
+
+/* Related songs use the same artwork-first cards as the music catalogue. */
+.more-artist-songs ul { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.more-artist-songs li { min-width: 0; }
+.more-artist-songs a { box-sizing: border-box; flex-direction: column; justify-content: flex-start; gap: 8px; padding: 24px 16px; border-radius: 16px; text-align: center; }
+.more-artist-songs a img { width: 120px; height: 120px; max-width: 100%; object-fit: cover; border: 1px solid #d4af3766; border-radius: 12px; }
+.more-artist-songs a strong { font-size: .85rem; margin-top: 4px; }
+.more-artist-songs a span { font-size: .8rem; color: var(--muted, #d0d7c9); }
+@media (max-width: 900px) { .more-artist-songs ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+@media (max-width: 360px) { .more-artist-songs ul { grid-template-columns: 1fr; } }

@@ -7,8 +7,9 @@ import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import SongVideo from '../components/SongVideo.jsx';
 import SongArtworkViewer from '../components/SongArtworkViewer.jsx';
+import SongArtwork from '../components/SongArtwork.jsx';
 import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
-import { songMetadata, performanceKind } from '../seo/catalogue.js';
+import { songMetadata } from '../seo/catalogue.js';
 
 export default function SongDetail() {
   const { slug } = useParams();
@@ -35,7 +36,6 @@ export default function SongDetail() {
 
   const songSlug = `${song.id}-${song.link}`;
   const { previous, next } = songNeighbours(song);
-  const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
 
   return (
     <main>
@@ -75,8 +75,7 @@ export default function SongDetail() {
           <div className="song-detail-layout">
             <div className="song-detail-main">
               <p className="song-detail-artist">{song.artist}</p>
-              <h1 className="song-detail-title">{song.song} — {song.artist}</h1>
-              <p>{performanceKind(song)}: {song.artist}</p>
+              <h1 className="song-detail-title">{song.song}</h1>
 
               <div className="song-detail-info">
                 <h2>Artist background</h2>
@@ -96,11 +95,7 @@ export default function SongDetail() {
 
               <SongVideo song={song} className="song-youtube-embed" />
 
-              <div className="song-detail-actions">
-                <a href={xShareUrl} target="_blank" rel="noopener noreferrer" className="twitter-share-link">
-                  Share on X
-                </a>
-              </div>
+
             </div>
 
             <div className="song-detail-artwork">
@@ -111,7 +106,11 @@ export default function SongDetail() {
           {moreSongs.length > 0 && <section className="more-artist-songs" aria-labelledby="more-artist-heading">
             <h2 id="more-artist-heading">More Christmas songs from {song.artist}</h2>
             <ul>{moreSongs.map(other => <li key={other.id}>
-              <Link to={`/christmas-artist/${other.id}-${other.link}`}>{other.song}<span aria-hidden="true">→</span></Link>
+              <Link to={`/christmas-artist/${other.id}-${other.link}`}>
+                <SongArtwork song={other} width="120" height="120" loading="lazy" />
+                <strong>{other.artist}</strong>
+                <span>{other.song}</span>
+              </Link>
             </li>)}</ul>
           </section>}
           <Link to="/christmas-music" className="back-link">← Back to Christmas Music</Link>
