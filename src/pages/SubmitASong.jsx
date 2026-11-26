@@ -2,7 +2,7 @@ import SongMediaField from '../components/SongMediaField.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  buildSponsorshipMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
+  getSponsorshipPackage, buildSponsorshipMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
   SongSubmissionError, submitSong, validateSongFields,
 } from '../lib/songSubmission.js';
 import { formatUkDate } from '../lib/ukDates.js';
@@ -15,6 +15,7 @@ export default function SubmitASong() {
   const [mode, setMode] = useState(requestedMode);
   const isSong = mode === 'song';
   const isSponsorship = mode === 'sponsorship';
+  const sponsorshipPackage = getSponsorshipPackage();
   const [fields, setFields] = useState(() => {
     const initial = emptySongFields;
     const reference = searchParams.get('dadSupport');
@@ -212,21 +213,20 @@ export default function SubmitASong() {
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
             <p>We screen lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide to feature the song. Suitable songs will feature on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
             </> : isSponsorship ? <>
-              <p>For Christmas-related brands—including gifts, decorations, festive food and attractions—ask about joining Santa Radio’s Christmas 2026 campaign.</p>
               <section className="sponsorship-offer" aria-labelledby="sponsorship-offer-title">
-                <p className="sponsorship-offer__eyebrow">The 2026 Christmas package</p>
-                <h2 id="sponsorship-offer-title">£2,500 · 01/11/2026–31/12/2026</h2>
+                <p className="sponsorship-offer__eyebrow">The {sponsorshipPackage.year} Christmas package</p>
+                <h2 id="sponsorship-offer-title">{sponsorshipPackage.price} · {formatUkDate(sponsorshipPackage.start)}–{formatUkDate(sponsorshipPackage.end)}</h2>
                 <ul>
-                  <li>Two recorded sponsor mentions each hour, 24/7 through 31/12/2026.</li>
+                  <li>Two recorded sponsor mentions each hour, 24/7 through {formatUkDate(sponsorshipPackage.end)}.</li>
                   <li>A linked sponsor banner on every Santa Radio website page.</li>
                   <li>Branding on participating apps’ launch or splash screens.</li>
                 </ul>
-                <p>A full 61-day campaign schedules 2,928 on-air broadcasts. These are scheduled mentions, not audience impressions; a later start date means fewer scheduled broadcasts. Launch timing and campaign assets are agreed with the sponsor.</p>
+                <p>A full 61-day campaign schedules 2,928 on-air broadcasts. Audience impressions are measured separately. A later start date means fewer scheduled broadcasts. Launch timing and campaign assets are agreed with the sponsor.</p>
               </section>
               <aside className="sponsorship-evidence" aria-labelledby="sponsorship-evidence-title">
                 <h2 id="sponsorship-evidence-title">Historical figures</h2>
                 <p>Google Analytics recorded approximately 65,000 active website users in 2025.</p>
-                <p>Apple’s Lifetime Units report, viewed 28/10/2026, showed approximately 247,000 combined lifetime units across Santa Radio iOS/tvOS/watchOS (~59,400), Santa Radio macOS (~5,070), Christmas Radio UK (~142,000) and Fireplace Christmas Radio (~40,000). These are cumulative app acquisitions, not deduplicated people or current or active listeners.</p>
+                <p>Apple’s Lifetime Units report, viewed 28/10/2026, showed approximately 247,000 combined lifetime units across Santa Radio iOS/tvOS/watchOS, Santa Radio macOS, Christmas Radio UK and Fireplace Christmas Radio. The total counts cumulative app acquisitions. Unique and active listener figures are separate measures.</p>
               </aside>
               <p>Share your brand, website, campaign and preferred launch date below. Sending an enquiry does not confirm a booking.</p>
             </> : <p>For press and corporate enquiries, feedback or suggestions, send us your details and message below.</p>}
@@ -258,7 +258,7 @@ export default function SubmitASong() {
                 })}
                 {field('sponsorLaunchDate', 'Preferred launch date', {
                   type: 'date', autocomplete: 'off', limit: 10,
-                  min: '2026-11-01', max: '2026-12-31',
+                  min: sponsorshipPackage.start, max: sponsorshipPackage.end,
                 })}
                 <p className="song-character-count" id="song-message-count">
                   {buildSponsorshipMessage(fields).length} / 500 characters sent to Brevo
@@ -301,8 +301,8 @@ export default function SubmitASong() {
               <p className="song-privacy">{isSong
                 ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
                 : isSponsorship
-                  ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent to Brevo as your enquiry.'
-                  : 'Your name, email and message are sent via Brevo to handle your enquiry.'}{isSponsorship && ' This does not give consent for marketing.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
+                  ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent via Brevo as your enquiry.'
+                  : 'Your name, email and message are sent via Brevo to handle your enquiry.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
               {error && <p className="song-form-alert" role="alert">{error}</p>}
               <button className="song-submit-button" type="submit" disabled={pending || uploading}>{pending
                 ? (isSong ? 'Submitting your song…' : isSponsorship ? 'Sending your sponsorship enquiry…' : 'Sending your enquiry…')

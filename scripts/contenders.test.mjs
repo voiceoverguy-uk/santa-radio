@@ -4,7 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
 import { defaultSettings, votingStatus, COMPETITION, bobEntry, sourceApprovedContenders, sourceContenderCatalogue } from '../src/lib/contenders.js';
-import { buildSongMessage, validateSongFields, submitSong, emptySongFields, SONG_FORM_URL, GENERAL_FORM_URL } from '../src/lib/songSubmission.js';
+import { getSponsorshipPackage, buildSponsorshipMessage, buildSongMessage, validateSongFields, submitSong, emptySongFields, SONG_FORM_URL, GENERAL_FORM_URL } from '../src/lib/songSubmission.js';
 import { createContendersHandler as createHandler, validateManagement, privateDigest } from '../server/christmas-contenders.js';
 const createContendersHandler = options => createHandler({ abuseLimit: async () => {}, ...options });
 import { demoBallot, competitionState, manageCompetition } from '../server/contenders-store.js';
@@ -59,6 +59,17 @@ test('complete SONG payload rejects excess without discarding lyrics/media/right
   assert.deepEqual(validateSongFields({...fields,lyricsLink:'',hostPermission:false,criteriaMet:false},'general'),{});
 });
 
+test('Sponsorship dates roll forward in the UK and blank enquiries count zero', () => {
+  assert.deepEqual(getSponsorshipPackage(new Date('2026-12-31T23:59:59Z')), {
+    year: '2026', price: '£2,200 + VAT', start: '2026-11-01', end: '2026-12-31',
+  });
+  assert.deepEqual(getSponsorshipPackage(new Date('2027-01-01T00:00:00Z')), {
+    year: '2027', price: '£2,200 + VAT', start: '2027-11-01', end: '2027-12-31',
+  });
+  assert.equal(buildSponsorshipMessage(emptySongFields).length, 0);
+  assert.ok(buildSponsorshipMessage({...emptySongFields, sponsorBrand:'Brand'}).includes('Brand: Brand'));
+});
+
 test('provider fields and General/Sponsorship destination split stay unchanged (no mail sent)', async () => {
   const previous = global.fetch;
   const captured = [];
@@ -67,14 +78,15 @@ test('provider fields and General/Sponsorship destination split stay unchanged (
     const signal = new AbortController().signal;
     await submitSong(fields,signal,'song');
     await submitSong({...fields,hostPermission:false},signal,'general');
-    const sponsorship = {...fields,sponsorBrand:'Brand',sponsorWebsite:'https://example.test',sponsorCampaign:'Campaign',sponsorLaunchDate:'2026-11-01'};
+    const sponsorship = {...fields,sponsorBrand:'Brand',sponsorWebsite:'https://example.test',sponsorCampaign:'Campaign',sponsorLaunchDate:getSponsorshipPackage().start};
     await submitSong(sponsorship,signal,'sponsorship');
     assert.equal(captured[0].url,`${SONG_FORM_URL}?isAjax=1`);
     assert.equal(captured[1].url,`${GENERAL_FORM_URL}?isAjax=1`);
     assert.equal(captured[2].url,`${GENERAL_FORM_URL}?isAjax=1`);
     assert.equal(captured[0].body.SONG_REQUEST,buildSongMessage(fields));
     assert.equal(captured[1].body.SONG_REQUEST,fields.SONG_REQUEST);
-    assert.ok(captured[2].body.SONG_REQUEST.includes('Preferred launch: 01/11/2026'));
+    assert.ok(captured[2].body.SONG_REQUEST.includes(`Preferred launch: 01/11/${getSponsorshipPackage().year}`));
+    assert.equal(captured[2].body.SONG_REQUEST, buildSponsorshipMessage(sponsorship));
     assert.deepEqual(Object.keys(captured[0].body),['FIRSTNAME','LASTNAME','EMAIL','SONG_REQUEST','email_address_check','locale']);
   } finally {global.fetch=previous;}
 });

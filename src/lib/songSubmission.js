@@ -21,6 +21,11 @@ export const songCountries = countryPairs.split(' ').map(pair => {
 const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'SONG_REQUEST'];
 const supportedFields = requiredFields;
 
+export function getSponsorshipPackage(now = new Date()) {
+  const year = new Intl.DateTimeFormat('en-GB', { year: 'numeric', timeZone: 'Europe/London' }).format(now);
+  return { year, price: '£2,200 + VAT', start: `${year}-11-01`, end: `${year}-12-31` };
+}
+
 export function validateSongFields(fields, mode = 'song') {
   const errors = {};
   for (const [name, label, limit] of [
@@ -51,6 +56,7 @@ export function validateSongFields(fields, mode = 'song') {
     if (buildSongMessage(fields).length > 500) errors.SONG_REQUEST = 'The complete message, including lyrics, media links and permission, exceeds 500 characters. Shorten your details or use shorter secure links; nothing has been sent.';
   }
   if (mode === 'sponsorship') {
+    const campaign = getSponsorshipPackage();
     for (const [name, label, limit] of [
       ['sponsorBrand', 'company or brand', 80],
       ['sponsorWebsite', 'website', 200],
@@ -74,8 +80,8 @@ export function validateSongFields(fields, mode = 'song') {
       const date = new Date(`${value}T00:00:00.000Z`);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
         errors.sponsorLaunchDate = 'Please choose a valid preferred launch date.';
-      } else if (value < '2026-11-01' || value > '2026-12-31') {
-        errors.sponsorLaunchDate = 'Please choose a launch date between 01/11/2026 and 31/12/2026.';
+      } else if (value < campaign.start || value > campaign.end) {
+        errors.sponsorLaunchDate = `Please choose a launch date between ${formatUkDate(campaign.start)} and ${formatUkDate(campaign.end)}.`;
       }
     }
     if (!Object.keys(errors).length && buildSponsorshipMessage(fields).length > 500) {
@@ -87,13 +93,18 @@ export function validateSongFields(fields, mode = 'song') {
 
 export function buildSponsorshipMessage(fields) {
   const contact = [fields.FIRSTNAME, fields.LASTNAME].map(value => value?.trim()).filter(Boolean).join(' ');
+  const details = [
+    ['Brand', fields.sponsorBrand?.trim()],
+    ['Contact', contact],
+    ['Website', fields.sponsorWebsite?.trim()],
+    ['Preferred launch', formatUkDate(fields.sponsorLaunchDate)],
+    ['Campaign', fields.sponsorCampaign?.trim()],
+  ].filter(([, value]) => value).map(([label, value]) => `${label}: ${value}`);
+  if (!details.length) return '';
+  const campaign = getSponsorshipPackage();
   return [
-    '2026 Christmas sponsorship enquiry: £2,500, 01/11/2026–31/12/2026',
-    `Brand: ${fields.sponsorBrand?.trim() || ''}`,
-    `Contact: ${contact}`,
-    `Website: ${fields.sponsorWebsite?.trim() || ''}`,
-    `Preferred launch: ${formatUkDate(fields.sponsorLaunchDate)}`,
-    `Campaign: ${fields.sponsorCampaign?.trim() || ''}`,
+    `${campaign.year} Christmas sponsorship enquiry: ${campaign.price}, ${formatUkDate(campaign.start)}–${formatUkDate(campaign.end)}`,
+    ...details,
   ].join('\n');
 }
 
