@@ -145,7 +145,7 @@
 .dad-recap-row button { display:grid; place-items:center; min-width:44px; }
 @media(max-width:760px) {
  .dad-step-heading:has(.dad-review-actions) { flex-wrap:wrap; }
- .dad-review-actions { width:100%; justify-content:flex-end; gap:8px; }
+ .dad-review-actions { width:100%; justify-content:space-between; gap:8px; }
  .dad-review-actions button { font-size:12px; padding:9px 10px; gap:8px; }
 }
 
@@ -200,3 +200,8 @@
 .dad-return-purchase p{margin:12px 0 16px}
 @media(max-width:480px){.dad-studio .dad-purchase-cta{font-size:18px;padding:16px}.dad-return-purchase{margin-top:36px}}
 
+
+/* Give the mobile Continue action breathing room below the studio heading. */
+@media (max-width:760px) {
+ .dad-step-heading > .dad-primary:not(.dad-create-message) { margin-top:12px; }
+}

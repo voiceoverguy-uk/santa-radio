@@ -56,6 +56,6 @@ export default function DadCertificate({name = 'Dad', downloadable = false, onRe
     <div className="dad-certificate-preview">
       {!downloadable ? <img src="/certificates/dad/dad-hand-drawn.webp" alt="Nice-ish List certificate for Dad" width="1491" height="1055"/> : urls.dad && urls.name ? ['dad','name'].map(variant => <img key={variant} src={urls[variant]} hidden={style!==variant} alt={`Nice-ish List certificate for ${variant === 'dad' ? 'Dad' : recipient}`} width="1491" height="1055"/>) : <div role="status"><p>{error || 'Preparing his certificates…'}</p>{error && <button type="button" onClick={()=>setAttempt(value=>value+1)}>Retry certificates</button>}</div>}
     </div>
-    <div className="dad-certificate-download">{url && <a className="dad-primary" href={url} download={`Santa-certificate-${style === 'dad' ? 'Dad' : recipient.replace(/[^\p{L}\p{N}-]/gu, '-')}.png`}>Download Dad’s certificate ↓</a>}</div>
+    <div className="dad-certificate-download">{url && <a className="dad-primary" href={url} download={`Santa-certificate-${style === 'dad' ? 'Dad' : recipient.replace(/[^\p{L}\p{N}-]/gu, '-')}.png`}>Download {style === 'dad' ? 'Dad' : recipient}’s certificate ↓</a>}</div>
   </section>;
 }

@@ -51,3 +51,8 @@
 .santa-video-player__skin--dad .santa-video-player__seek img{width:clamp(23.8px,4.9vw,37.8px)}
 
 .santa-video-player__skin--kids .santa-video-player__time { bottom: 27%; }
+
+/* Keep the mobile timer inside the wood, above the lower gold frame. */
+@media (max-width: 760px) {
+  .santa-video-player__skin--dad .santa-video-player__time { bottom: 29%; }
+}

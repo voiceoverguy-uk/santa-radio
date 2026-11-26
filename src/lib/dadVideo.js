@@ -50,8 +50,8 @@ export function dadTimeline(result){
  const ageStart = dadAgeStart(result);
  const ageEnd = ageStart + AGE_CAPTION_SECONDS;
  const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
- const captions = [{id:'incoming',text:recipient ? `Incoming message from Santa\nFor ${recipient}` : 'Incoming message from Santa',start:0,end:5,noFade:true},
- {id:'name',text:result.writtenName,start:Math.min(s.name, NAME_BADGE_START - 1),end:NAME_BADGE_START,noFade:true},
+ const captions = [{id:'incoming',text:'Incoming message from Santa',start:0,end:9,noFade:true},
+ {id:'name',text:result.writtenName,start:Math.max(9, Math.min(s.name, NAME_BADGE_START - 1)),end:NAME_BADGE_START,noFade:true},
  {id:'age',text:`Aged ${result.age}`,start:ageStart,end:ageEnd,noFade:true},
  {id:'habit',text:`You’re especially good at ${result.habit}`,start:Math.max(s.habit, ageEnd),end:Math.min(s.viewing,s.habit+7)},
  {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:Math.min(s.treat,s.viewing+7)},
