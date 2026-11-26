@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import HomepageSantaRunner from './HomepageSantaRunner.jsx';
+import MiniSantaDashTeaser from './MiniSantaDashTeaser.jsx';
 import { advanceRound, jumpHeight, pressJump, releaseJump, newRound, ROUND_MS } from './miniSantaDash.js';
 import './MiniSantaDash.css';
 
-export default function MiniSantaDash({ onFinishedChange }) {
+export default function MiniSantaDash({ onFinishedChange, onSessionChange }) {
   const [mode, setMode] = useState('idle');
   const [round, setRound] = useState(newRound);
   const [visible, setVisible] = useState(false);
@@ -17,6 +17,40 @@ export default function MiniSantaDash({ onFinishedChange }) {
   const finishedCallback = useRef(onFinishedChange);
   finishedCallback.current = onFinishedChange;
   const arena = useRef(null);
+  const santa = useRef(null);
+  const pieNodes = useRef(new Map());
+  const obstacleNodes = useRef(new Map());
+  const laneWidth = useRef(320);
+  const sessionCallback = useRef(onSessionChange);
+  sessionCallback.current = onSessionChange;
+  const displayed = useRef('');
+  function paint() {
+    const current = state.current;
+    if (santa.current) {
+      const tripped = current.elapsed < current.tripUntil;
+      santa.current.style.transform = tripped ? 'translate3d(-50%, 6px, 0) rotate(65deg)' : `translate3d(-50%, ${-jumpHeight(current)}px, 0)`;
+    }
+    for (const pie of current.pies) {
+      const node = pieNodes.current.get(pie.id);
+      if (node) node.style.transform = `translate3d(${pie.x * laneWidth.current}px, 0, 0) translate(-50%, 50%)`;
+    }
+    for (const item of current.obstacles) {
+      const node = obstacleNodes.current.get(item.id);
+      if (node) node.style.transform = `translate3d(${item.x * laneWidth.current}px, 0, 0) translateX(-50%)`;
+    }
+  }
+  useEffect(() => {
+    sessionCallback.current?.(mode !== 'idle');
+    return () => sessionCallback.current?.(false);
+  }, [mode]);
+  useEffect(() => {
+    if (mode !== 'playing' || !arena.current) return undefined;
+    const update = () => { laneWidth.current = arena.current.clientWidth; paint(); };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(arena.current);
+    return () => observer.disconnect();
+  }, [mode]);
   const startButton = useRef(null);
   const state = useRef(round);
   const active = mode === 'playing' && visible && !hidden && !paused;
@@ -68,7 +102,7 @@ export default function MiniSantaDash({ onFinishedChange }) {
     const tick = now => {
       let remaining = previous === undefined ? 0 : Math.min(now - previous, 250);
       previous = now;
-      const width = arena.current?.clientWidth || 320;
+      const width = laneWidth.current;
       while (remaining > 0) {
         const dt = Math.min(remaining, 16);
         const previousCollected = state.current.collected;
@@ -76,8 +110,11 @@ export default function MiniSantaDash({ onFinishedChange }) {
         if (state.current.collected > previousCollected) collectionSound();
         remaining -= dt;
       }
-      setRound(state.current);
-      if (state.current.elapsed >= ROUND_MS) { setMode('finished'); return; }
+      paint();
+      const current = state.current;
+      const summary = `${Math.ceil((ROUND_MS - current.elapsed) / 1000)}:${current.score}:${current.pies.map(p => p.id).join(',')}:${current.obstacles.map(o => o.id).join(',')}`;
+      if (summary !== displayed.current) { displayed.current = summary; setRound(current); }
+      if (state.current.elapsed >= ROUND_MS) { setRound(state.current); setMode('finished'); return; }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -96,7 +133,6 @@ export default function MiniSantaDash({ onFinishedChange }) {
     if (!active || state.current.held) return;
     enableSound();
     state.current = pressJump(state.current);
-    setRound(state.current);
   }
   function release() {
     pointer.current = null;
@@ -122,8 +158,8 @@ export default function MiniSantaDash({ onFinishedChange }) {
 
   return <div className="mini-santa-dash" ref={root}>
     {mode === 'idle' ? <button ref={startButton} className="mini-santa-dash__start" onClick={start} aria-label="Play Mini Santa Dash for one minute">
-      <HomepageSantaRunner />
-      <span>Tap Santa for a one-minute mince-pie dash</span>
+      <MiniSantaDashTeaser />
+      <span>Tap PLAY or Santa for a one-minute mince-pie dash</span>
     </button> : <div className={`mini-santa-dash__game${mode === 'finished' ? ' mini-santa-dash__game--finished' : ''}`}>
       {mode !== 'finished' && <div className="mini-santa-dash__toolbar">
         <strong>Mini Santa Dash</strong>
@@ -160,11 +196,11 @@ export default function MiniSantaDash({ onFinishedChange }) {
               if (!event.repeat) jump();
             }
           }}>
-          <span className="mini-santa-dash__santa" data-tripped={round.elapsed < round.tripUntil} style={{ transform: round.elapsed < round.tripUntil ? 'translate(-50%, 6px) rotate(65deg)' : `translate(-50%, ${-jumpHeight(round)}px)` }}>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcSet="/images/studio-runners/classic-still.png" /><img src="/images/studio-runners/classic.webp" alt="" width="60" height="64" draggable="false" /></picture>
+          <span ref={node => { santa.current = node; if (node) paint(); }} className="mini-santa-dash__santa">
+            <picture><source media="(prefers-reduced-motion: reduce)" srcSet="/images/studio-runners/classic-still.png" /><img src={active ? '/images/studio-runners/classic.webp' : '/images/studio-runners/classic-still.png'} alt="" width="60" height="64" draggable="false" /></picture>
           </span>
-          {round.pies.map(pie => <img key={pie.id} className="mini-santa-dash__pie" src="/images/tracker/mince-pie.png" alt="" draggable="false" style={{ left: `${pie.x * 100}%`, bottom: `${pie.height + 12}px` }} />)}
-          {round.obstacles.map(item => <img key={item.id} className={`mini-santa-dash__obstacle mini-santa-dash__obstacle--${item.kind}`} src={`/media/studio-mini-dash/${item.kind}.png`} alt="" draggable="false" style={{ left: `${item.x * 100}%` }} />)}
+          {round.pies.map(pie => <img key={pie.id} ref={node => { if (node) pieNodes.current.set(pie.id, node); else pieNodes.current.delete(pie.id); if (node) paint(); }} className="mini-santa-dash__pie" src="/images/tracker/mince-pie.png" alt="" draggable="false" style={{ bottom: `${pie.height + 12}px` }} />)}
+          {round.obstacles.map(item => <img key={item.id} ref={node => { if (node) obstacleNodes.current.set(item.id, node); else obstacleNodes.current.delete(item.id); if (node) paint(); }} className={`mini-santa-dash__obstacle mini-santa-dash__obstacle--${item.kind}`} src={`/media/studio-mini-dash/${item.kind}.png`} alt="" draggable="false" />)}
           {!active && <span className="mini-santa-dash__paused">Paused</span>}
         </button>
         <p id="mini-santa-dash-instructions">Tap the game or press Space to jump. Hold longer to jump higher. Collect pies and jump over Gary, trees, and snowmen. Each trip costs 2 pies!</p>

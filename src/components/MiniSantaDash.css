@@ -3,7 +3,7 @@
 .mini-santa-dash__start { display: block; width: 100%; padding: 0; border: 0; color: #f4d888; background: transparent; }
 .mini-santa-dash__start .homepage-santa-runner { margin-top: 0; }
 .mini-santa-dash__start > span { display: block; padding: 8px; font-size: .85rem; }
-.mini-santa-dash__game { overflow: hidden; border: 1px solid #ad9050; border-radius: 14px; background: #0b291fe8; }
+.mini-santa-dash__game { width: min(100%, 800px); margin-inline: auto; overflow: hidden; border: 1px solid #ad9050; border-radius: 14px; background: #0b291fe8; }
 .mini-santa-dash__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; padding: 12px; font-variant-numeric: tabular-nums; }
 .mini-santa-dash__toolbar strong { margin-right: auto; color: #f4d888; }
 .mini-santa-dash__toolbar button, .mini-santa-dash__result button { min-height: 44px; padding: 8px 14px; color: #fff3d7; border: 1px solid #ad9050; border-radius: 6px; background: #173d2d; }
@@ -30,3 +30,32 @@
 
 .mini-santa-dash__game--finished { width: min(100%, 600px); margin-inline: auto; }
 .mini-santa-dash__result p { margin: 5px 0 0; font-size: .9rem; line-height: 1.35; }
+
+/* Per-frame movement only changes composited transforms, never layout positions. */
+.mini-santa-dash__arena { contain: layout paint; }
+.mini-santa-dash__pie, .mini-santa-dash__obstacle { left: 0; will-change: transform; }
+.mini-santa-dash__santa { will-change: transform; }
+/* A compact landscape handset around the playable screen. */
+.mini-santa-dash__game:not(.mini-santa-dash__game--finished) {
+  position: relative;
+  padding: 7px 18px;
+  border: 3px solid #747d73;
+  border-radius: 30px;
+  background: #080e0b;
+  box-shadow: 0 14px 28px #0006, inset 0 0 0 2px #252f29;
+}
+.mini-santa-dash__game:not(.mini-santa-dash__game--finished)::before {
+  content: ''; position: absolute; left: 6px; top: calc(50% - 18px); width: 3px; height: 36px;
+  border-radius: 3px; background: #6d786f;
+}
+.mini-santa-dash__game:not(.mini-santa-dash__game--finished)::after {
+  content: ''; position: absolute; right: 5px; top: calc(50% - 3px); width: 6px; height: 6px;
+  border: 1px solid #647164; border-radius: 50%; background: #111d18;
+}
+.mini-santa-dash__toolbar { background: #0b291f; border-radius: 12px 12px 0 0; }
+.mini-santa-dash__game > p { background: #0b291f; border-radius: 0 0 12px 12px; }
+@media (max-width: 480px) {
+  .mini-santa-dash__game:not(.mini-santa-dash__game--finished) { padding: 5px 10px; border-width: 2px; border-radius: 22px; }
+  .mini-santa-dash__game:not(.mini-santa-dash__game--finished)::before { left: 3px; width: 2px; }
+  .mini-santa-dash__game:not(.mini-santa-dash__game--finished)::after { right: 2px; width: 4px; height: 4px; }
+}

@@ -1,0 +1,5 @@
+.mini-santa-dash__start > .mini-dash-teaser { position: relative; display: block; width: 100%; height: 158px; padding: 0; overflow: hidden; contain: layout paint; }
+.mini-dash-teaser__box { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); display: grid; place-items: center; width: 96px; height: 34px; border: 2px solid #e5c46e; border-radius: 5px; background: linear-gradient(#284b36, #10291e); color: #ffe9ac; font-weight: 800; letter-spacing: .12em; box-shadow: inset 0 0 0 2px #6c5b34, 0 3px 8px #0008; }
+.mini-dash-teaser__runner { position: absolute; left: 0; bottom: 0; width: 60px; height: 64px; will-change: transform; }
+.mini-dash-teaser__runner picture { display: block; }
+.mini-dash-teaser__runner img { display: block; width: 60px; height: 64px; object-fit: contain; }

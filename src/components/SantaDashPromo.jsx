@@ -16,6 +16,7 @@ function getReducedMotionPreference() {
 }
 
 export default function SantaDashPromo() {
+  const [miniOpen, setMiniOpen] = useState(false);
   const [miniFinished, setMiniFinished] = useState(false);
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
@@ -116,7 +117,7 @@ export default function SantaDashPromo() {
     !playBlocked &&
     !failed &&
     (!reducedMotion || userRequested);
-  const shouldPlay = sourceAttached &&
+  const shouldPlay = sourceAttached && !miniOpen &&
     inViewport &&
     documentVisible &&
     wantsPlayback;
@@ -159,7 +160,7 @@ export default function SantaDashPromo() {
   }, [shouldPlay, retryVersion]);
 
   const pauseButtonMeansPause = wantsPlayback;
-  const status = failed
+  const status = miniOpen ? 'Preview video paused while Mini Santa Dash is open.' : failed
     ? 'Gameplay video unavailable. Showing the still preview.'
     : playing
       ? 'Gameplay is playing.'
@@ -277,6 +278,7 @@ export default function SantaDashPromo() {
             className="santa-dash-promo__playback"
             type="button"
             onClick={handlePlaybackToggle}
+            disabled={miniOpen}
             aria-label={failed
               ? 'Retry Santa Dash gameplay video'
               : `${pauseButtonMeansPause ? 'Pause' : 'Play'} Santa Dash gameplay video`}
@@ -299,7 +301,7 @@ export default function SantaDashPromo() {
           Download Santa Dash for iPhone and iPad <span aria-hidden="true">→</span>
         </a>
         <div className="santa-dash-promo__runner">
-          <MiniSantaDash onFinishedChange={setMiniFinished} />
+          <MiniSantaDash onFinishedChange={setMiniFinished} onSessionChange={setMiniOpen} />
         </div>
       </div>
     </section>
