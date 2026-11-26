@@ -1003,9 +1003,10 @@
 
 .hero-name-preview__checker-top:has(.hero-name-preview__thursday-aside) {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: baseline;
-  gap: .25rem .75rem;
+  container-type: inline-size;
+  column-gap: .5rem;
 }
 
 .hero-name-preview__thursday-aside {
@@ -1019,4 +1020,13 @@
   text-decoration: underline wavy #ce6657;
   text-underline-offset: .22em;
   text-decoration-thickness: 1px;
+}
+
+.hero-name-preview .hero-name-preview__checker.black-friday-paper .hero-name-preview__checker-top:has(.hero-name-preview__thursday-aside) .hero-name-preview__checker-kicker {
+  white-space: nowrap;
+  font-size: min(1.75rem, 7cqi);
+}
+
+.hero-name-preview__checker-top .hero-name-preview__thursday-aside {
+  font-size: min(1.12rem, 4.5cqi);
 }

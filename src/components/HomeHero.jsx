@@ -134,7 +134,10 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
         </div>
         <aside ref={checkerRef} className={`hero-name-preview__checker${blackFriday ? ' black-friday-paper' : ''}`} aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">
-            {blackFriday ? <>\n              <span className="hero-name-preview__checker-kicker">BLACK FRIDAY</span>\n              {thursdayAside && <span className="hero-name-preview__thursday-aside">(on a Thursday)</span>}\n            </> : <>
+            {blackFriday ? <>
+              <span className="hero-name-preview__checker-kicker">BLACK FRIDAY</span>
+              {thursdayAside && <span className="hero-name-preview__thursday-aside">(on a Thursday)</span>}
+            </> : <>
             <span className="hero-name-preview__seal" aria-hidden="true">SR</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span></>}
           </div>
