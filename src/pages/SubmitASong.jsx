@@ -205,10 +205,9 @@ export default function SubmitASong() {
                 <li>Song title</li>
                 <li>Your MP3 and Square Artwork</li>
                 <li>A short bio or description</li>
-                <li>No A.I. songs</li>
                 <li>A link to any promotion of Santa Radio</li>
               </ul>
-              <p>Keep the message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending.</p>
+              <p>Keep the message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending, and no A.I. songs.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
             <p>We screen lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide to feature the song. Suitable songs will feature on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
@@ -273,9 +272,9 @@ export default function SubmitASong() {
               {isSong && <>
                 <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending || uploading}
                   onChange={event => onChange('instrumental', event.target.checked)} /> This is instrumental, with no sung or spoken lyrics</label>
-                {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
                 {['audioLink','artworkLink'].map(name=><SongMediaField key={name} audio={name==='audioLink'} value={fields[name]}
                   onChange={value=>onChange(name,value)} busy={pending || uploading} onBusy={setUploading} error={errors[name]}/>)}
+                {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
                 <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending || uploading}
                   required aria-invalid={Boolean(errors.hostPermission)} aria-describedby={errors.hostPermission ? 'song-permission-error' : undefined}
                   onChange={event => onChange('hostPermission', event.target.checked)} /> Santa Radio has permission to host and broadcast this recording and use its artwork.</label>

@@ -38,7 +38,7 @@ app.use(async (req,res) => {
     const ext = match[1];
     const result = await handleUploadPresigned({request:req,body:req.body,getSignedToken:async pathname=>({
       token:await issueSignedToken({pathname,operations:['put'],allowedContentTypes:[types[ext]],
-        maximumSizeInBytes:(ext==='mp3'?40:10)*1024*1024,validUntil:Date.now()+15*60*1000}),
+        maximumSizeInBytes:(ext==='mp3'?15:4)*1024*1024,validUntil:Date.now()+15*60*1000}),
       urlOptions:{allowOverwrite:false,addRandomSuffix:false}
     })});
     res.json(result);

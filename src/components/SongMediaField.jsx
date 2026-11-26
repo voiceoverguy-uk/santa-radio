@@ -5,7 +5,7 @@ export default function SongMediaField({audio,value,onChange,busy,onBusy,error})
   const [notice,setNotice]=useState('');
   const [uploaded,setUploaded]=useState('');
   const name=audio?'audioLink':'artworkLink';
-  const maximum=audio?40:10;
+  const maximum=audio?15:4;
   const formats=audio?{mp3:'audio/mpeg'}:{jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
   async function choose(event) {
     const file=event.target.files[0];
