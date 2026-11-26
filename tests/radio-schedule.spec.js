@@ -18,7 +18,7 @@ test('new Stag format produces clean titles and estimates on the first visit', a
   await page.route('**/api/radio-metadata?*', async route => route.fulfill({ json: await service(new URL(route.request().url()).searchParams.get('part')) }));
   await page.goto('/');
   await page.locator('.hero-actions button').click();
-  await expect(page.locator('.home-upcoming time').first()).toHaveText('8:39pm approx. *');
+  await expect(page.locator('.home-upcoming time').first()).toHaveText('8:39pm approx.');
   await expect(page.locator('.now-playing-artwork')).toContainText("Do They Know It's Christmas");
   await expect(page.locator('.now-playing-artwork')).not.toContainText('2026-11-26');
   await page.locator('nav a[href="/christmas-music"]').first().click();
@@ -51,7 +51,7 @@ for (const width of [1280, 390]) {
     await expect(list.locator('time')).toHaveCount(0);
     current = { artist: 'Leona Lewis', title: 'One More Sleep' };
     await expect(list.locator('time')).toHaveCount(3, { timeout: 12000 });
-    const time = (await list.locator('time').first().textContent()).replace(' approx. *', '');
+    const time = (await list.locator('time').first().textContent()).replace(' approx.', '');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `/private/tmp/santa-upcoming-${width}.png`, fullPage: false });
     if (width > 900) {
@@ -80,7 +80,7 @@ test('nine published times display three on Home and four on Music', async ({ pa
   await page.goto('/');
   await page.locator('.hero-actions button').click();
   await expect(page.locator('.home-upcoming li')).toHaveCount(3);
-  await expect(page.locator('.home-upcoming time').first()).toHaveText('9:02pm approx. *');
+  await expect(page.locator('.home-upcoming time').first()).toHaveText('9:02pm approx.');
   await page.locator('nav a[href="/christmas-music"]').first().click();
   await expect(page.locator('.song-card-upcoming')).toHaveCount(4);
   await expect(page.locator('.song-card-upcoming').first()).toContainText('Expected at 9:02pm');

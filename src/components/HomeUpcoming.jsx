@@ -9,7 +9,7 @@ export default function HomeUpcoming() {
     <h2>Coming up</h2>
     <ol>{upcoming.slice(0, 3).map((track, index) => <li key={`${index}-${track.artist}-${track.title}`}>
       <span className="home-upcoming__track"><strong>{track.artist}</strong> — {track.title}</span>
-      {track.estimatedAt !== null && <time dateTime={new Date(track.estimatedAt).toISOString()}>{formatPlayTime(track.estimatedAt)} approx. *</time>}
+      {track.estimatedAt !== null && <time dateTime={new Date(track.estimatedAt).toISOString()}>{formatPlayTime(track.estimatedAt)} approx.</time>}
     </li>)}</ol>
   </section>;
 }
