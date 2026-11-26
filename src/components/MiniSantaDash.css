@@ -17,3 +17,10 @@
 .mini-santa-dash__result { padding: 32px 16px; }
 .mini-santa-dash button:focus-visible { outline: 3px solid #ffe4a2; outline-offset: -4px; }
 @media (max-width: 400px) { .mini-santa-dash__toolbar { gap: 8px; } .mini-santa-dash__toolbar strong { width: 100%; margin-right: 0; } }
+
+.mini-santa-dash__obstacle { position: absolute; bottom: 12px; width: 44px; height: 60px; object-fit: contain; transform: translateX(-50%); pointer-events: none; }
+.mini-santa-dash__obstacle--gary { width: 74px; height: 100px; }
+.mini-santa-dash__result > img { display: block; margin: 0 auto 10px; }
+.mini-santa-dash__result > strong { display: block; color: #f4d888; font-size: 1.7rem; }
+.mini-santa-dash__result b { display: block; color: #f4d888; font-size: 2rem; }
+.home-page .santa-dash-promo__download--highlighted { outline: 3px solid #ffe096; outline-offset: 5px; background: #f4d888; color: #17372b; box-shadow: 0 0 26px #f4d88899; }

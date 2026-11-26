@@ -22,3 +22,20 @@ test('jump lands and missed pies leave the arena', () => {
   assert.equal(state.jump, null);
   assert.deepEqual(state.pies, []);
 });
+test('three times the original pies spawn over a minute', () => {
+ let round = newRound();
+ for (let i=0;i<3750;i++) round=advanceRound(round,16,390);
+ assert.equal(round.nextId,120); // Old 1500ms interval spawned 40.
+ assert.equal(round.obstacleId,17);
+});
+test('obstacles cost two pies once, never below zero, and can be cleared', () => {
+ for(const kind of ['gary','tree','snowman']) {
+  const base={...newRound(),score:5,obstacles:[{id:0,kind,x:.161,hit:false}]};
+  const hit=advanceRound(base,16,320);
+  assert.equal(hit.score,3);assert.equal(hit.trips,1);
+  assert.equal(advanceRound(hit,16,320).score,3);
+  assert.equal(advanceRound({...base,score:1},16,320).score,0);
+  const cleared=advanceRound({...base,jump:JUMP_MS/2-16},16,320);
+  assert.equal(cleared.score,5);assert.equal(cleared.trips,0);
+ }
+});

@@ -16,6 +16,7 @@ function getReducedMotionPreference() {
 }
 
 export default function SantaDashPromo() {
+  const [miniFinished, setMiniFinished] = useState(false);
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const playAttemptRef = useRef(0);
@@ -289,7 +290,7 @@ export default function SantaDashPromo() {
         </div>
         </div>
         <a
-          className="santa-dash-promo__download"
+          className={`santa-dash-promo__download${miniFinished ? ' santa-dash-promo__download--highlighted' : ''}`}
           href={APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
@@ -298,7 +299,7 @@ export default function SantaDashPromo() {
           Download Santa Dash for iPhone and iPad <span aria-hidden="true">→</span>
         </a>
         <div className="santa-dash-promo__runner">
-          <MiniSantaDash />
+          <MiniSantaDash onFinishedChange={setMiniFinished} />
         </div>
       </div>
     </section>
