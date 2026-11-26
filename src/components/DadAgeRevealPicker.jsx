@@ -15,7 +15,6 @@ export default function DadAgeRevealPicker({artwork, age, name, value, onChange}
 
   return <section className="dad-age-picker" aria-labelledby="dad-age-picker-title">
     <h4 id="dad-age-picker-title">What would Dad least like to see on his Christmas Message?</h4>
-    <p>Pick one and we’ll give him a little surprise.</p>
     <div className="dad-age-choices">
       {DAD_AGE_THEMES.map(theme => <button key={theme.id} type="button"
         aria-pressed={value === theme.id} onClick={() => { onChange(theme.id); setReplay(count => count + 1); }}>
