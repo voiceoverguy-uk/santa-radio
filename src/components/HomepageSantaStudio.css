@@ -61,9 +61,18 @@
   font-weight: 700;
 }
 
+.hero-name-preview .hero-name-preview__checker.black-friday-paper .hero-name-preview__checker-kicker {
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .09em;
+  color: #f5d77b;
+}
+
 @supports (background-clip: text) {
   @media (prefers-reduced-motion: no-preference) {
-    :is(.home-page, .bespoke-messages-page) .homepage-santa-studio__heading .bespoke-premium-glow {
+    :is(.home-page, .bespoke-messages-page) .homepage-santa-studio__heading .bespoke-premium-glow,
+    .hero-name-preview .hero-name-preview__checker.black-friday-paper .hero-name-preview__checker-kicker {
       display: inline-block;
       background: linear-gradient(110deg, #e2bd66 38%, #fff2ba 46%, #fff 50%, #fff2ba 54%, #e2bd66 62%) 100% center / 300% 100%;
       background-clip: text;
