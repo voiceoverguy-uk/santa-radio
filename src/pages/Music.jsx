@@ -35,7 +35,7 @@ function UpcomingSongCard({ track, song, index }) {
     <div className="song-info">
       <strong>{song?.artist || track.artist}</strong>
       <span>{song?.song || track.title}</span>
-      <span className="song-coming-up">{['Playing next', 'Not long to go', 'The song at platform 3', 'Getting closer...'][index] || 'Coming up'}</span>
+      <span className="song-coming-up">{['Playing next', 'Warming up in the wings', 'Next stop: Christmas!', 'Worth the wait…'][index] || 'Coming up'}</span>
       {Number.isFinite(track.estimatedAt) && <span className="song-coming-up">{index === 1 ? 'Around' : 'Expected at'} {formatPlayTime(track.estimatedAt)}</span>}
     </div>
   </Card>;
