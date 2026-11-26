@@ -1,3 +1,5 @@
+import { DAD_AGE_REVEAL_SECONDS, DAD_AGE_REVEAL_Y, drawDadAgeReveal } from './dadAgeReveal.js';
+
 // Paid exports use a 720p canvas, caption strips, scene dissolves and a prepared Nice List reveal.
 export const STUDIO_VIDEO_WIDTH = 1280;
 export const STUDIO_VIDEO_HEIGHT = 720;
@@ -12,51 +14,67 @@ export function studioAge(result) {
 }
 export function studioVideoTimeline(result) {
   const details = result.gift?.details || {};
-  const talent = details.talent || details.activity;
-  const strengths = [talent, details.achievement].filter(Boolean).join(' and ');
-  const cue = (key, fallback, offset = 1) => Number.isFinite(result.clipStarts?.[key]) && result.clipStarts[key] >= 0
-    ? result.clipStarts[key] + offset : fallback;
-  const nameStart = Math.max(3, cue('name', 10, 0));
-  const ageStart = Math.max(nameStart, cue('age', 18, 0));
-  const treatStart = cue('treat', 57), placeStart = cue('place', 70);
-  const destinationStart = placeStart - 2;
-  const approvedStart = Number.isFinite(result.clipStarts?.secondName) && result.clipStarts.secondName >= 0
-    ? Math.max(0, result.clipStarts.secondName - 2) : placeStart + 13;
-  const selectedStrengths = [
-    { id: 'talent', text: details.talent ? `Great at ${details.talent.charAt(0).toLocaleLowerCase('en-GB')}${details.talent.slice(1)}` : '' },
-    { id: 'activity', text: details.activity ? `Well done for trying hard at ${details.activity}` : '' },
-    { id: 'achievement', text: details.achievement || '' },
-  ].filter(caption => caption.text);
-  const hasMeasuredStrengths = selectedStrengths.length > 0 && selectedStrengths.every(caption =>
-    Number.isFinite(result.clipEnds?.[caption.id]) && result.clipEnds[caption.id] >= 0);
-  const strengthCaptions = hasMeasuredStrengths
-    ? selectedStrengths.map((caption, index) => ({ ...caption,
-      start: result.clipEnds[caption.id] - 2,
-      end: Math.min(index + 1 < selectedStrengths.length
-        ? result.clipEnds[selectedStrengths[index + 1].id] - 2 : treatStart - 1, treatStart - 1),
-    })).filter(caption => caption.end > caption.start)
-    : strengths ? [{ id: 'strengths', text: `Great at ${strengths.charAt(0).toLocaleLowerCase('en-GB')}${strengths.slice(1)}`, start: 38, end: Math.min(50, treatStart - 1) }] : [];
-
-  const choiceCaptions = [
-    ...strengthCaptions,
-    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: destinationStart }] : []),
-    ...(details.destination ? [{ id: 'destination', text: `Christmas Eve, Santa will be visiting ${details.destination}`, start: destinationStart, end: approvedStart }] : []),
-  ];
-  const badgeStart = ageStart + 3;
   const name = (result.writtenName || '').trim();
-  const introduction = `A message from Santa to ${name}`;
-  const personalisedCaptions = choiceCaptions
-    .map(caption => {
-      const start = Math.max(caption.start, badgeStart);
-      return { ...caption, start, end: Math.min(caption.end, start + 4 + CAPTION_FADE) };
-    })
-    .filter(caption => caption.end > caption.start);
+  const cue = (timings, key, fallback) => Number.isFinite(timings?.[key]) && timings[key] >= 0
+    ? timings[key] : fallback;
+  const startOf = (key, fallback) => cue(result.clipStarts, key, fallback);
+  const endOf = (key, fallback) => cue(result.clipEnds, key, fallback);
+  const badgeStart = 16;
+  const nameStart = Math.max(3, startOf('name', 10));
+  const ageStart = Math.max(badgeStart, startOf('age', 21));
+  const ageEnd = ageStart + 2;
+  const treatStart = startOf('treat', 57);
+  const placeStart = startOf('place', 70);
+  const approvedStart = startOf('secondName', 85);
+  const captionDuration = 4 + CAPTION_FADE;
+  const placeEnd = Math.min(approvedStart, placeStart + captionDuration + 2);
+
+  const activityStart = startOf('activity', 40);
+  const talentSkipped = !details.talent && Number.isFinite(result.clipStarts?.activity);
+  const talentEnd = talentSkipped ? activityStart - 4 : startOf('talent', 28);
+  const achievementStart = startOf('achievement', 44);
+  const achievementPromptStart = Math.max(ageEnd, achievementStart, endOf('activity', 44));
+  const achievementPromptEnd = Math.min(achievementPromptStart + 3, treatStart - 5);
+
+  // Anchor the gaps to the stitched audio so short or long recordings stay in sync.
+  const prompts = [
+    { id: 'talent-prompt', text: 'What talents do you have?', start: Math.max(talentEnd - 5, endOf('age', 23)), end: talentEnd },
+    { id: 'activity-prompt', text: 'What else can I find?', start: Math.max(activityStart - 6, talentSkipped ? talentEnd : endOf('talent', 0)), end: activityStart },
+    { id: 'achievement-prompt', text: 'Hang on, there is more?', start: achievementPromptStart, end: achievementPromptEnd },
+    { id: 'treat-prompt', text: 'I do love the treats you leave me', start: Math.max(treatStart - 5, endOf('achievement', 0)), end: treatStart },
+    { id: 'place-prompt', text: 'Checking where I’m heading...', start: Math.max(placeStart - 5, endOf('treat', 0)), end: placeStart },
+    { id: 'list-prompt', text: 'Just checking my list...', start: Math.max(approvedStart - 8, placeEnd, endOf('place', 0)), end: approvedStart },
+  ].map(prompt => ({ ...prompt, start: Math.max(ageEnd, prompt.start), noFade: true }))
+    .filter(prompt => prompt.end - prompt.start >= 1);
+
+  const talent = details.talent;
+  const strengths = [
+    { id: 'talent', text: talent && `Great at ${talent.charAt(0).toLocaleLowerCase('en-GB')}${talent.slice(1)}`, fallback: 28 },
+    { id: 'activity', text: details.activity && `Well done for trying hard at ${details.activity}`, fallback: 40 },
+    { id: 'achievement', text: details.achievement, fallback: 47 },
+  ].filter(caption => caption.text).map(({ id, text, fallback }) => ({
+    id, text, start: Math.max(ageEnd, endOf(id, fallback + 2) - 2,
+      id === 'achievement' ? achievementPromptEnd : startOf(id, fallback)),
+  }));
+  const personalised = [
+    ...strengths,
+    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart }] : []),
+    ...(details.destination ? [{ id: 'destination', text: `Christmas Eve, Santa will be visiting ${details.destination}`, start: placeStart }] : []),
+  ].map((caption, index, rows) => {
+    const next = rows[index + 1]?.start ?? approvedStart;
+    const nextPrompt = prompts.find(prompt => prompt.start >= caption.start);
+    const end = Math.min(next, nextPrompt?.start ?? Infinity,
+      caption.id === 'destination' ? placeEnd : caption.start + captionDuration);
+    return { ...caption, end };
+  }).filter(caption => caption.end > caption.start);
+
   return [
-    { id: 'incoming', text: name ? `Incoming message from Santa\nFor ${name}` : 'Incoming message from Santa', start: 0, end: 3, noFade: true },
-    ...(nameStart < ageStart ? [{ id: 'name', text: introduction, start: nameStart, end: ageStart }] : []),
-    { id: 'age', text: `${introduction}\nAged ${studioAge(result)}`, start: ageStart, end: badgeStart },
-    { id: 'name-badge', text: name, start: badgeStart, end: approvedStart + CAPTION_FADE },
-    ...personalisedCaptions,
+    { id: 'incoming', text: name ? `Incoming message from Santa\\nFor ${name}` : 'Incoming message from Santa', start: 0, end: 3, noFade: true },
+    ...(nameStart < badgeStart ? [{ id: 'name', text: `A message from Santa to ${name}`, start: nameStart, end: badgeStart, noFade: true }] : []),
+    { id: 'age', text: `Aged ${studioAge(result)}`, start: ageStart, end: ageEnd, noFade: true },
+    ...(name ? [{ id: 'name-badge', text: name, start: badgeStart, end: approvedStart, noFade: true }] : []),
+    ...personalised,
+    ...prompts,
     { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 + CAPTION_FADE },
     { id: 'christmas', text: name ? `Merry Christmas, ${name}!` : 'Merry Christmas!', start: approvedStart + 9 },
   ];
@@ -203,7 +221,7 @@ export async function drawStudioVideoFrames(image, result, customTimeline) {
   const timeline = customTimeline || studioVideoTimeline(result);
   const layers = timeline.map(caption => {
     if (caption.id === 'name-badge') return { ...caption, canvas: drawStudioRecipientBadge(caption.text, 230), y: 430 };
-    return drawVideoCaption(caption, { panelTop: 517, panelHeight: 190, shadowOffsetY: 2 });
+    return drawVideoCaption(caption, { panelTop: 517, panelHeight: 190, shadowOffsetY: 2, fontSize: caption.id === 'age' ? 96 : 48 });
   });
   return { base, layers };
 }
@@ -296,6 +314,12 @@ export async function prepareStudioVideoFrames(image, result, duration, scenes =
     ...await Promise.all(transitions.map(transition => prepareSceneDissolve(transition, signal))),
     ...captions,
   ];
+  const age = captions.find(layer => layer.id === 'age');
+  if (age && result.ageTheme) {
+    const canvas = await drawDadAgeReveal(result.ageTheme, studioAge(result));
+    if (canvas) included.push({ id: 'age-reveal', canvas, y: DAD_AGE_REVEAL_Y,
+      start: age.start, end: age.start + DAD_AGE_REVEAL_SECONDS, noFade: true, rise: 24 });
+  }
   signal?.throwIfAborted();
   if (reveal) included.push(await prepareNiceListReveal(result, reveal.start));
   const files = [{ name: 'image.png', blob: await png(base) }];

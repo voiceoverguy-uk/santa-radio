@@ -1,4 +1,6 @@
-import StudioScenePicker from './StudioScenePicker.jsx';
+import DadAgeRevealPicker from './DadAgeRevealPicker.jsx';
+import { STUDIO_VIDEO_SCENES } from '../lib/studioVideo.js';
+import StudioScenePicker, { StudioScenePicture } from './StudioScenePicker.jsx';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
@@ -45,6 +47,7 @@ export default function WorkshopMessageAudio({
   const resultsRef = useRef([]);
   const [error, setError] = useState('');
   const [scene, setScene] = useState(null);
+  const [ageTheme, setAgeTheme] = useState(null);
   const [resetConfirmation, setResetConfirmation] = useState(false);
   const resetDialogRef = useRef(null);
   const operationRef = useRef(null);
@@ -214,7 +217,10 @@ export default function WorkshopMessageAudio({
   };
   const create = async () => {
     if (requestRef.current || disabled) return;
-    if (deliveryStep !== 'scene') setScene(null);
+    if (deliveryStep !== 'scene') {
+      setScene(null);
+      setAgeTheme(null);
+    }
     onDeliveryStep('scene');
     document.dispatchEvent(new Event('studio-stop-audio'));
     setError('');
@@ -264,10 +270,11 @@ export default function WorkshopMessageAudio({
       {deliveryStep === 'scene' ? 'Retry recording' : 'Choose picture'} <span aria-hidden="true">→</span>
     </button>
   );
+  const ageRevealScene = STUDIO_VIDEO_SCENES.find(option => option.src === scene) || STUDIO_VIDEO_SCENES[0];
   const finishScene = () => {
     if (!scene || phase !== 'ready' || !urlRef.current) return;
     const next = resultsRef.current.map(result => result.url === urlRef.current
-      ? { ...result, artwork: scene } : result);
+      ? { ...result, artwork: scene, ageTheme } : result);
     resultsRef.current = next;
     setResults(next);
     onDeliveryStep('result');
@@ -313,6 +320,10 @@ export default function WorkshopMessageAudio({
     {deliveryStep === 'scene' && <>
       <StudioScenePicker selected={scene} onSelect={setScene}
         recipientCaption={writtenName && ageLabel ? `${writtenName} - aged ${ageLabel.replace(/\s+old$/i, '')}` : writtenName} />
+      {ageLabel && <DadAgeRevealPicker age={ageLabel.replace(/\s+old$/i, '').replace(/\s+years?$/i, '')}
+        heading={`How would ${writtenName || 'your child'} like to see their age?`}
+        previewArtwork={<StudioScenePicture scene={ageRevealScene} caption={writtenName && `A message for ${writtenName}`} />}
+        value={ageTheme} onChange={setAgeTheme} />}
       {!busy && phase !== 'ready' && <div className="smw-actions">{messageAction()}</div>}
       {reviewActionTarget ? createPortal(
         <button type="button" className="smw-button smw-button-next"
