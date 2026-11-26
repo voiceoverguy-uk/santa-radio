@@ -34,9 +34,12 @@ const AGE_CAPTION_SECONDS = 5;
 // intervening narration is fixed, while the preceding answers vary in length.
 const DAD_NARRATION_CAPTIONS = [
   { id: 'age-prompt', text: 'So... How old are you now?', nextClip: 'age', lead: 4, duration: 4 },
+  { id: 'stout-prompt', text: "you've aged like a fine stout!", nextClip: 'habit', lead: 10, duration: 4 },
+  { id: 'good-year-prompt', text: name => `Have you been good this year ${name}?`, nextClip: 'habit', lead: 5, duration: 5 },
   { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', nextClip: 'viewing', lead: 7, duration: 6 },
   { id: 'generosity-prompt', text: 'But, how generous are you?', nextClip: 'treat', lead: 8, duration: 6 },
   { id: 'approved', text: 'Nice List Approved… just!', nextClip: 'secondName', lead: 16, duration: 7 },
+  { id: 'name-reprise', text: name => name, nextClip: 'secondName', lead: 0, duration: 5 },
   { id: 'forgotten-name', text: "DOH! I've forgotten your name!", nextClip: 'secondName', lead: 6, duration: 6 },
 ];
 const dadAgeStart = result => Math.max(result.clipStarts.age, NAME_BADGE_START);
@@ -59,8 +62,8 @@ export function dadTimeline(result){
    const next = s[nextClip];
    if (!Number.isFinite(next)) return [];
    const start = Math.max(NAME_BADGE_START, next - lead);
-   const end = Math.min(next, start + duration);
-   return end > start ? [{ id, text, start, end, noFade: true }] : [];
+   const end = lead === 0 ? start + duration : Math.min(next, start + duration);
+   return end > start ? [{ id, text: typeof text === 'function' ? text(recipient) : text, start, end, noFade: true }] : [];
  });
  const fitted = narration.reduce((rows, prompt) => rows.flatMap(caption => {
    const end = caption.end ?? Infinity;
@@ -93,8 +96,8 @@ function frames(image,result){
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
  const recipientLayers=[{id:'name-badge',text:result.writtenName,start:NAME_BADGE_START,noFade:true,canvas:badge,y:430}];
- const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528, maxLines:caption.id === 'name' || caption.id.startsWith('christmas') ? 1 : 2,
-   ...(caption.id === 'name' && { fontSize: 96 })}));
+ const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption.id.startsWith('christmas')?{...caption,layoutText:'Merry Christmas! and all that!'}:caption,{panelTop:528, maxLines:(caption.id === 'name' || caption.id === 'name-reprise') || caption.id.startsWith('christmas') ? 1 : 2,
+   ...((caption.id === 'name' || caption.id === 'name-reprise') && { fontSize: 96 })}));
  return {base,layers:[...recipientLayers,...layers]};
 }
 export async function dadPoster(result){
