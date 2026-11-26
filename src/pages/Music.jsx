@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SongArtwork from '../components/SongArtwork.jsx';
 import './Music.css';
 import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
+
+import { useRadio } from '../components/radio-context.js';
+import { matchLiveSong } from '../data/matchLiveSong.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
 
@@ -15,6 +18,15 @@ function ArtistAvatar({ song }) {
 }
 
 export default function Music() {
+  const { metadata } = useRadio();
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 901px)');
+    const update = () => setDesktop(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState('random');
   const [randomSongs, setRandomSongs] = useState(shuffleSongs);
@@ -23,6 +35,13 @@ export default function Music() {
     s.artist.toLowerCase().includes(search.toLowerCase()) ||
     s.song.toLowerCase().includes(search.toLowerCase())
   );
+
+  const upcoming = desktop && order === 'random' && !search.trim() && metadata?.upcomingStatus === 'ready'
+    ? (metadata.upcoming || []).filter(track => track && (track.title || track.artist)).slice(0, 3)
+      .map(track => ({ track, song: matchLiveSong(track, songsData).song }))
+    : [];
+  const upcomingIds = new Set(upcoming.map(item => item.song?.id));
+  const catalogueSongs = filtered.filter(song => !upcomingIds.has(song.id));
 
   return (
     <main className="music-page">
@@ -57,7 +76,22 @@ export default function Music() {
 
       <div className="music-grid-section starry-bg">
         <div className="container music-grid">
-          {filtered.map((s) => (
+          {upcoming.map(({ track, song }, index) => {
+            const Card = song ? Link : 'div';
+            return (
+              <Card key={`upcoming-${index}-${track.artist}-${track.title}`}
+                {...(song ? { to: `/christmas-artist/${song.id}-${song.link}` } : {})}
+                className="song-card song-card-upcoming">
+                <ArtistAvatar song={song || { artist: track.artist || '', song: track.title || '' }} />
+                <div className="song-info">
+                  <strong>{song?.artist || track.artist}</strong>
+                  <span>{song?.song || track.title}</span>
+                  <span className="song-coming-up">Coming up <span className="song-coming-up-position">· {index + 1}</span></span>
+                </div>
+              </Card>
+            );
+          })}
+          {catalogueSongs.map((s) => (
             <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
               <ArtistAvatar song={s} />
               <div className="song-info">

@@ -250,3 +250,17 @@
 .music-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto; }
 
 @media (max-width: 767px) { .music-page .music-hero { padding-top: 33px; } }
+
+.music-page .song-info .song-coming-up {
+  color: #f0d060;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.music-page .song-info .song-coming-up-position {
+  color: inherit;
+}
+
+.music-page div.song-card-upcoming {
+  cursor: default;
+}
