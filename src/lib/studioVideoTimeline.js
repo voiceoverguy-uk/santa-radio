@@ -34,8 +34,8 @@ export function studioVideoTimeline(result) {
   const talentSkipped = !details.talent && Number.isFinite(result.clipStarts?.activity);
   const talentEnd = talentSkipped ? activityStart - 4 : startOf('talent', 28);
   const achievementStart = startOf('achievement', 44);
-  const achievementPromptStart = Math.max(ageEnd, achievementStart, endOf('activity', 44));
-  const achievementPromptEnd = Math.min(achievementPromptStart + 3, treatStart - 5);
+  const achievementPromptStart = Math.max(ageEnd, achievementStart, endOf('activity', 44)) + 2;
+  const achievementPromptEnd = Math.min(achievementPromptStart + 2, treatStart - 5);
 
   // Anchor the gaps to the stitched audio so short or long recordings stay in sync.
   const prompts = [
@@ -52,7 +52,7 @@ export function studioVideoTimeline(result) {
   const strengths = [
     { id: 'talent', text: talent && `Great at ${talent.charAt(0).toLocaleLowerCase('en-GB')}${talent.slice(1)}`, fallback: 28 },
     { id: 'activity', text: details.activity && `Well done for trying hard at ${details.activity}`, fallback: 40 },
-    { id: 'achievement', text: details.achievement, fallback: 47 },
+    { id: 'achievement', text: details.achievement && `You are amazing at ${details.achievement}`, fallback: 47 },
   ].filter(caption => caption.text).map(({ id, text, fallback }) => ({
     id, text, start: Math.max(ageEnd, endOf(id, fallback + 2) - 2,
       id === 'achievement' ? achievementPromptEnd : startOf(id, fallback)),
@@ -72,6 +72,7 @@ export function studioVideoTimeline(result) {
   return [
     { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: incomingEnd, noFade: true },
     ...(nameStart < badgeStart ? [{ id: 'name', text: `A message from Santa to ${name}`, start: nameStart, end: badgeStart, noFade: true }] : []),
+    ...(ageStart > badgeStart ? [{ id: 'age-check', text: 'Just checking your age...', start: badgeStart, end: ageStart, noFade: true }] : []),
     { id: 'age', text: `Aged ${studioAge(result)}`, start: ageStart, end: ageEnd, noFade: true },
     ...(name ? [{ id: 'name-badge', text: name, start: badgeStart, end: approvedStart, noFade: true }] : []),
     ...personalised,
