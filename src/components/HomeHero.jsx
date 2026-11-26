@@ -118,10 +118,6 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
                   <RadioButton className="btn-red" />
                 </div>
               </div>
-              <p className="hero-note">
-                <span className="hero-name-preview__copy--wide">The World’s Best Christmas Radio Station · All year round</span>
-                <span className="hero-name-preview__copy--phone">The World’s Best Christmas Radio Station · 24/7 - 365 Days</span>
-              </p>
               <div id="christmas-countdown" className="hero-countdown"><Countdown showBlackFriday={!preview} /></div>
             </div>
           </div>

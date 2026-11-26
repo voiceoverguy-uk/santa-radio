@@ -1100,3 +1100,13 @@
     padding: 24px 0 0;
   }
 }
+
+/* Align the countdown and message action along the desktop card's baseline. */
+@media (min-width: 768px) {
+  .hero-unified .hero-name-preview__broadcast { align-self: stretch; }
+  .hero-unified .hero-name-preview__left-stack,
+  .hero-unified .hero-name-preview__listening { display: flex; flex-direction: column; flex: 1; }
+  .hero-unified .hero-name-preview__listening > .hero-countdown { margin-top: auto; padding-top: 20px; }
+  .hero-unified .hero-name-preview__checker,
+  .hero-unified .hero-name-preview__checker.black-friday-paper { padding-top: 0; padding-bottom: 0; justify-content: space-between; }
+}
