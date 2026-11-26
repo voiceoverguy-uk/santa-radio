@@ -78,7 +78,7 @@ export function studioVideoTimeline(result) {
     ...personalised,
     ...prompts,
     { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 + CAPTION_FADE },
-    { id: 'christmas', text: name ? `Merry Christmas, ${name}!` : 'Merry Christmas!', start: approvedStart + 9 },
+    { id: 'christmas', text: name ? `Merry Christmas, ${name}!` : 'Merry Christmas!', start: approvedStart + 7 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
