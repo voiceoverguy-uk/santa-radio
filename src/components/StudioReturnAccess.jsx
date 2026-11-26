@@ -6,7 +6,7 @@ import './StudioReturnAccess.css';
 
 // Tokens stay in memory. Email-link scanners cannot redeem on a GET: the
 // visitor explicitly chooses Open my Studio before the protected POST.
-export default function StudioReturnAccess({ collapsible = false }) {
+export default function StudioReturnAccess({ collapsible = false, dad = false }) {
   const id = useId(), navigate = useNavigate(), request = useRef(null);
   const { hash } = useLocation();
   const disclosure = useRef(null);
@@ -16,14 +16,14 @@ export default function StudioReturnAccess({ collapsible = false }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   useEffect(() => {
-    const fragment = takeStudioReturnFragment();
+    const fragment = dad ? null : takeStudioReturnFragment();
     if (fragment) {
       if (disclosure.current) disclosure.current.open = true;
       if (fragment.valid) setToken(fragment.value);
       else setError('This private link is invalid. Request a fresh link using your purchase email.');
     }
     return () => request.current?.abort();
-  }, []);
+  }, [dad]);
   useEffect(() => {
     if (hash === '#studio-return-access' && disclosure.current) disclosure.current.open = true;
   }, [hash]);
@@ -35,7 +35,7 @@ export default function StudioReturnAccess({ collapsible = false }) {
     const timeout = window.setTimeout(() => controller.abort(), 15000);
     setBusy(true); setError(''); setMessage('');
     try {
-      const response = await fetch('/api/santa-studio-return', {
+      const response = await fetch(dad ? '/api/dad-studio-return' : '/api/santa-studio-return', {
         method: 'POST', credentials: 'same-origin', cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(token ? { token } : { email: email.trim() }), signal: controller.signal,
@@ -73,7 +73,7 @@ export default function StudioReturnAccess({ collapsible = false }) {
       {message && <div className="studio-return-confirmation" role="status"><strong>Request received</strong><p>{message}</p></div>}
       {error && <p role="alert">{error}</p>}
     </form>
-    <p>Your £6.50 purchase includes two successful creations. Returning keeps your remaining allowance; it does not restore recordings. Download your video message and gifts before leaving Studio.</p>
+    {dad ? <p>Your purchase includes one Dad message creation. Download your video and certificate before leaving Studio.</p> : <p>Your £6.50 purchase includes two successful creations. Returning keeps your remaining allowance; it does not restore recordings. Download your video message and gifts before leaving Studio.</p>}
   </>;
   if (collapsible) return <details ref={disclosure} id="studio-return-access" aria-labelledby={`${id}-title`}>
     <summary id={`${id}-title`}>Already purchased?</summary>
