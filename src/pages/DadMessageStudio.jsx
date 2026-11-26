@@ -70,6 +70,16 @@ export default function DadMessageStudio(){
  },[busy,showProgress]);
  const name=useWorkshopNameResolution(),job=useRef(null),saved=useRef(null),videoURL=useRef(null),confirmed=useRef(null),audioFlight=useRef(false),videoFlight=useRef(false),hideTimer=useRef(null);
  const [previewArt,setPreviewArt]=useState(0);
+ const [introArt,setIntroArt]=useState(0);
+ const introScene=DAD_ARTWORK[introArt];
+ useEffect(()=>{
+  if(step!==0||result)return;
+  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const timer=window.setInterval(()=>{
+   if(!motion.matches)setIntroArt(current=>(current+1)%DAD_ARTWORK.length);
+  },5000);
+  return()=>window.clearInterval(timer);
+ },[step,result]);
  const sceneDialog=useRef(null),panelRef=useRef(null);
  // Align each new step before paint; selection changes must not scroll the page.
  useLayoutEffect(()=>{
@@ -222,7 +232,7 @@ export default function DadMessageStudio(){
  return <main className="dad-studio smw-page"><Helmet><title>Dad Message Maker Studio | Santa Radio</title><meta name="robots" content="noindex,follow"/></Helmet>
  {!access?.authorized&&<><nav className="dad-tabs" aria-label="Message type"><Link to="/bespoke-personalised-message-from-santa">For Kids</Link><span aria-current="page">For Dads</span></nav>
  <header><p className="dad-eyebrow">A WORD FROM THE NORTH POLE</p><h1>Dad’s Message Maker Studio</h1><p>Even Dad can make the Nice List. Just.</p><p>A funny, personalised message from Santa. Add his name, age, bad household habits, unpopular TV choices and the questionable Christmas Eve treats left for Santa.</p></header></>}
- <div className={`dad-layout${step===0&&!result?" dad-layout-opening":" dad-layout-focused"}`}>{step===0&&!result&&<div className="dad-intro-art"><img className="dad-intro-logo" src="/images/dad-message-logo-v4.webp" alt="Dad’s Message from Santa"/><section className="dad-art"><img src={DAD_ARTWORK[art].src} loading="lazy" alt={DAD_ARTWORK[art].label}/><FittedArtCaption>{name.record ? `A message for ${name.record.name}${sceneAge ? ` — aged ${sceneAge}` : ''}` : 'Ready to get silly?'}</FittedArtCaption></section></div>}
+ <div className={`dad-layout${step===0&&!result?" dad-layout-opening":" dad-layout-focused"}`}>{step===0&&!result&&<div className="dad-intro-art"><img className="dad-intro-logo" src="/images/dad-message-logo-v4.webp" alt="Dad’s Message from Santa"/><section className="dad-art"><img src={introScene.src} loading="lazy" alt={introScene.label}/><FittedArtCaption>{name.record ? `A message for ${name.record.name}${sceneAge ? ` — aged ${sceneAge}` : ''}` : 'Ready to get silly?'}</FittedArtCaption></section></div>}
  <section ref={panelRef} className="dad-panel" aria-label="Dad recording studio"><h2>The North Pole Recording Studio</h2>
  {error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
  {!access?<p role="status">Checking your creation…</p>:access.checkFailed?<div role="alert">
