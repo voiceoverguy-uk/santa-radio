@@ -18,6 +18,30 @@ function title(row) {
   return row.song + (duplicateLabels.has(row.search) ? ' (#' + row.id + ')' : '');
 }
 
+function ArtworkPreview({ src, alt, caption, onError }) {
+  const dialog = useRef(null);
+  const trigger = useRef(null);
+  return <figure>
+    {src ? <>
+      <button type="button" ref={trigger} className="catalogue-art__thumbnail" aria-haspopup="dialog"
+        aria-label={'Enlarge ' + alt} onClick={() => dialog.current.showModal()}>
+        <img src={src} alt={alt} width="180" height="180" onError={onError} />
+      </button>
+      <dialog ref={dialog} className="catalogue-art__zoom" aria-label={alt}
+        onClose={() => trigger.current?.focus({ preventScroll: true })}
+        onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
+        <button className="catalogue-art__close" type="button" aria-label="Close enlarged artwork"
+          onClick={() => dialog.current.close()}>Close ×</button>
+        <button className="catalogue-art__zoom-image" type="button" aria-label="Return to thumbnail"
+          onClick={() => dialog.current.close()}>
+          <img src={src} alt={alt} width="540" height="540" />
+        </button>
+      </dialog>
+    </> : <p>Image unavailable</p>}
+    <figcaption>{caption}</figcaption>
+  </figure>;
+}
+
 function ArtworkUpload({ song, scope, ownerToken, candidates, caption, onSaved, busy, setBusy }) {
   const input = useRef(null);
   const [preview, setPreview] = useState('');
@@ -52,12 +76,9 @@ function ArtworkUpload({ song, scope, ownerToken, candidates, caption, onSaved, 
   }
   return <>
     <div className="catalogue-art__previews">
-      <figure>
-        {current ? <img src={current} alt={'Current artwork for ' + target} width="180" height="180"
-          onError={() => setFailedImages(previous => [...previous, current])} /> : <p>Image unavailable</p>}
-        <figcaption>{caption}</figcaption>
-      </figure>
-      {preview && <figure><img src={preview} alt={'Replacement artwork for ' + target} width="180" height="180" /><figcaption>New artwork preview</figcaption></figure>}
+      <ArtworkPreview src={current} alt={'Current artwork for ' + target} caption={caption}
+        onError={() => setFailedImages(previous => [...previous, current])} />
+      {preview && <ArtworkPreview src={preview} alt={'Replacement artwork for ' + target} caption="New artwork preview" />}
     </div>
     <label>Choose new artwork <small>JPG, PNG or WebP · up to 20 MB · square centre crop</small>
       <input type="file" ref={input} disabled={busy} accept="image/jpeg,image/png,image/webp" onChange={event => choose(event.target.files[0])} />
