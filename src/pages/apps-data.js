@@ -122,7 +122,10 @@ export const christmasApps = [
       interactiveMode: 'christmas-shops',
       liveClock: '#102e22',
     },
-    downloads: downloads('https://apps.apple.com/app/christmas-music-for-shops/id6832399619'),
+    downloads: [
+      ...downloads('https://apps.apple.com/app/christmas-music-for-shops/id6832399619'),
+      { platform: 'Android', href: 'https://play.google.com/store/apps/details?id=com.christmasmusicforshops.app&pli=1' },
+    ],
     features: [
       feature('Christmas music 24/7', 'The Christmas music of Santa Radio,\nready for your shop all day.', 'radio'),
       feature('No adverts or pop-ups', 'A simple, uncluttered interface\nthat keeps the music centre stage.', 'shield'),
