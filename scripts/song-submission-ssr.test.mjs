@@ -27,7 +27,7 @@ test('production pre-rendered shared page defaults to general enquiry with accur
   assert.match(html, /<textarea[^>]*name="SONG_REQUEST"[^>]*required=""[^>]*maxLength="500"/i);
   assert.ok(!html.includes('name="MESSAGE"'));
   assert.ok(!html.includes('name="COMPANY:name"'));
-  assert.ok(html.includes('Your name, email and message are sent to Brevo'));
+  assert.ok(html.includes('Your name, email and message are sent via Brevo'));
   assert.ok(html.includes('General enquiry'));
   assert.ok(html.includes('Send enquiry'));
   assert.ok(!html.includes('name="criteriaMet"'));

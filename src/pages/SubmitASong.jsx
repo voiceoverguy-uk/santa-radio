@@ -302,7 +302,7 @@ export default function SubmitASong() {
                 ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent to Brevo as your enquiry.'
-                  : 'Your name, email and message are sent to Brevo to handle your enquiry.'}{!isSong && ' This does not give consent for marketing.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
+                  : 'Your name, email and message are sent via Brevo to handle your enquiry.'}{isSponsorship && ' This does not give consent for marketing.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
               {error && <p className="song-form-alert" role="alert">{error}</p>}
               <button className="song-submit-button" type="submit" disabled={pending || uploading}>{pending
                 ? (isSong ? 'Submitting your song…' : isSponsorship ? 'Sending your sponsorship enquiry…' : 'Sending your enquiry…')
