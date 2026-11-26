@@ -69,7 +69,7 @@ export function studioVideoTimeline(result) {
   }).filter(caption => caption.end > caption.start);
 
   return [
-    { id: 'incoming', text: name ? `Incoming message from Santa\\nFor ${name}` : 'Incoming message from Santa', start: 0, end: 3, noFade: true },
+    { id: 'incoming', text: name ? `Incoming message from Santa\nFor ${name}` : 'Incoming message from Santa', start: 0, end: 3, noFade: true },
     ...(nameStart < badgeStart ? [{ id: 'name', text: `A message from Santa to ${name}`, start: nameStart, end: badgeStart, noFade: true }] : []),
     { id: 'age', text: `Aged ${studioAge(result)}`, start: ageStart, end: ageEnd, noFade: true },
     ...(name ? [{ id: 'name-badge', text: name, start: badgeStart, end: approvedStart, noFade: true }] : []),
