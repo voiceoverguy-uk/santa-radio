@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { trackIdentity } from '../lib/radio-track-identity.js';
+import { observeSong } from '../lib/radio-schedule.js';
 
 const empty = { current: null, upcoming: [], currentStatus: 'loading', upcomingStatus: 'loading' };
 const STALE_MS = 45000;
@@ -15,6 +16,7 @@ export default function useRadioMetadata(listening = false) {
   useEffect(() => {
     let stopped = false, expiryTimer, lastUpcoming = [], lastUpdated = 0, currentUpdated = 0;
     let lastCurrentIdentity = null, transitionRefresh = false;
+    let observation = null;
     const channels = {
       current: { timer: null, request: null },
       upcoming: { timer: null, request: null },
@@ -80,10 +82,12 @@ export default function useRadioMetadata(listening = false) {
           currentUpdated = Date.now();
           const identity = data.currentStatus === 'ready' ? trackIdentity(data.current) : null;
           const changed = identity && lastCurrentIdentity && identity !== lastCurrentIdentity;
+          observation = observeSong(observation, data.currentStatus === 'ready' ? data.current : null, currentUpdated);
           if (identity) lastCurrentIdentity = identity;
           setMetadata(previous => ({
             ...previous, current: data.currentStatus === 'ready' ? data.current : null,
             currentStatus: data.currentStatus,
+            currentStartedAt: data.currentStatus === 'ready' ? observation?.startedAt ?? null : null,
           }));
           if (changed && allowed('upcoming')) {
             // Keep the active queue read; coalesce any number of transitions
@@ -118,6 +122,7 @@ export default function useRadioMetadata(listening = false) {
       // Suspended phone timers cannot guarantee background freshness. Clear old
       // values on return before reading again; identical titles are not expiry signals.
       if (currentUpdated && Date.now() - currentUpdated > 15000) {
+        observation = null;
         setMetadata(previous => ({ ...previous, current: null, currentStatus: 'loading' }));
       }
       if (lastUpcoming.length && Date.now() - lastUpdated >= STALE_MS) {

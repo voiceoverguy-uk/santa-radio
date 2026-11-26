@@ -58,8 +58,32 @@ No FTP credentials or cross-origin browser requests are needed. These sources
 are independent of the main website domain; there is no fallback to the
 retiring Heart Internet host. HTML is rejected rather than displayed as music.
 
-Broadcast metadata can lead buffered audio. No precise synchronization or
-upcoming start times are promised.
+Broadcast metadata can lead buffered audio. Website upcoming times are estimates,
+not precise synchronization with a listener's buffered stream.
+
+## Website estimated play times
+
+The homepage shows up to three upcoming songs below the play button while playing.
+The existing desktop Music-page upcoming cards share the same schedule through
+RadioProvider. Titles appear immediately; times wait until the browser observes a
+current-song identity change. Opening a page midway through a track never assigns
+that track a new start time. The provider survives internal navigation.
+
+Each estimate adds the current recording's duration plus five seconds for a
+jingle, then repeats for the upcoming queue. `src/data/radio-song-durations.json`
+contains the 154 audio-file records used for the reference spreadsheet. Missing
+title tags use filenames. Missing artists and ambiguous recording matches use
+the 210-second fallback, as do songs absent from the list. Extend this JSON with
+artist, title and duration in seconds when more recordings are supplied.
+
+Times use Europe/London and reset on each detected transition. Observations over
+15 seconds apart cannot establish a start; after a long interruption the browser
+waits for a fresh transition. Unavailable/stale queues and elapsed estimates do
+not display predicted clock times. No additional feed requests are introduced.
+
+Checks: `node --test scripts/radio-schedule.test.mjs` and the Playwright test
+`tests/radio-schedule.spec.js` cover the anchor, fallback, jingle spacing, midnight,
+UK daylight saving, desktop/mobile layout and shared times across navigation.
 
 The independent history worker shares the bounded current-feed reader, not this
 request cache. See [radio-history.md](radio-history.md) for observed-transition

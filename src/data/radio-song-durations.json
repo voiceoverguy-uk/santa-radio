@@ -1,0 +1,772 @@
+[
+  {
+    "artist": "",
+    "title": "Joy To The World",
+    "seconds": 182
+  },
+  {
+    "artist": "",
+    "title": "DJ Play a Christmas Song",
+    "seconds": 207
+  },
+  {
+    "artist": "Aaron Neville",
+    "title": "Christmas Prayer",
+    "seconds": 231
+  },
+  {
+    "artist": "Aloe Blacc",
+    "title": "I Got Your Christmas Right Here",
+    "seconds": 193
+  },
+  {
+    "artist": "Andy Williams",
+    "title": "Do You Hear What I Hear",
+    "seconds": 174
+  },
+  {
+    "artist": "Andy Williams",
+    "title": "It's The Most Wonderful Time Of The Year",
+    "seconds": 153
+  },
+  {
+    "artist": "Anne-Marie",
+    "title": "Think of Christmas",
+    "seconds": 168
+  },
+  {
+    "artist": "Aretha Franklin",
+    "title": "Joy To The World",
+    "seconds": 182
+  },
+  {
+    "artist": "Ariana Grande",
+    "title": "Last Christmas",
+    "seconds": 146
+  },
+  {
+    "artist": "Ava Max",
+    "title": "Christmas Without You",
+    "seconds": 168
+  },
+  {
+    "artist": "Backstreet Boys",
+    "title": "Christmas In New York",
+    "seconds": 274
+  },
+  {
+    "artist": "Backstreet Boys",
+    "title": "Christmas Time",
+    "seconds": 244
+  },
+  {
+    "artist": "Band Aid",
+    "title": "Do They Know It's Christmas",
+    "seconds": 222
+  },
+  {
+    "artist": "Band Aid",
+    "title": "Do They Know It's Christmas",
+    "seconds": 217
+  },
+  {
+    "artist": "Bastille",
+    "title": "Merry Xmas Everybody",
+    "seconds": 191
+  },
+  {
+    "artist": "Beverley Knight",
+    "title": "A Christmas Wish",
+    "seconds": 187
+  },
+  {
+    "artist": "Bill Nighy",
+    "title": "Christmas Is All Around",
+    "seconds": 229
+  },
+  {
+    "artist": "Bing Crosby",
+    "title": "It's Beginning To Look A Lot Like Christmas",
+    "seconds": 167
+  },
+  {
+    "artist": "Bing Crosby",
+    "title": "White Christmas",
+    "seconds": 184
+  },
+  {
+    "artist": "Bing Crosby & Rosemary Clooney",
+    "title": "Here Comes Santa Claus",
+    "seconds": 180
+  },
+  {
+    "artist": "Blossoms",
+    "title": "It's Going To Be A Cold Winter",
+    "seconds": 135
+  },
+  {
+    "artist": "Bo Selecta",
+    "title": "Bo Selecta - Proper Crimbo",
+    "seconds": 217
+  },
+  {
+    "artist": "Boney M",
+    "title": "Mary's Boy Child / Oh My Lord",
+    "seconds": 312
+  },
+  {
+    "artist": "Brenda Lee",
+    "title": "Rockin Around The Christmas Tree",
+    "seconds": 123
+  },
+  {
+    "artist": "Britney Spears",
+    "title": "My Only Wish (This Year)",
+    "seconds": 252
+  },
+  {
+    "artist": "Britney Spears",
+    "title": "My Only Wish (This Year)",
+    "seconds": 257
+  },
+  {
+    "artist": "Bruce Springsteen",
+    "title": "Santa Claus Is Coming To Town",
+    "seconds": 221
+  },
+  {
+    "artist": "Bryan Adams",
+    "title": "Run Rudolph Run",
+    "seconds": 159
+  },
+  {
+    "artist": "Camila Cabello",
+    "title": "I'll Be Home For Christmas",
+    "seconds": 180
+  },
+  {
+    "artist": "Carly Rae Jepsen",
+    "title": "It's Not Christmas Till Somebody Cries",
+    "seconds": 171
+  },
+  {
+    "artist": "Chris De Burgh",
+    "title": "A Spaceman Came Travelling",
+    "seconds": 242
+  },
+  {
+    "artist": "Chris Kamara",
+    "title": "I Wish It Could Be Christmas Everyday",
+    "seconds": 217
+  },
+  {
+    "artist": "Chris Rea",
+    "title": "Driving Home For Christmas",
+    "seconds": 234
+  },
+  {
+    "artist": "Christina Aguilera",
+    "title": "Merry Christmas Baby",
+    "seconds": 343
+  },
+  {
+    "artist": "Christina Aguilera",
+    "title": "The Christmas Song (Chestnuts Roasting On An Open Fire)",
+    "seconds": 267
+  },
+  {
+    "artist": "Cliff Richard",
+    "title": "Mistletoe And Wine",
+    "seconds": 241
+  },
+  {
+    "artist": "Cliff Richard",
+    "title": "Saviours Day",
+    "seconds": 254
+  },
+  {
+    "artist": "Coldplay",
+    "title": "Christmas Lights",
+    "seconds": 243
+  },
+  {
+    "artist": "Corinne Bailey Rae",
+    "title": "This Christmas",
+    "seconds": 200
+  },
+  {
+    "artist": "Darlene Love",
+    "title": "All Alone On Christmas",
+    "seconds": 249
+  },
+  {
+    "artist": "Darlene Love",
+    "title": "Christmas (Baby Please Come Home)",
+    "seconds": 162
+  },
+  {
+    "artist": "David Archuleta",
+    "title": "Christmas Every Day",
+    "seconds": 220
+  },
+  {
+    "artist": "Dean Martin",
+    "title": "Baby, It's Cold Outside",
+    "seconds": 140
+  },
+  {
+    "artist": "Dean Martin",
+    "title": "Let It Snow! Let It Snow! Let It Snow!",
+    "seconds": 114
+  },
+  {
+    "artist": "Dido",
+    "title": "Christmas Day",
+    "seconds": 241
+  },
+  {
+    "artist": "East 17",
+    "title": "Stay Another Day",
+    "seconds": 265
+  },
+  {
+    "artist": "Ed Sheeran & Elton John",
+    "title": "Merry Christmas",
+    "seconds": 206
+  },
+  {
+    "artist": "Ella Fitzgerald & Louis Armstrong",
+    "title": "I've Got My Love To Keep Me Warm",
+    "seconds": 194
+  },
+  {
+    "artist": "Elsa and Anna",
+    "title": "Ring in the Season",
+    "seconds": 122
+  },
+  {
+    "artist": "Elton John",
+    "title": "Step Into Christmas",
+    "seconds": 235
+  },
+  {
+    "artist": "Elvis Presley",
+    "title": "Blue Christmas",
+    "seconds": 130
+  },
+  {
+    "artist": "Frank Sinatra",
+    "title": "Let It Snow! Let It Snow! Let It Snow!",
+    "seconds": 153
+  },
+  {
+    "artist": "Freiheit",
+    "title": "Keeping The Dream Alive",
+    "seconds": 228
+  },
+  {
+    "artist": "Freya Skye",
+    "title": "Snow Angels",
+    "seconds": 194
+  },
+  {
+    "artist": "Gabriella Cilmi ",
+    "title": "Warm this Winter",
+    "seconds": 151
+  },
+  {
+    "artist": "Gary Barlow",
+    "title": "How Christmas Is Supposed To Be",
+    "seconds": 154
+  },
+  {
+    "artist": "George Ezra",
+    "title": "Come On Home For Christmas",
+    "seconds": 167
+  },
+  {
+    "artist": "Geraldine McQueen",
+    "title": "Once Upon a Christmas Song",
+    "seconds": 202
+  },
+  {
+    "artist": "Greg Lake",
+    "title": "I Believe In Father Christmas",
+    "seconds": 209
+  },
+  {
+    "artist": "Gregory Porter",
+    "title": "Christmas Wish",
+    "seconds": 232
+  },
+  {
+    "artist": "Gwen Stefani",
+    "title": "Hot Cocoa",
+    "seconds": 215
+  },
+  {
+    "artist": "Gwen Stefani ",
+    "title": "Secret Santa",
+    "seconds": 207
+  },
+  {
+    "artist": "Hall & Oates",
+    "title": "Jingle Bell Rock",
+    "seconds": 125
+  },
+  {
+    "artist": "Hanson",
+    "title": "What Christmas Means To Me",
+    "seconds": 211
+  },
+  {
+    "artist": "Heidi Anne",
+    "title": "Dear Santa",
+    "seconds": 224
+  },
+  {
+    "artist": "Idina Menzel",
+    "title": "We Wish You The Merriest",
+    "seconds": 147
+  },
+  {
+    "artist": "Jamie Cullum ",
+    "title": "Christmas Never Gets Old",
+    "seconds": 159
+  },
+  {
+    "artist": "Jason Mraz",
+    "title": "Winter Wonderland",
+    "seconds": 127
+  },
+  {
+    "artist": "Jessica Braithwaite",
+    "title": "I Still Get Excited For Christmas",
+    "seconds": 200
+  },
+  {
+    "artist": "Jessie J",
+    "title": "This Christmas Day",
+    "seconds": 225
+  },
+  {
+    "artist": "John Legend",
+    "title": "Bring Me Love",
+    "seconds": 201
+  },
+  {
+    "artist": "John Lennon",
+    "title": "Happy Xmas (War Is Over)",
+    "seconds": 207
+  },
+  {
+    "artist": "Johnny Mathis",
+    "title": "When a Child Is Born",
+    "seconds": 219
+  },
+  {
+    "artist": "Jon Bon Jovi",
+    "title": "Please Come Home For Christmas",
+    "seconds": 172
+  },
+  {
+    "artist": "Jona Lewie",
+    "title": "Stop The Cavalry",
+    "seconds": 175
+  },
+  {
+    "artist": "Jonas Brothers",
+    "title": "Coming Home This Christmas",
+    "seconds": 207
+  },
+  {
+    "artist": "Katy Perry",
+    "title": "Cozy Little Christmas",
+    "seconds": 186
+  },
+  {
+    "artist": "Kelly Clarkson",
+    "title": "Underneath The Tree",
+    "seconds": 218
+  },
+  {
+    "artist": "Kelly Clarkson and Brett Eldredge",
+    "title": "Under The Mistletoe",
+    "seconds": 225
+  },
+  {
+    "artist": "Kevin Bacon",
+    "title": "Here It Is Christmastime",
+    "seconds": 211
+  },
+  {
+    "artist": "Kylie Minogue",
+    "title": "White December",
+    "seconds": 188
+  },
+  {
+    "artist": "Kylie Minogue",
+    "title": "I'm Gonna Be Warm This Winter",
+    "seconds": 147
+  },
+  {
+    "artist": "Kylie Minogue",
+    "title": "It's The Most Wonderful Time Of The Year",
+    "seconds": 165
+  },
+  {
+    "artist": "Kylie Minogue",
+    "title": "Santa Baby",
+    "seconds": 202
+  },
+  {
+    "artist": "Kylie Minogue",
+    "title": "Santa Claus Is Coming To Town",
+    "seconds": 136
+  },
+  {
+    "artist": "Laufey",
+    "title": "Santa Claus Is Comin' To Town",
+    "seconds": 159
+  },
+  {
+    "artist": "Lauren Spencer Smith",
+    "title": "Single On The 25th",
+    "seconds": 159
+  },
+  {
+    "artist": "Leona Lewis",
+    "title": "Kiss Me It's Christmas",
+    "seconds": 211
+  },
+  {
+    "artist": "Leona Lewis",
+    "title": "One More Sleep",
+    "seconds": 238
+  },
+  {
+    "artist": "Liam Payne",
+    "title": "Naughty List",
+    "seconds": 156
+  },
+  {
+    "artist": "Lindsey Lohan",
+    "title": "Jingle Bell Rock",
+    "seconds": 176
+  },
+  {
+    "artist": "Little Mix",
+    "title": "One I've Been Missing",
+    "seconds": 193
+  },
+  {
+    "artist": "Maisie Peters",
+    "title": "Together This Christmas",
+    "seconds": 209
+  },
+  {
+    "artist": "Mariah Carey",
+    "title": "All I Want For Christmas Is You",
+    "seconds": 231
+  },
+  {
+    "artist": "Mariah Carey",
+    "title": "Fall in Love at Christmas",
+    "seconds": 306
+  },
+  {
+    "artist": "Mariah Carey",
+    "title": "Oh Santa",
+    "seconds": 200
+  },
+  {
+    "artist": "Matt Terry",
+    "title": "When Christmas comes around",
+    "seconds": 200
+  },
+  {
+    "artist": "Megan Trainor",
+    "title": "My Kind Of Present",
+    "seconds": 163
+  },
+  {
+    "artist": "Meghan Trainor",
+    "title": "Gifts For Me",
+    "seconds": 150
+  },
+  {
+    "artist": "Mel & Kim",
+    "title": "Rockin Around The Christmas Tree",
+    "seconds": 181
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "All I Want For Christmas Is You",
+    "seconds": 170
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "Christmas (Baby Please Come Home)",
+    "seconds": 186
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "It's Beginning To Look A Lot Like Christmas",
+    "seconds": 204
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "Jingle Bells",
+    "seconds": 158
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "Santa Claus Is Coming To Town",
+    "seconds": 169
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "The Christmas Sweater",
+    "seconds": 219
+  },
+  {
+    "artist": "Michael Buble",
+    "title": "The More You Give",
+    "seconds": 192
+  },
+  {
+    "artist": "Miley Cyrus",
+    "title": "Santa Claus Is Coming to Town",
+    "seconds": 144
+  },
+  {
+    "artist": "Mud",
+    "title": "Lonely This Christmas",
+    "seconds": 212
+  },
+  {
+    "artist": "N Sync",
+    "title": "I Dont Wanna Spend One More Xmas Without u",
+    "seconds": 242
+  },
+  {
+    "artist": "Natasha Bedingfield",
+    "title": "Shake Up Christmas",
+    "seconds": 227
+  },
+  {
+    "artist": "Neon Trees",
+    "title": "Holiday Rock",
+    "seconds": 185
+  },
+  {
+    "artist": "Paloma Faith",
+    "title": "Christmas Prayer",
+    "seconds": 200
+  },
+  {
+    "artist": "Pat Benatar",
+    "title": "Please Come Home For Christmas",
+    "seconds": 185
+  },
+  {
+    "artist": "Paul Burling",
+    "title": "Another Christmas Song",
+    "seconds": 187
+  },
+  {
+    "artist": "Paul McCartney",
+    "title": "Wonderful Christmastime",
+    "seconds": 225
+  },
+  {
+    "artist": "Pentatonix",
+    "title": "Kid On Christmas",
+    "seconds": 200
+  },
+  {
+    "artist": "Pentatonix ",
+    "title": "Rockin Around The Christmas Tree",
+    "seconds": 127
+  },
+  {
+    "artist": "Pogues",
+    "title": "Fairytale of New York",
+    "seconds": 240
+  },
+  {
+    "artist": "Queen",
+    "title": "Thank God It's Christmas",
+    "seconds": 255
+  },
+  {
+    "artist": "Robbie Williams",
+    "title": "Bad Sharon ft.",
+    "seconds": 220
+  },
+  {
+    "artist": "Robbie Williams",
+    "title": "Can't stop Christmas",
+    "seconds": 202
+  },
+  {
+    "artist": "Sam Ryder",
+    "title": "You're Christmas to me",
+    "seconds": 205
+  },
+  {
+    "artist": "Santa, Can't You Hear Me",
+    "title": "Kelly Clarkson & Ariana Grande",
+    "seconds": 237
+  },
+  {
+    "artist": "Scottish Quest All Stars",
+    "title": "Santa is a Scotsman",
+    "seconds": 215
+  },
+  {
+    "artist": "Scouting For Girls",
+    "title": "Christmas In The Air Tonight",
+    "seconds": 185
+  },
+  {
+    "artist": "Scouting For Girls",
+    "title": "Kids At Christmas",
+    "seconds": 178
+  },
+  {
+    "artist": "Shakin Stevens",
+    "title": "Merry Christmas Everyone",
+    "seconds": 218
+  },
+  {
+    "artist": "Sia",
+    "title": "Candy Cane Lane",
+    "seconds": 213
+  },
+  {
+    "artist": "Sia",
+    "title": "My Old Santa Claus",
+    "seconds": 204
+  },
+  {
+    "artist": "Sia",
+    "title": "Naughty & Nice",
+    "seconds": 131
+  },
+  {
+    "artist": "Sia",
+    "title": "Santa's Coming For Us",
+    "seconds": 207
+  },
+  {
+    "artist": "Slade",
+    "title": "Merry Xmas Everybody",
+    "seconds": 205
+  },
+  {
+    "artist": "Spice Girls",
+    "title": "Christmas Wrapping",
+    "seconds": 253
+  },
+  {
+    "artist": "Spice Girls",
+    "title": "Sleigh Ride",
+    "seconds": 114
+  },
+  {
+    "artist": "Stacie Orrico",
+    "title": "Christmas Wish",
+    "seconds": 237
+  },
+  {
+    "artist": "Stevie Wonder",
+    "title": "Silver Bells",
+    "seconds": 143
+  },
+  {
+    "artist": "Susy Wall",
+    "title": "All wrapped up",
+    "seconds": 190
+  },
+  {
+    "artist": "Swv",
+    "title": "Give Love On Christmas Day",
+    "seconds": 232
+  },
+  {
+    "artist": "Taylor Swift",
+    "title": "Christmas Tree Farm",
+    "seconds": 225
+  },
+  {
+    "artist": "Taylor Swift ",
+    "title": "Santa Baby",
+    "seconds": 120
+  },
+  {
+    "artist": "The Darkness",
+    "title": "Christmas Time",
+    "seconds": 208
+  },
+  {
+    "artist": "The Jackson 5",
+    "title": "Santa Claus Is Coming To Town",
+    "seconds": 139
+  },
+  {
+    "artist": "The Pointer Sisters",
+    "title": "Santa Claus Is Coming To Town",
+    "seconds": 195
+  },
+  {
+    "artist": "The Ronettes",
+    "title": "Sleigh Ride",
+    "seconds": 177
+  },
+  {
+    "artist": "The Weather Girls",
+    "title": "Dear Santa (Bring Me A Man This Christmas)",
+    "seconds": 232
+  },
+  {
+    "artist": "Tom Jones & C Matthews",
+    "title": "Baby, Its Cold Outside",
+    "seconds": 219
+  },
+  {
+    "artist": "Toni Braxton",
+    "title": "Holiday Celebrate",
+    "seconds": 237
+  },
+  {
+    "artist": "Train",
+    "title": "Shake Up Christmas",
+    "seconds": 205
+  },
+  {
+    "artist": "Trijntje Oosterhuis",
+    "title": "Merry Christmas Baby",
+    "seconds": 230
+  },
+  {
+    "artist": "Waitresses",
+    "title": "Christmas Wrapping",
+    "seconds": 253
+  },
+  {
+    "artist": "Wham!",
+    "title": "Last Christmas",
+    "seconds": 261
+  },
+  {
+    "artist": "Whitney Houston",
+    "title": "The First Noel",
+    "seconds": 196
+  },
+  {
+    "artist": "Wizzard",
+    "title": "I Wish It Could Be Christmas Everyday",
+    "seconds": 277
+  }
+]

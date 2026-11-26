@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useRadioMetadata from './useRadioMetadata.js';
 import useSnowEffects from './useSnowEffects.js';
 import { RadioContext } from './radio-context.js';
+import { upcomingSchedule } from '../lib/radio-schedule.js';
 export { useRadio } from './radio-context.js';
 
 const DEMO_VOLUME_FACTOR = 0.12;
@@ -14,6 +15,7 @@ export function RadioProvider({ children }) {
   const owner = useRef('radio');
   const [status, setStatus] = useState('idle');
   const metadata = useRadioMetadata(status === 'playing' || status === 'loading');
+  const upcoming = upcomingSchedule(metadata);
   const [volume, setVolume] = useState(.7);
   const [activeDemo, setActiveDemo] = useState(null);
   const [error, setError] = useState('');
@@ -93,7 +95,7 @@ export function RadioProvider({ children }) {
     if (contender.current === audio) contender.current = null;
   };
   return (
-    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, duckForDemo, claimContender, releaseContender, effects, setEffects, metadata }}>
+    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, duckForDemo, claimContender, releaseContender, effects, setEffects, metadata, upcoming }}>
       <audio ref={audioRef} src={STREAM_URL} preload="none" onError={fail}
         onWaiting={() => {
           setStatus(current => current === 'playing' ? 'loading' : current);

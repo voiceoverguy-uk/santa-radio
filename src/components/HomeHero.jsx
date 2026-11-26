@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import { RadioButton } from './AudioPlayer.jsx';
 import NowPlayingArtwork from './NowPlayingArtwork.jsx';
+import HomeUpcoming from './HomeUpcoming.jsx';
 import Countdown from './Countdown.jsx';
 import SantaFlyby from './SantaFlyby.jsx';
 import { useBlackFridayOfferWindow } from './BlackFridayOffer.jsx';
@@ -118,6 +119,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
                   <RadioButton className="btn-red" />
                 </div>
               </div>
+              <HomeUpcoming />
               <div id="christmas-countdown" className="hero-countdown"><Countdown showBlackFriday={!preview} /></div>
             </div>
           </div>

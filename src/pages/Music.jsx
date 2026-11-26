@@ -8,6 +8,7 @@ import { randomSongOrder } from '../data/randomSongOrder.js';
 
 import { useRadio } from '../components/radio-context.js';
 import { matchLiveSong } from '../data/matchLiveSong.js';
+import { formatPlayTime } from '../lib/radio-schedule.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
 
@@ -18,7 +19,7 @@ function ArtistAvatar({ song }) {
 }
 
 export default function Music() {
-  const { metadata } = useRadio();
+  const { upcoming: scheduled = [] } = useRadio();
   const [desktop, setDesktop] = useState(false);
   useEffect(() => {
     const query = window.matchMedia('(min-width: 901px)');
@@ -36,8 +37,8 @@ export default function Music() {
     s.song.toLowerCase().includes(search.toLowerCase())
   );
 
-  const upcoming = desktop && order === 'random' && !search.trim() && metadata?.upcomingStatus === 'ready'
-    ? (metadata.upcoming || []).filter(track => track && (track.title || track.artist)).slice(0, 3)
+  const upcoming = desktop && order === 'random' && !search.trim()
+    ? scheduled
       .map(track => ({ track, song: matchLiveSong(track, songsData).song }))
     : [];
   const upcomingIds = new Set(upcoming.map(item => item.song?.id));
@@ -87,6 +88,7 @@ export default function Music() {
                   <strong>{song?.artist || track.artist}</strong>
                   <span>{song?.song || track.title}</span>
                   <span className="song-coming-up">Coming up <span className="song-coming-up-position">· {index + 1}</span></span>
+                  {track.estimatedAt !== null && <span className="song-coming-up">Expected at {formatPlayTime(track.estimatedAt)}</span>}
                 </div>
               </Card>
             );

@@ -1,0 +1,7 @@
+.home-upcoming { margin: 8px 0 4px; min-width: 0; color: var(--cream); }
+.home-upcoming h2 { margin: 0 0 5px; color: var(--gold-light); font-family: inherit; font-weight: 600; font-size: .85rem; line-height: 1.3; }
+.home-upcoming ol { list-style: none; margin: 0; padding: 0; }
+.home-upcoming li { display: flex; flex-wrap: wrap; gap: 0 6px; align-items: baseline; margin-top: 4px; font-size: .8rem; line-height: 1.35; }
+.home-upcoming__track { min-width: 0; overflow-wrap: anywhere; }
+.home-upcoming strong { font-weight: 600; }
+.home-upcoming time { color: var(--gold-light); white-space: nowrap; font-variant-numeric: tabular-nums; }
