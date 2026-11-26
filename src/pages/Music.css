@@ -264,3 +264,24 @@
 .music-page div.song-card-upcoming {
   cursor: default;
 }
+
+/* Festive gold wrapping and a double frame for the upcoming tracks. */
+.music-page .song-card-upcoming {
+  border: 1px solid #d7b56c;
+  background:
+    radial-gradient(ellipse at center, #173a2bef 22%, #142b20d9 65%, #92703933),
+    url('./music-wrap-tile.svg') center / 150px 150px repeat,
+    linear-gradient(135deg, #b78a36, #f1d18a 35%, #76501c 70%, #e5bf6a);
+  box-shadow: inset 0 0 0 4px #10291e, inset 0 0 0 5px #d7b56c88;
+}
+.music-page .song-card-upcoming--soon {
+  border-color: #ffe6a0;
+  animation: upcoming-track-glow 2s ease-in-out infinite;
+}
+@keyframes upcoming-track-glow {
+  0%, 100% { box-shadow: inset 0 0 0 4px #10291e, inset 0 0 0 5px #ffe6a0aa, 0 0 12px #edc66b66; }
+  50% { box-shadow: inset 0 0 0 4px #10291e, inset 0 0 0 5px #ffe6a0, 0 0 26px 3px #edc66baa; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-page .song-card-upcoming--soon { animation: none; box-shadow: inset 0 0 0 4px #10291e, inset 0 0 0 5px #ffe6a0, 0 0 18px #edc66b99; }
+}

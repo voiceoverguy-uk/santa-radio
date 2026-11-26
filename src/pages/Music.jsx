@@ -9,6 +9,7 @@ import { randomSongOrder } from '../data/randomSongOrder.js';
 import { useRadio } from '../components/radio-context.js';
 import { matchLiveSong } from '../data/matchLiveSong.js';
 import { formatPlayTime } from '../lib/radio-schedule.js';
+import { isTrackAboutToPlay } from '../lib/upcomingTrackGlow.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
 
@@ -16,6 +17,28 @@ function ArtistAvatar({ song }) {
   return (
     <SongArtwork song={song} className="artist-avatar-img" width="120" height="120" loading="lazy" />
   );
+}
+
+function UpcomingSongCard({ track, song, index }) {
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (!Number.isFinite(track.estimatedAt)) return;
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [track.estimatedAt]);
+  const aboutToPlay = isTrackAboutToPlay(track.estimatedAt, now);
+  const Card = song ? Link : 'div';
+  return <Card {...(song ? { to: `/christmas-artist/${song.id}-${song.link}` } : {})}
+    className={`song-card song-card-upcoming${aboutToPlay ? ' song-card-upcoming--soon' : ''}`}>
+    <ArtistAvatar song={song || { artist: track.artist || '', song: track.title || '' }} />
+    <div className="song-info">
+      <strong>{song?.artist || track.artist}</strong>
+      <span>{song?.song || track.title}</span>
+      <span className="song-coming-up">{aboutToPlay ? 'About to play' : 'Coming up'} <span className="song-coming-up-position">· {index + 1}</span></span>
+      {Number.isFinite(track.estimatedAt) && <span className="song-coming-up">Expected at {formatPlayTime(track.estimatedAt)}</span>}
+    </div>
+  </Card>;
 }
 
 export default function Music() {
@@ -77,22 +100,9 @@ export default function Music() {
 
       <div className="music-grid-section starry-bg">
         <div className="container music-grid">
-          {upcoming.map(({ track, song }, index) => {
-            const Card = song ? Link : 'div';
-            return (
-              <Card key={`upcoming-${index}-${track.artist}-${track.title}`}
-                {...(song ? { to: `/christmas-artist/${song.id}-${song.link}` } : {})}
-                className="song-card song-card-upcoming">
-                <ArtistAvatar song={song || { artist: track.artist || '', song: track.title || '' }} />
-                <div className="song-info">
-                  <strong>{song?.artist || track.artist}</strong>
-                  <span>{song?.song || track.title}</span>
-                  <span className="song-coming-up">Coming up <span className="song-coming-up-position">· {index + 1}</span></span>
-                  {track.estimatedAt !== null && <span className="song-coming-up">Expected at {formatPlayTime(track.estimatedAt)}</span>}
-                </div>
-              </Card>
-            );
-          })}
+          {upcoming.map(({ track, song }, index) => <UpcomingSongCard
+            key={`upcoming-${index}-${track.artist}-${track.title}`}
+            track={track} song={song} index={index} />)}
           {catalogueSongs.map((s) => (
             <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
               <ArtistAvatar song={s} />
