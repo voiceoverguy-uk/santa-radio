@@ -9,11 +9,9 @@ function SantaCooldownUpsell({ name = null, prelaunch = true, highlight = false,
     <section className="message-cooldown-upsell" aria-label="Full Santa video offer">
       <p className="message-cooldown-upsell__eyebrow">Loved their free message? There’s more!</p>
       <h4 className="message-cooldown-upsell__heading">Make a full Santa video {name ? `for ${name}` : 'for your child'}</h4>
-      <p className="message-cooldown-upsell__copy">Santa talks about their name, age and the things they’ve done well. You choose the details!</p>
-      <p className="message-cooldown-upsell__copy">Includes a letter from Santa and a Nice List certificate to print and keep.</p>
+      <p className="message-cooldown-upsell__copy">Santa knows their name, age and good deeds — plus a letter and Nice List certificate to keep.</p>
       {!prelaunch && <p className="message-cooldown-upsell__price">
         <strong>{blackFriday ? '£3.25 with code HALFPRICE' : '£6.50'}</strong>
-        <span>{blackFriday ? 'Black Friday · Usually £6.50. Includes two video creations.' : 'Includes two video creations.'}</span>
       </p>}
       <a className={`message-cooldown-upsell__link${highlight ? ' message-cooldown-upsell__link--highlight' : ''}`}
         href={`${BESPOKE_MESSAGES_PATH}#${kidsOffer.id}`} onClick={onExplore}
