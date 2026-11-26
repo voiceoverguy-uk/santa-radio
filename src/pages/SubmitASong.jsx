@@ -2,7 +2,7 @@ import SongMediaField from '../components/SongMediaField.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  buildSponsorshipMessage, buildSongMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
+  buildSponsorshipMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
   SongSubmissionError, submitSong, validateSongFields,
 } from '../lib/songSubmission.js';
 import { formatUkDate } from '../lib/ukDates.js';
@@ -195,21 +195,22 @@ export default function SubmitASong() {
               </div>
             </fieldset>
             {isSong ? <>
-            <p>Have a Christmas recording you’d like us to consider? Upload your MP3 and artwork below, or paste a secure link for either.</p>
+            <p>Have a Christmas recording you’d like us to consider? Upload your MP3 and square artwork below.</p>
             <section className="song-requirements" aria-labelledby="song-requirements-title">
               <h2 id="song-requirements-title">Before you send your song</h2>
               <p>Please include <strong>the following details</strong> before submitting:</p>
               <ul id="song-requirements-checklist">
                 <li>Artist name</li>
                 <li>Song title</li>
-                <li>Your MP3 or a listening link</li>
+                <li>Your MP3 and Square Artwork</li>
                 <li>A short bio or description</li>
+                <li>No A.I. songs</li>
                 <li>A link to any promotion of Santa Radio</li>
               </ul>
-              <p>Keep the complete serialized message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending.</p>
+              <p>Keep the message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
-            <p>We manually screen full lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide whether to feature the song. Any competition submission cutoff will be shown on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
+            <p>We screen lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide to feature the song. Suitable songs will feature on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
             </> : isSponsorship ? <>
               <p>For Christmas-related brands—including gifts, decorations, festive food and attractions—ask about joining Santa Radio’s Christmas 2026 campaign.</p>
               <section className="sponsorship-offer" aria-labelledby="sponsorship-offer-title">
@@ -265,9 +266,9 @@ export default function SubmitASong() {
               </> : <>
                 {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
                 <p className="song-guidance" id="song-message-help">{isSong
-                  ? 'Include the artist name, song title, a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check your links work.'
+                  ? 'Keep the whole message within 500 characters and check your links work.'
                   : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
-                <p className="song-character-count" id="song-message-count" role={isSong && buildSongMessage(fields).length > 500 ? 'alert' : undefined}>{isSong ? buildSongMessage(fields).length : fields.SONG_REQUEST.length} / 500 characters{isSong && ' in the complete message sent to Brevo'}</p>
+                <p className="song-character-count" id="song-message-count">{fields.SONG_REQUEST.length} / 500 characters</p>
               </>}
               {isSong && <>
                 <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending || uploading}
@@ -277,7 +278,7 @@ export default function SubmitASong() {
                   onChange={value=>onChange(name,value)} busy={pending || uploading} onBusy={setUploading} error={errors[name]}/>)}
                 <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending || uploading}
                   required aria-invalid={Boolean(errors.hostPermission)} aria-describedby={errors.hostPermission ? 'song-permission-error' : undefined}
-                  onChange={event => onChange('hostPermission', event.target.checked)} /> I have permission for Santa Radio to host and broadcast this recording and use its artwork</label>
+                  onChange={event => onChange('hostPermission', event.target.checked)} /> Santa Radio has permission to host and broadcast this recording and use its artwork.</label>
                 {errors.hostPermission && <p id="song-permission-error" className="song-field-error">{errors.hostPermission}</p>}
               </>}
               {isSong && <div className="song-criteria-field">
@@ -298,10 +299,10 @@ export default function SubmitASong() {
               </div>
               <input type="hidden" name="locale" value="en" />
               <p className="song-privacy">{isSong
-                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately to Brevo to handle your song submission. Uploaded files are stored privately and can be downloaded by anyone with their review link.'
+                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent to Brevo as your enquiry.'
-                  : 'Your name, email and message are sent to Brevo to handle your enquiry.'} This does not give consent for marketing. Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
+                  : 'Your name, email and message are sent to Brevo to handle your enquiry.'}{!isSong && ' This does not give consent for marketing.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
               {error && <p className="song-form-alert" role="alert">{error}</p>}
               <button className="song-submit-button" type="submit" disabled={pending || uploading}>{pending
                 ? (isSong ? 'Submitting your song…' : isSponsorship ? 'Sending your sponsorship enquiry…' : 'Sending your enquiry…')

@@ -23,18 +23,15 @@ export default function SongMediaField({audio,value,onChange,busy,onBusy,error})
         onUploadProgress:({percentage})=>setNotice('Uploading '+file.name+' — '+Math.round(percentage)+'%')});
       onChange(window.location.origin+'/api/song-media?file='+key);
       setUploaded(file.name);setNotice('Uploaded: '+file.name);
-    } catch {setNotice('Upload failed. Try again or paste a secure link below.');}
+    } catch {setNotice('Upload failed. Please try again.');}
     finally {onBusy(false);}
   }
   return <div className="song-field">
     <label>{audio?'Upload MP3':'Upload artwork'} ({maximum} MB max)
-      <input type="file" accept={Object.keys(formats).map(ext=>'.'+ext).join(',')} disabled={busy} onChange={choose}/>
+      <input type="file" accept={Object.keys(formats).map(ext=>'.'+ext).join(',')} name={name} disabled={busy} onChange={choose} aria-invalid={Boolean(error)} aria-describedby={error ? `${name}-error` : undefined}/>
     </label>
     <p role="status">{notice}</p>
-    {uploaded && value ? <button type="button" disabled={busy} onClick={()=>{onChange('');setUploaded('');setNotice('');}}>Remove {audio?'MP3':'artwork'}</button> :
-      <label>{audio?'Or paste a secure audio or listening link':'Or paste a secure artwork link'}
-        <input type="url" name={name} value={value} maxLength={400} placeholder="https://…" disabled={busy} onChange={e=>onChange(e.target.value)} aria-invalid={Boolean(error)}/>
-      </label>}
-    {error && <p className="song-field-error">{error}</p>}
+    {uploaded && value && <button type="button" disabled={busy} onClick={()=>{onChange('');setUploaded('');setNotice('');}}>Remove {audio?'MP3':'artwork'}</button>}
+    {error && <p id={`${name}-error`} className="song-field-error">{error}</p>}
   </div>;
 }

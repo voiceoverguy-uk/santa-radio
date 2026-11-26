@@ -45,7 +45,7 @@ export function validateSongFields(fields, mode = 'song') {
         const value = fields[name];
         const url = new URL(value);
         if (typeof value !== 'string' || value.length > 400 || url.protocol !== 'https:' || url.username || url.password) throw new Error();
-      } catch { errors[name] = 'Provide a secure https:// link, up to 400 characters, with no embedded credentials.'; }
+      } catch { errors[name] = name === 'audioLink' ? 'Please upload your MP3.' : name === 'artworkLink' ? 'Please upload your square artwork.' : 'Provide a secure https:// link, up to 400 characters, with no embedded credentials.'; }
     }
     if (fields.hostPermission !== true) errors.hostPermission = 'Please confirm permission to host and broadcast this recording and artwork.';
     if (buildSongMessage(fields).length > 500) errors.SONG_REQUEST = 'The complete message, including lyrics, media links and permission, exceeds 500 characters. Shorten your details or use shorter secure links; nothing has been sent.';
