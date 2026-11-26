@@ -365,3 +365,17 @@
 .more-artist-songs a span { font-size: .8rem; color: var(--muted, #d0d7c9); }
 @media (max-width: 900px) { .more-artist-songs ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
 @media (max-width: 360px) { .more-artist-songs ul { grid-template-columns: 1fr; } }
+
+/* Compact lyrics disclosure beneath the artist background. */
+.song-detail-main .song-lyrics-section summary {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d4af3766;
+  border-radius: 8px;
+  color: var(--gold-light, #ead39a);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+.song-detail-main .song-lyrics-section[open] summary { margin-bottom: 12px; }
