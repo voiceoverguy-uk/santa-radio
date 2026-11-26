@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import HomepageSantaRunner from './HomepageSantaRunner.jsx';
-import { advanceRound, jumpHeight, newRound, ROUND_MS } from './miniSantaDash.js';
+import { advanceRound, jumpHeight, pressJump, releaseJump, newRound, ROUND_MS } from './miniSantaDash.js';
 import './MiniSantaDash.css';
 
 export default function MiniSantaDash({ onFinishedChange }) {
@@ -10,6 +10,7 @@ export default function MiniSantaDash({ onFinishedChange }) {
   const [hidden, setHidden] = useState(false);
   const [paused, setPaused] = useState(false);
   const root = useRef(null);
+  const pointer = useRef(null);
   const audio = useRef({ context: null, buffer: null });
   const [muted, setMuted] = useState(false);
   const mutedRef = useRef(false);
@@ -92,11 +93,28 @@ export default function MiniSantaDash({ onFinishedChange }) {
     requestAnimationFrame(() => arena.current?.focus({ preventScroll: true }));
   }
   function jump() {
-    if (active && state.current.jump === null && state.current.elapsed >= state.current.tripUntil) {
-      state.current = { ...state.current, jump: 0 };
-      setRound(state.current);
-    }
+    if (!active || state.current.held) return;
+    enableSound();
+    state.current = pressJump(state.current);
+    setRound(state.current);
   }
+  function release() {
+    pointer.current = null;
+    state.current = releaseJump(state.current);
+  }
+  useEffect(() => {
+    if (!active) release();
+  }, [active]);
+  useEffect(() => {
+    window.addEventListener('blur', release);
+    window.addEventListener('pointerup', release);
+    window.addEventListener('keyup', release);
+    return () => {
+      window.removeEventListener('blur', release);
+      window.removeEventListener('pointerup', release);
+      window.removeEventListener('keyup', release);
+    };
+  }, []);
   function close() {
     setMode('idle');
     requestAnimationFrame(() => startButton.current?.focus({ preventScroll: true }));
@@ -106,25 +124,35 @@ export default function MiniSantaDash({ onFinishedChange }) {
     {mode === 'idle' ? <button ref={startButton} className="mini-santa-dash__start" onClick={start} aria-label="Play Mini Santa Dash for one minute">
       <HomepageSantaRunner />
       <span>Tap Santa for a one-minute mince-pie dash</span>
-    </button> : <div className="mini-santa-dash__game">
-      <div className="mini-santa-dash__toolbar">
+    </button> : <div className={`mini-santa-dash__game${mode === 'finished' ? ' mini-santa-dash__game--finished' : ''}`}>
+      {mode !== 'finished' && <div className="mini-santa-dash__toolbar">
         <strong>Mini Santa Dash</strong>
         <span aria-label={`${Math.ceil((ROUND_MS - round.elapsed) / 1000)} seconds remaining`}>{Math.ceil((ROUND_MS - round.elapsed) / 1000)}s</span>
         <span>{round.score} {round.score === 1 ? 'pie' : 'pies'}</span>
         {mode === 'playing' && <button onClick={() => setPaused(value => !value)}>{paused ? 'Resume' : 'Pause'}</button>}
         {mode === 'playing' && <button aria-pressed={muted} onClick={() => { enableSound(); mutedRef.current = !muted; setMuted(!muted); }}>{muted ? 'Sound on' : 'Mute sound'}</button>}
         <button onClick={close}>Close</button>
-      </div>
+      </div>}
       {mode === 'finished' ? <div className="mini-santa-dash__result" role="status">
         <img src="/images/tracker/mince-pie.png" width="64" height="64" alt="" />
         <strong>Congratulations!</strong>
         <p>You collected {round.score} mince {round.score === 1 ? 'pie' : 'pies'}!</p>
         <p>Your mince pie score <b>{round.score * 10}</b></p>
         <p>Enjoyed that? Download Santa Dash using the highlighted button above.</p>
-        <small>Returning to the homepage in 4 seconds…</small>
       </div> : <>
-        <button ref={arena} type="button" className="mini-santa-dash__arena" onClick={jump}
-          aria-label="Jump for a mince pie. Press Space or Enter, or tap to jump."
+        <button ref={arena} type="button" className="mini-santa-dash__arena"
+          onPointerDown={event => {
+            if (event.button !== 0 || pointer.current !== null) return;
+            event.preventDefault();
+            pointer.current = event.pointerId;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            event.currentTarget.focus({ preventScroll: true });
+            jump();
+          }}
+          onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release} onBlur={release}
+          onClick={event => { if (event.detail === 0 && !state.current.held) { jump(); release(); } }}
+          onKeyUp={event => { if (event.code === 'Space' || event.code === 'Enter') { event.preventDefault(); release(); } }}
+          aria-label="Jump for a mince pie. Press Space or Enter, or tap. Hold longer to jump higher."
           aria-describedby="mini-santa-dash-instructions"
           onKeyDown={event => {
             if (event.code === 'Space' || event.code === 'Enter') {
@@ -132,14 +160,14 @@ export default function MiniSantaDash({ onFinishedChange }) {
               if (!event.repeat) jump();
             }
           }}>
-          <span className="mini-santa-dash__santa" data-tripped={round.elapsed < round.tripUntil} style={{ transform: round.elapsed < round.tripUntil ? 'translate(-50%, 6px) rotate(65deg)' : `translate(-50%, ${-jumpHeight(round.jump)}px)` }}>
+          <span className="mini-santa-dash__santa" data-tripped={round.elapsed < round.tripUntil} style={{ transform: round.elapsed < round.tripUntil ? 'translate(-50%, 6px) rotate(65deg)' : `translate(-50%, ${-jumpHeight(round)}px)` }}>
             <picture><source media="(prefers-reduced-motion: reduce)" srcSet="/images/studio-runners/classic-still.png" /><img src="/images/studio-runners/classic.webp" alt="" width="60" height="64" draggable="false" /></picture>
           </span>
           {round.pies.map(pie => <img key={pie.id} className="mini-santa-dash__pie" src="/images/tracker/mince-pie.png" alt="" draggable="false" style={{ left: `${pie.x * 100}%`, bottom: `${pie.height + 12}px` }} />)}
           {round.obstacles.map(item => <img key={item.id} className={`mini-santa-dash__obstacle mini-santa-dash__obstacle--${item.kind}`} src={`/media/studio-mini-dash/${item.kind}.png`} alt="" draggable="false" style={{ left: `${item.x * 100}%` }} />)}
           {!active && <span className="mini-santa-dash__paused">Paused</span>}
         </button>
-        <p id="mini-santa-dash-instructions">Tap the game or press Space to jump. Collect pies and jump over Gary, trees, and snowmen. Each trip costs 2 pies!</p>
+        <p id="mini-santa-dash-instructions">Tap the game or press Space to jump. Hold longer to jump higher. Collect pies and jump over Gary, trees, and snowmen. Each trip costs 2 pies!</p>
       </>}
     </div>}
   </div>;

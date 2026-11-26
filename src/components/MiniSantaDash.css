@@ -7,20 +7,26 @@
 .mini-santa-dash__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; padding: 12px; font-variant-numeric: tabular-nums; }
 .mini-santa-dash__toolbar strong { margin-right: auto; color: #f4d888; }
 .mini-santa-dash__toolbar button, .mini-santa-dash__result button { min-height: 44px; padding: 8px 14px; color: #fff3d7; border: 1px solid #ad9050; border-radius: 6px; background: #173d2d; }
-.mini-santa-dash__arena { position: relative; display: block; width: 100%; height: 230px; overflow: hidden; padding: 0; border: 0; border-block: 1px solid #ad905060; background: linear-gradient(#102f3b55, #09231a88), url('../assets/home/santa-dash-aurora-background.webp') center 70% / cover; touch-action: manipulation; }
+.mini-santa-dash__arena { position: relative; display: block; width: 100%; height: 244px; overflow: hidden; padding: 0; border: 0; border-block: 1px solid #ad905060; background: linear-gradient(#102f3b55, #09231a88), url('../assets/home/santa-dash-aurora-background.webp') center 70% / cover; touch-action: manipulation; }
 .mini-santa-dash__arena::after { position: absolute; content: ''; bottom: 12px; left: 0; right: 0; height: 2px; background: #e5eee5a0; }
 .mini-santa-dash__santa { position: absolute; left: 16%; bottom: 12px; width: 60px; height: 64px; pointer-events: none; }
 .mini-santa-dash__santa img { display: block; width: 60px; height: 64px; object-fit: contain; }
 .mini-santa-dash__pie { position: absolute; width: 32px; height: 32px; object-fit: contain; transform: translate(-50%, 50%); pointer-events: none; }
 .mini-santa-dash__paused { position: absolute; inset: 0; display: grid; place-items: center; color: #ffe4a2; background: #071d17b8; font-size: 1.5rem; }
 .mini-santa-dash__game > p { margin: 0; padding: 12px 16px; font-size: .85rem; }
-.mini-santa-dash__result { padding: 32px 16px; }
+.mini-santa-dash__result { padding: 14px 16px; }
 .mini-santa-dash button:focus-visible { outline: 3px solid #ffe4a2; outline-offset: -4px; }
 @media (max-width: 400px) { .mini-santa-dash__toolbar { gap: 8px; } .mini-santa-dash__toolbar strong { width: 100%; margin-right: 0; } }
 
-.mini-santa-dash__obstacle { position: absolute; bottom: 12px; width: 44px; height: 60px; object-fit: contain; transform: translateX(-50%); pointer-events: none; }
-.mini-santa-dash__obstacle--gary { width: 74px; height: 100px; }
-.mini-santa-dash__result > img { display: block; margin: 0 auto 10px; }
-.mini-santa-dash__result > strong { display: block; color: #f4d888; font-size: 1.7rem; }
-.mini-santa-dash__result b { display: block; color: #f4d888; font-size: 2rem; }
+.mini-santa-dash__obstacle { position: absolute; bottom: 12px; width: 44px; height: 60px; object-fit: contain; object-position: center bottom; transform: translateX(-50%); pointer-events: none; }
+/* Offset each PNG's transparent bottom padding so visible feet meet the ground line. */
+.mini-santa-dash__obstacle--gary { width: 74px; height: 100px; bottom: 7.64px; }
+.mini-santa-dash__obstacle--snowman { bottom: 12.85px; }
+.mini-santa-dash__obstacle--tree { bottom: 10.25px; }
+.mini-santa-dash__result > img { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+.mini-santa-dash__result > strong { display: block; color: #f4d888; font-size: 1.2rem; }
+.mini-santa-dash__result b { display: block; color: #f4d888; font-size: 1.5rem; }
 .home-page .santa-dash-promo__download--highlighted { outline: 3px solid #ffe096; outline-offset: 5px; background: #f4d888; color: #17372b; box-shadow: 0 0 26px #f4d88899; }
+
+.mini-santa-dash__game--finished { width: min(100%, 600px); margin-inline: auto; }
+.mini-santa-dash__result p { margin: 5px 0 0; font-size: .9rem; line-height: 1.35; }
