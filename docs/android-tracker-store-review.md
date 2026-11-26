@@ -1,7 +1,10 @@
 # Android Santa Tracker review access
 
-The free-studio form includes a collapsed **App store reviewer sign-in** section.
-Use username `play-review` and the private password recorded in Play Console.
+The free-studio form includes a collapsed **Have an access code?** section.
+Enter the private password already recorded in the store console as the access code,
+then choose **Continue with code**. No username needs to be entered; the form
+uses the existing `play-review` identity internally. Apple review instructions
+should point to More → Free Santa Message → Have an access code?.
 The password is not in this repository or the Android app. The server checks its
 SHA-256 digest from `SANTA_TRACKER_REVIEW_PASSWORD_SHA256` in production.
 

@@ -19,28 +19,26 @@ export default function StoreReviewAccess({ onAccepted }) {
       const response = await fetch('/api/santa-message-access', {
         method: 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error',
         headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
-        body: JSON.stringify({ action: 'review-login', username: data.get('username'), password: data.get('password') }),
+        body: JSON.stringify({ action: 'review-login', username: 'play-review', password: String(data.get('accessCode') || '').trim() }),
       });
       const result = await response.json();
-      if (!response.ok || result.success !== true) throw new Error('Review sign-in was not accepted. Check your details and try again.');
+      if (!response.ok || result.success !== true) throw new Error('That access code was not accepted. Check your code and try again.');
       form.reset();
       try { localStorage.removeItem('santa-message-allowance'); } catch { /* Server controls allowance. */ }
-      grantAccess('Reviewer');
+      grantAccess('Guest');
       onAccepted?.();
     } catch (failure) {
-      setError(failure.name === 'AbortError' ? 'Sign-in took too long. Please try again.' : 'Review sign-in was not accepted. Check your details and try again.');
+      setError(failure.name === 'AbortError' ? 'Sign-in took too long. Please try again.' : 'That access code was not accepted. Check your code and try again.');
     } finally { clearTimeout(timeout); busy.current = false; setPending(false); }
   };
   return <details style={{ margin: '16px 0', maxWidth: '100%' }}>
-    <summary>App store reviewer sign-in</summary>
+    <summary>Have an access code?</summary>
     <form onSubmit={submit} style={{ display: 'grid', gap: 12, paddingTop: 12 }}>
-      <p>Use the review credentials supplied in the app store console. This opens the regular free message maker without an email code.</p>
-      <label htmlFor={`${id}-username`}>Review username</label>
-      <input id={`${id}-username`} name="username" autoComplete="username" required maxLength={80} disabled={pending} style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', fontSize: 16 }} />
-      <label htmlFor={`${id}-password`}>Review password</label>
-      <input id={`${id}-password`} name="password" type="password" autoComplete="current-password" required maxLength={128} disabled={pending} style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', fontSize: 16 }} />
+      <p>Enter your access code to open the free message maker.</p>
+      <label htmlFor={`${id}-access-code`}>Access code</label>
+      <input id={`${id}-access-code`} name="accessCode" type="password" autoComplete="off" autoCapitalize="none" spellCheck={false} required maxLength={128} disabled={pending} style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', fontSize: 16 }} />
       {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={pending}>{pending ? 'Signing in…' : 'Sign in for app review'}</button>
+      <button type="submit" disabled={pending}>{pending ? 'Signing in…' : 'Continue with code'}</button>
     </form>
   </details>;
 }
