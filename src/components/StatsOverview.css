@@ -1,0 +1,66 @@
+.santa-dashboard .stats-overview {
+  --panel-line: #44614e;
+  --muted: #c0cec4;
+  padding: clamp(14px, 2.3vw, 24px);
+  background: linear-gradient(135deg, #193b2e, #0d291f 60%);
+  scroll-margin-top: 6rem;
+}
+.stats-overview__header, .stats-overview__row, .stats-overview__dates {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.stats-overview__header { flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.stats-overview h2 { margin: 0; line-height: 1.15; font-size: clamp(1.55rem, 3.1vw, 2.15rem); }
+.stats-overview small { display: block; color: var(--muted); font-size: .77rem; line-height: 1.4; }
+.stats-overview__header small { margin-top: 4px; }
+.stats-overview__period { display: inline-flex; border: 1px solid #6a775a; border-radius: 8px; overflow: hidden; }
+.santa-dashboard .stats-overview__period button {
+  background: #112b22; color: #e4e8e0; border: 0; border-radius: 0;
+  padding: 8px 14px; min-height: 40px; font-weight: 600;
+}
+.santa-dashboard .stats-overview__period button[aria-pressed="true"] { background: #f1d38a; color: #183124; }
+.stats-overview :focus-visible, .stats-app-tool summary:focus-visible { outline: 2px solid #ffe2a0; outline-offset: 2px; }
+.stats-overview__period button:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.stats-overview__trends, .stats-overview__groups { display: grid; gap: 10px; }
+.stats-overview__trends { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stats-overview__trend, .stats-overview__groups article {
+  min-width: 0; border: 1px solid var(--panel-line); border-radius: 10px; background: #09261e;
+  padding: clamp(10px, 1.5vw, 16px);
+}
+.stats-overview h3 { margin: 0; color: #f8f4e7; font-family: inherit; font-size: .95rem; font-weight: 650; line-height: 1.25; }
+.santa-dashboard .stats-overview a { color: inherit; text-decoration: none; }
+.santa-dashboard .stats-overview a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.stats-overview a span { font-size: .72rem; color: #b9c8b9; }
+.stats-overview__trend { display: flex; flex-direction: column; min-height: 155px; }
+.stats-overview__trend--gold { --series: #f2cf78; }
+.stats-overview__trend--coral { --series: #f6a794; }
+.stats-overview__trend--mint { --series: #92d9ad; }
+.stats-overview__trend--blue { --series: #96ccdc; }
+.stats-overview__trend > strong, .stats-overview__row strong, .stats-overview__dates { font-variant-numeric: tabular-nums; }
+.stats-overview__trend > strong { font-size: clamp(1.45rem, 2.6vw, 2.3rem); line-height: 1.12; margin: 10px 0 2px; color: var(--series); overflow-wrap: anywhere; }
+.stats-overview__trend svg { display: block; width: 100%; height: 46px; padding-top: 6px; margin-top: auto; color: var(--series); }
+.stats-overview__baseline { stroke: var(--panel-line); stroke-width: 1; }
+.stats-overview__dates { font-size: .65rem; color: var(--muted); }
+.stats-overview__missing { margin: auto 0; color: var(--muted); }
+.stats-overview__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px; }
+.stats-overview__groups h3 { color: #edce86; margin-bottom: 6px; }
+.stats-overview__row { padding: 7px 0; font-size: .88rem; line-height: 1.3; }
+.stats-overview__row + .stats-overview__row { border-top: 1px solid #365341; }
+.stats-overview__row:last-child { padding-bottom: 0; }
+.stats-overview__row strong { font-size: 1.08rem; text-align: right; }
+.stats-app-tool > summary { color: #efcf79; font-weight: 700; cursor: pointer; padding: 12px 0; }
+.santa-dashboard :is(#studio-takings, #free-message-activity, #website-visitors-title, #app-store-reports, #contender-votes, #checker-downloads, #website-email-totals) { scroll-margin-top: 6rem; }
+@media (max-width: 860px) {
+  .stats-overview__trends { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .stats-overview__groups { grid-template-columns: 1fr; }
+  .stats-overview__trend { min-height: 134px; }
+  .stats-overview__header { margin-bottom: 10px; }
+}
+@media (max-width: 370px) {
+  .stats-overview__dates { flex-wrap: wrap; gap: 2px; }
+  .stats-overview__trends { gap: 6px; }
+}

@@ -1,5 +1,5 @@
 import { formatUkDate } from '../lib/ukDates.js';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './WebsiteVisitors.css';
 const number = value => value.toLocaleString('en-GB');
 function Movement({ value, previous }) {
@@ -11,27 +11,17 @@ function Movement({ value, previous }) {
     <span aria-hidden="true">{change > 0 ? '↑' : change < 0 ? '↓' : '—'} {change === 0 ? 'No change' : `${change > 0 ? '+' : '−'}${number(Math.abs(change))}`}{previous > 0 && change !== 0 ? ` (${(Math.abs(change) / previous * 100).toFixed(1)}%)` : ''}</span>
   </span>;
 }
-export default function WebsiteVisitors({ ownerToken }) {
+export default function WebsiteVisitors({ source }) {
   const [visibleDays, setVisibleDays] = useState(10);
   const [breakdown, setBreakdown] = useState('countries');
   const [visibleRows, setVisibleRows] = useState({ countries: 5, sources: 5, pages: 5 });
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(false);
-  const [refresh, setRefresh] = useState(0);
-  useEffect(() => {
-    const controller = new AbortController();
-    setError(false);
-    fetch('/api/message-statistics?view=visitors', { headers: { Authorization: `Bearer studio-owner.${ownerToken}` }, cache:'no-store', signal:controller.signal })
-      .then(async response => { if (!response.ok) throw new Error(); return response.json(); })
-      .then(setData).catch(error => { if (error.name !== 'AbortError') setError(true); });
-    return () => controller.abort();
-  }, [ownerToken, refresh]);
+  const { report: data, error, refresh } = source;
   const days = data?.days || [];
   const max = Math.max(1, ...days.map(day => day.visitors));
   const points = days.map((day, i) => `${48 + i * 844 / 29},${210 - day.visitors / max * 170}`).join(' ');
   return <section className="website-visitors" aria-labelledby="website-visitors-title">
     <header><p>GOOGLE ANALYTICS · LAST 30 COMPLETE DAYS</p><h2 id="website-visitors-title">Website visitors</h2></header>
-    {error ? <p role="status">Visitor figures are temporarily unavailable. <button onClick={() => setRefresh(value => value + 1)}>Try again</button></p> : !data ? <p role="status">Loading visitor figures…</p> : <>
+    {error ? <p role="status">Visitor figures are temporarily unavailable. <button onClick={refresh}>Try again</button></p> : !data ? <p role="status">Loading visitor figures…</p> : <>
       <div className="website-visitors__stats"><div><strong>{number(days.at(-1)?.visitors || 0)}</strong><span>Visitors yesterday</span><Movement value={days.at(-1)?.visitors || 0} previous={days.at(-2)?.visitors} /></div><div><strong>{number(Math.round(days.reduce((sum, day) => sum + day.visitors, 0) / 30))}</strong><span>Average daily visitors</span></div><div><strong>{number(days.reduce((sum, day) => sum + day.views, 0))}</strong><span>Page views · 30 days</span></div></div>
       <svg viewBox="0 0 930 255" role="img" aria-label="Daily active visitors to Santa Radio over the last 30 complete days">
         {[0, .5, 1].map(t => <g key={t}><line x1="48" x2="892" y1={210 - t * 170} y2={210 - t * 170} stroke="currentColor" opacity=".18"/><text x="40" y={215 - t * 170} textAnchor="end">{number(Math.round(max * t))}</text></g>)}
