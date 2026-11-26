@@ -126,12 +126,12 @@
       "installCommand": "",
       "maxDuration": 30
     },
-    "api/**/*.js": {
-      "installCommand": ""
-    },
     "api/app-promotions.js": {
       "installCommand": "",
       "maxDuration": 30
+    },
+    "api/**/*.js": {
+      "installCommand": ""
     }
   },
   "routes": [
