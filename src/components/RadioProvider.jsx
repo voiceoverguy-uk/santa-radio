@@ -4,6 +4,7 @@ import useSnowEffects from './useSnowEffects.js';
 import { RadioContext } from './radio-context.js';
 export { useRadio } from './radio-context.js';
 
+const DEMO_VOLUME_FACTOR = 0.12;
 const STREAM_URL = 'https://global.citrus3.com:8164/';
 export function RadioProvider({ children }) {
   const audioRef = useRef(null);
@@ -14,9 +15,20 @@ export function RadioProvider({ children }) {
   const [status, setStatus] = useState('idle');
   const metadata = useRadioMetadata(status === 'playing' || status === 'loading');
   const [volume, setVolume] = useState(.7);
+  const [activeDemo, setActiveDemo] = useState(null);
   const [error, setError] = useState('');
   const { effects, setEffects } = useSnowEffects();
-  useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume * (activeDemo ? DEMO_VOLUME_FACTOR : 1);
+  }, [volume, activeDemo]);
+  const duckForDemo = video => {
+    const demo = { video };
+    setActiveDemo(demo);
+    for (const media of document.querySelectorAll('audio, video')) {
+      if (media !== video && media !== audioRef.current) media.pause();
+    }
+    return () => setActiveDemo(current => current === demo ? null : current);
+  };
   useEffect(() => () => clearTimeout(timeout.current), []);
   const fail = () => {
     clearTimeout(timeout.current);
@@ -81,7 +93,7 @@ export function RadioProvider({ children }) {
     if (contender.current === audio) contender.current = null;
   };
   return (
-    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, claimContender, releaseContender, effects, setEffects, metadata }}>
+    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, duckForDemo, claimContender, releaseContender, effects, setEffects, metadata }}>
       <audio ref={audioRef} src={STREAM_URL} preload="none" onError={fail}
         onWaiting={() => {
           setStatus(current => current === 'playing' ? 'loading' : current);

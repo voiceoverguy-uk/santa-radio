@@ -9,16 +9,16 @@ export const VIDEO_EXAMPLES = builtInDemos.free;
 
 export default function SantaMessageVideoExample({group = 'free', onExampleNameChange}) {
   const radio = useRadio();
-  const resume = useRef(null);
+  const restoreVolume = useRef(null);
   const {example, choose} = useVideoDemo(group);
   function finish() {
-    const restore = resume.current;
-    resume.current = null;
+    const restore = restoreVolume.current;
+    restoreVolume.current = null;
     restore?.();
     onExampleNameChange?.(null);
   }
   useEffect(() => () => {
-    resume.current?.(); resume.current = null;
+    restoreVolume.current?.(); restoreVolume.current = null;
     onExampleNameChange?.(null);
   }, [onExampleNameChange]);
   if (!example) return null;
@@ -26,8 +26,7 @@ export default function SantaMessageVideoExample({group = 'free', onExampleNameC
     <FoldingVideoPlayer key={example.id} preload="none" overlayLabel="Example"
       poster={example.poster} src={example.src} label={'Play ' + example.name + ' example video'}
       onPlay={event => {
-        document.querySelectorAll('audio,video').forEach(media => { if (media !== event.currentTarget) media.pause(); });
-        if (!resume.current) resume.current = radio?.pauseForMessage();
+        if (!restoreVolume.current) restoreVolume.current = radio?.duckForDemo(event.currentTarget);
         onExampleNameChange?.(example.recipient ?? null);
       }} onPause={finish} onEnded={() => { finish(); choose(); }} onError={finish} />
   </figure>;
