@@ -159,7 +159,6 @@ export default function MiniSantaDash({ onFinishedChange, onSessionChange }) {
   return <div className="mini-santa-dash" ref={root}>
     {mode === 'idle' ? <button ref={startButton} className="mini-santa-dash__start" onClick={start} aria-label="Play Mini Santa Dash for one minute">
       <MiniSantaDashTeaser />
-      <span>Tap PLAY or Santa for a one-minute mince-pie dash</span>
     </button> : <div className={`mini-santa-dash__game${mode === 'finished' ? ' mini-santa-dash__game--finished' : ''}`}>
       {mode !== 'finished' && <div className="mini-santa-dash__toolbar">
         <strong>Mini Santa Dash</strong>
