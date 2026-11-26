@@ -1,3 +1,4 @@
+import AppPromotionManager from '../components/AppPromotionManager.jsx';
 import CatalogueArtworkManager from '../components/CatalogueArtworkManager.jsx';
 import MessageDemoManager from '../components/MessageDemoManager.jsx';
 import { formatUkDate, formatUkDateTime } from '../lib/ukDates.js';
@@ -32,6 +33,7 @@ export default function SantaDashboard() {
   const [namePage,setNamePage]=useState(1),[namePageSize,setNamePageSize]=useState(10);
   const [ledger,setLedger]=useState(false);
   const [uploads,setUploads]=useState(false);
+  const [promotions,setPromotions]=useState(false);
   const token=useRef(''), request=useRef(0);
   const [input,setInput]=useState(''),[data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
   async function load(event) {
@@ -51,6 +53,7 @@ export default function SantaDashboard() {
       const result=await response.json();if(!response.ok)throw new Error(result.error);if(action==='reject')setRejectionNotice(`${name} was declined. ${result.notificationsQueued} notification(s) queued. ${result.notificationsQueued ? 'Emails are processed by the notification worker.' : 'No new notification was queued; an email may already be queued/sent, or no saved contact is available.'}`);if(action==='dismiss')setDismissed(name);else if(action==='restore')setDismissed('');await load();
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
+  if (promotions && data) return <main className="santa-dashboard"><DashboardBackButton onClick={()=>setPromotions(false)} /><AppPromotionManager ownerToken={token.current}/></main>;
   if (uploads && data) return <main className="santa-dashboard"><DashboardBackButton onClick={()=>setUploads(false)} /><NameRecordingUploads ownerToken={token.current}/></main>;
   if (ledger && data) return <SantaRequestLedger ownerToken={token.current} email="Studio owner" onSignOut={()=>{setLedger(false);load();}} />;
   const namePages=Math.max(1,Math.ceil((data?.names.length||0)/namePageSize));
@@ -64,6 +67,7 @@ export default function SantaDashboard() {
     <header><p>THE NORTH POLE DESK</p><h1>The Dashboard of Effectiveness</h1><p>Purchases, messages, votes and names to record.</p></header>
     {!data?<form onSubmit={load}><label htmlFor="dashboard-token">Private Studio owner token</label><input id="dashboard-token" type="password" autoComplete="off" value={input} onChange={e=>setInput(e.target.value)} required /><button disabled={busy}>{busy?'Opening…':'Open dashboard'}</button><p>Your token stays in this page’s memory and is cleared when you leave or reload.</p></form>:<>
       {busy && <p role="status">Updating dashboard figures…</p>}<div className="santa-dashboard__actions"><button onClick={load} disabled={busy}>{busy?'Refreshing…':'Refresh figures'}</button><button onClick={()=>{request.current++;token.current='';setData(null);setBusy(false);setError('');}}>Lock dashboard</button></div>
+      <section><h2>App welcome banners</h2><p>Save designs, preview your next promotion and publish it to both radio apps.</p><button onClick={()=>setPromotions(true)}>Open banner library</button></section>
       <WebsiteVisitors ownerToken={token.current} />
       <p>Free-message totals are all time{data.since ? ` since tracking began on ${formatUkDate(data.since)}` : '; tracking has not recorded any activity yet'}. Figures use UK dates. Earlier activity is not reconstructed.</p>
       <div className="santa-dashboard__cards"><section><strong>{totals.creations.toLocaleString()}</strong><span>Free messages created</span></section><section><strong>{totals.downloads.toLocaleString()}</strong><span>First download clicks</span></section><section><strong>{(data.allTime?.mp4Downloads ?? 0).toLocaleString()}</strong><span>MP4 download clicks</span></section><section><strong>{totals.listens.toLocaleString()}</strong><span>Recordings listened to</span></section><section><strong>{totals.shares.toLocaleString()}</strong><span>Recordings shared</span></section><section><strong>{data.votes.reduce((n,r)=>n+r.votes,0).toLocaleString()}</strong><span>Confirmed competition votes</span></section></div>

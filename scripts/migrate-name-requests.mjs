@@ -1,3 +1,4 @@
+import { seedPromotionLibrary } from '../server/app-promotions.js';
 import { seedFriendVouchers } from '../server/friend-vouchers.js';
 // Additive, release-time migration. Never changes schema from a visitor request.
 import pg from 'pg';
@@ -25,6 +26,9 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query(await readFile(new URL('../database/friend-voucher-issues.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/catalogue-artwork.sql', import.meta.url), 'utf8'));
     await seedFriendVouchers(client);
+    await client.query(await readFile(new URL('../database/app-promotions.sql', import.meta.url), 'utf8'));
+    await seedPromotionLibrary(client, await readFile(new URL('../public/images/app-promotions/black-friday.jpg', import.meta.url)));
+    await seedPromotionLibrary(client, await readFile(new URL('../public/images/app-promotions/santa-dash.jpg', import.meta.url)), 'santaDash');
     await client.query('COMMIT');
     console.log('Name-request schema verified; existing requests preserved.');
   } catch (error) {
