@@ -1112,7 +1112,7 @@
 }
 
 /* Tuck the radio pill closer beneath the North Pole heading. */
-.hero-name-preview .hero-layout.hero-unified { row-gap: 8px; }
+.hero-name-preview .hero-layout.hero-unified { row-gap: 0; }
 
 /* Balance the artwork and offer spacing on either side of the divider. */
 @media (min-width: 1091px) {
@@ -1121,3 +1121,5 @@
     margin-right: -20px;
   }
 }
+
+.hero-unified .hero-name-preview__player-row { min-height: 44px; }
