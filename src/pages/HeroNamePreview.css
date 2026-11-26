@@ -1000,3 +1000,23 @@
 @media (max-width: 767px) {
   .home-page .hero-name-preview__hero { padding-bottom: 56px; }
 }
+
+.hero-name-preview__checker-top:has(.hero-name-preview__thursday-aside) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .25rem .75rem;
+}
+
+.hero-name-preview__thursday-aside {
+  display: inline-block;
+  color: #ffe9bc;
+  font: italic 600 clamp(.94rem, 1.6vw, 1.12rem)/1.25 Georgia, serif;
+  letter-spacing: .01em;
+  text-transform: none;
+  white-space: nowrap;
+  transform: rotate(-4deg);
+  text-decoration: underline wavy #ce6657;
+  text-underline-offset: .22em;
+  text-decoration-thickness: 1px;
+}

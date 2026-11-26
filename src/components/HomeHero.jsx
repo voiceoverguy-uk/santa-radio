@@ -36,6 +36,24 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
   const layoutRef = useRef(null);
   const titleRef = useRef(null);
   const blackFriday = useBlackFridayOfferWindow() && !preview;
+  const [thursdayAside, setThursdayAside] = useState(false);
+  useEffect(() => {
+    if (!blackFriday) return;
+    const end = Date.parse('2026-11-26T21:00:00Z');
+    const update = () => {
+      const now = Date.now();
+      setThursdayAside(now >= Date.parse('2026-11-26T00:00:00Z') && now < end);
+    };
+    update();
+    const remaining = end - Date.now();
+    if (remaining <= 0 || remaining > 86400000) return;
+    const timer = window.setTimeout(update, remaining);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, [blackFriday]);
   const checkerRef = useRef(null);
 
   useEffect(() => {
@@ -116,7 +134,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
         </div>
         <aside ref={checkerRef} className={`hero-name-preview__checker${blackFriday ? ' black-friday-paper' : ''}`} aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">
-            {blackFriday ? <span className="hero-name-preview__checker-kicker">BLACK FRIDAY</span> : <>
+            {blackFriday ? <>\n              <span className="hero-name-preview__checker-kicker">BLACK FRIDAY</span>\n              {thursdayAside && <span className="hero-name-preview__thursday-aside">(on a Thursday)</span>}\n            </> : <>
             <span className="hero-name-preview__seal" aria-hidden="true">SR</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span></>}
           </div>
