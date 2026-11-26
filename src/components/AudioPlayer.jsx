@@ -42,6 +42,7 @@ export default function AudioPlayer() {
   const dockRef = useRef(null);
   const hasScrolledRef = useRef(false);
   const keyboardInteraction = useRef(false);
+  const pointerInside = useRef(false);
   // Every full load starts compact, regardless of device or an older saved
   // preference. This shared component still keeps its state across SPA routes.
   const [minimized, setMinimized] = useState(true);
@@ -68,7 +69,7 @@ export default function AudioPlayer() {
       if (!hasScrolledRef.current) return;
       clearTimeout(timer);
       timer = setTimeout(() => {
-        if (dockRef.current?.contains(document.activeElement)) {
+        if (pointerInside.current || dockRef.current?.contains(document.activeElement)) {
           scheduleHide();
           return;
         }
@@ -87,15 +88,19 @@ export default function AudioPlayer() {
     };
     window.addEventListener('scroll', onScroll, { passive: true, capture: true });
     document.addEventListener('focusout', onFocusOut);
+    const dock = dockRef.current;
+    dock?.addEventListener('pointerleave', scheduleHide);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('scroll', onScroll, { capture: true });
       document.removeEventListener('focusout', onFocusOut);
+      dock?.removeEventListener('pointerleave', scheduleHide);
     };
   }, [miniPlayerEnabled, pathname]);
   const scrollIdleHidden = miniPlayerEnabled && !hidden && hasScrolled && !scrolling;
   useBrowserLayoutEffect(() => {
     if (!hidden) return;
+    pointerInside.current = false;
     setUpcomingOpen(false);
     const hadDockFocus = dockRef.current?.contains(document.activeElement);
     dockRef.current?.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
@@ -113,7 +118,7 @@ export default function AudioPlayer() {
       clearTimeout(timer);
       timer = setTimeout(() => {
         // Never hide the reader or controls a keyboard user is focused on.
-        if (dock.querySelector('dialog[open]') ||
+        if (pointerInside.current || dock.querySelector('dialog[open]') ||
             (keyboardInteraction.current && dock.contains(document.activeElement))) {
           restart();
           return;
@@ -128,7 +133,7 @@ export default function AudioPlayer() {
       if (event.type === 'pointerdown' || (event.type === 'click' && event.detail > 0)) keyboardInteraction.current = false;
       restart();
     };
-    const events = ['pointermove', 'pointerdown', 'click', 'keydown', 'input', 'focusin', 'focusout', 'wheel', 'close'];
+    const events = ['pointerleave', 'pointermove', 'pointerdown', 'click', 'keydown', 'input', 'focusin', 'focusout', 'wheel', 'close'];
     events.forEach(event => dock.addEventListener(event, interact, true));
     restart();
     return () => {
@@ -138,7 +143,10 @@ export default function AudioPlayer() {
   }, [minimized, hidden]);
   const upcomingId = useId();
   return (
-    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
+    <aside ref={dockRef}
+      onPointerEnter={event => { if (event.pointerType !== 'touch') pointerInside.current = true; }}
+      onPointerLeave={() => { pointerInside.current = false; }}
+      onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
       if (minimized && !event.target.closest('button, a, input, select, textarea, [role="button"]')) expandPlayer(event);
     }} className={`radio-dock ${isStudioPath(pathname) ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''} ${scrollIdleHidden ? 'is-scroll-idle' : ''}`} aria-label="Santa Radio player"
        inert={hidden || scrollIdleHidden ? '' : undefined}
