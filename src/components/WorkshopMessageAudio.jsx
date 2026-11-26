@@ -1,3 +1,4 @@
+import { KIDS_AGE_THEMES } from '../lib/dadAgeReveal.js';
 import DadAgeRevealPicker from './DadAgeRevealPicker.jsx';
 import { STUDIO_VIDEO_SCENES } from '../lib/studioVideo.js';
 import StudioScenePicker, { StudioScenePicture } from './StudioScenePicker.jsx';
@@ -320,7 +321,7 @@ export default function WorkshopMessageAudio({
     {deliveryStep === 'scene' && <>
       <StudioScenePicker selected={scene} onSelect={setScene}
         recipientCaption={writtenName && ageLabel ? `${writtenName} - aged ${ageLabel.replace(/\s+old$/i, '')}` : writtenName} />
-      {ageLabel && <DadAgeRevealPicker age={ageLabel.replace(/\s+old$/i, '').replace(/\s+years?$/i, '')}
+      {ageLabel && <DadAgeRevealPicker themes={KIDS_AGE_THEMES} age={ageLabel.replace(/\s+old$/i, '').replace(/\s+years?$/i, '')}
         heading={`How would ${writtenName || 'your child'} like to see their age?`}
         previewArtwork={<StudioScenePicture scene={ageRevealScene} caption={writtenName && `A message for ${writtenName}`} />}
         value={ageTheme} onChange={setAgeTheme} />}

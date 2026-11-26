@@ -10,11 +10,17 @@ export const DAD_AGE_THEMES = [
   { id: 'dinosaurs', label: 'Dinosaurs', colour: '#254723', centre: [0.51, 0.619], artwork: dinosaurs },
 ];
 
+const SUPERHERO_THEME = {
+  id: 'superheroes', label: 'Superheroes', colour: '#163965', centre: [0.51, 0.57],
+  artwork: '/images/studio-scenes/age-superheroes.webp',
+};
+export const KIDS_AGE_THEMES = DAD_AGE_THEMES.map(theme => theme.id === 'flowers' ? SUPERHERO_THEME : theme);
+
 export const DAD_AGE_REVEAL_SECONDS = 4;
 export const DAD_AGE_REVEAL_Y = 305;
 
 export async function drawDadAgeReveal(theme, age) {
-  const selection = DAD_AGE_THEMES.find(option => option.id === theme);
+  const selection = theme === SUPERHERO_THEME.id ? SUPERHERO_THEME : DAD_AGE_THEMES.find(option => option.id === theme);
   if (!selection || age == null) return null;
 
   const sheet = new Image();
