@@ -1110,3 +1110,6 @@
   .hero-unified .hero-name-preview__checker,
   .hero-unified .hero-name-preview__checker.black-friday-paper { padding-top: 0; padding-bottom: 0; display: flex; flex-direction: column; justify-content: space-between; }
 }
+
+/* Tuck the radio pill closer beneath the North Pole heading. */
+.hero-name-preview .hero-layout.hero-unified { row-gap: 8px; }
