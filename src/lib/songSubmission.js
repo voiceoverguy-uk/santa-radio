@@ -7,7 +7,7 @@ export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
   sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
-  lyricsLink: '', instrumental: false, audioLink: '', artworkLink: '', hostPermission: false,
+  lyricsLink: '', instrumental: false, audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -45,6 +45,7 @@ export function validateSongFields(fields, mode = 'song') {
     errors.criteriaMet = 'Please confirm that you have met all five criteria.';
   }
   if (mode === 'song') {
+    if (fields.noAi !== true) errors.noAi = 'Please confirm that no A.I. was used to create this song.';
     for (const name of ['audioLink', 'artworkLink', ...(fields.instrumental === true ? [] : ['lyricsLink'])]) {
       try {
         const value = fields[name];
@@ -112,6 +113,7 @@ export function buildSongMessage(fields) {
   return [
     fields.SONG_REQUEST?.trim() || '',
     fields.instrumental === true ? 'Lyrics: instrumental (no vocals)' : `Full lyrics: ${fields.lyricsLink?.trim() || ''}`,
+    `No A.I. used: ${fields.noAi === true ? 'confirmed' : 'NOT confirmed'}`,
     `Audio: ${fields.audioLink?.trim() || ''}`,
     `Artwork: ${fields.artworkLink?.trim() || ''}`,
     `Permission to host/broadcast recording & artwork: ${fields.hostPermission === true ? 'confirmed' : 'NOT confirmed'}`,

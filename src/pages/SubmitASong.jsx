@@ -275,6 +275,10 @@ export default function SubmitASong() {
                 {['audioLink','artworkLink'].map(name=><SongMediaField key={name} audio={name==='audioLink'} value={fields[name]}
                   onChange={value=>onChange(name,value)} busy={pending || uploading} onBusy={setUploading} error={errors[name]}/>)}
                 {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
+                <label className="song-criteria-label" htmlFor="song-noAi"><input id="song-noAi" type="checkbox" name="noAi" checked={fields.noAi === true} disabled={pending || uploading}
+                  required aria-invalid={Boolean(errors.noAi)} aria-describedby={errors.noAi ? 'song-noAi-error' : undefined}
+                  onChange={event => onChange('noAi', event.target.checked)} /> No A.I. was used to create this song.</label>
+                {errors.noAi && <p id="song-noAi-error" className="song-field-error">{errors.noAi}</p>}
                 <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending || uploading}
                   required aria-invalid={Boolean(errors.hostPermission)} aria-describedby={errors.hostPermission ? 'song-permission-error' : undefined}
                   onChange={event => onChange('hostPermission', event.target.checked)} /> Santa Radio has permission to host and broadcast this recording and use its artwork.</label>
@@ -298,7 +302,7 @@ export default function SubmitASong() {
               </div>
               <input type="hidden" name="locale" value="en" />
               <p className="song-privacy">{isSong
-                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
+                ? 'Your name, email, message, lyrics/instrumental declaration, media links, no-A.I. declaration and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent via Brevo as your enquiry.'
                   : 'Your name, email and message are sent via Brevo to handle your enquiry.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
