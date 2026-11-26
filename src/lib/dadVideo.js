@@ -34,7 +34,7 @@ const AGE_CAPTION_SECONDS = 5;
 // intervening narration is fixed, while the preceding answers vary in length.
 const DAD_NARRATION_CAPTIONS = [
   { id: 'age-prompt', text: 'So... How old are you now?', nextClip: 'age', lead: 4, duration: 4 },
-  { id: 'stout-prompt', text: "you've aged like a fine stout!", nextClip: 'habit', lead: 10, duration: 4 },
+  { id: 'stout-prompt', text: "You've aged like a fine stout!", nextClip: 'habit', lead: 10, duration: 4 },
   { id: 'good-year-prompt', text: name => `Have you been good this year ${name}?`, nextClip: 'habit', lead: 5, duration: 5 },
   { id: 'considerate-prompt', text: 'Ah yes! Mr Considerate!', nextClip: 'viewing', lead: 7, duration: 6 },
   { id: 'generosity-prompt', text: 'But, how generous are you?', nextClip: 'treat', lead: 8, duration: 6 },
