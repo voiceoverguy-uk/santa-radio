@@ -20,7 +20,8 @@ export function studioVideoTimeline(result) {
   const startOf = (key, fallback) => cue(result.clipStarts, key, fallback);
   const endOf = (key, fallback) => cue(result.clipEnds, key, fallback);
   const badgeStart = 16;
-  const nameStart = Math.max(3, startOf('name', 10));
+  const incomingEnd = 9;
+  const nameStart = Math.max(incomingEnd, startOf('name', 10));
   const ageStart = Math.max(badgeStart, startOf('age', 21));
   const ageEnd = ageStart + 2;
   const treatStart = startOf('treat', 57);
@@ -69,7 +70,7 @@ export function studioVideoTimeline(result) {
   }).filter(caption => caption.end > caption.start);
 
   return [
-    { id: 'incoming', text: name ? `Incoming message from Santa\nFor ${name}` : 'Incoming message from Santa', start: 0, end: 3, noFade: true },
+    { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: incomingEnd, noFade: true },
     ...(nameStart < badgeStart ? [{ id: 'name', text: `A message from Santa to ${name}`, start: nameStart, end: badgeStart, noFade: true }] : []),
     { id: 'age', text: `Aged ${studioAge(result)}`, start: ageStart, end: ageEnd, noFade: true },
     ...(name ? [{ id: 'name-badge', text: name, start: badgeStart, end: approvedStart, noFade: true }] : []),
