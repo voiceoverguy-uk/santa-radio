@@ -333,17 +333,19 @@ export default function WorkshopMessageAudio({
       ) : <button type="button" className="smw-button smw-button-next"
         disabled={!scene || phase !== 'ready'} onClick={finishScene} style={{ whiteSpace: 'nowrap' }}>Create Message <span aria-hidden="true">→</span></button>}
     </>}
-    {deliveryStep === 'result' && results.length > 1 && results.every(result => result.artwork) &&
-      <div className="smw-gift-selector" role="group" aria-label="View your video recordings">
-        <p>Your video recordings</p>
-        {results.map((result, index) => <button key={result.url} type="button"
-          onClick={() => showRecording(recordingSections.current.get(result.url))}>
-          {index === 0 ? '1st' : '2nd'} video for {result.writtenName}
-        </button>)}
-      </div>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
-      keepsakes={index === results.length - 1 ? keepsakes : null}
+      keepsakes={index === results.length - 1 ? <>
+        {results.length > 1 && results.every(result => result.videoBlob) &&
+          <div className="smw-gift-selector" role="group" aria-label="View your video recordings">
+            <p>Your video recordings</p>
+            {results.map((result, index) => <button key={result.url} type="button"
+              onClick={() => showRecording(recordingSections.current.get(result.url))}>
+              {index === 0 ? '1st' : '2nd'} video for {result.writtenName}
+            </button>)}
+          </div>}
+        {keepsakes}
+      </> : null}
       footer={index === results.length - 1 && url ? <div className="smw-finished-footer">
         {!finalMessageAvailable && remainingNotice}
         {startAction()}
