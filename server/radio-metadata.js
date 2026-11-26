@@ -64,7 +64,7 @@ export function createMetadataService(fetcher = fetch, ttl = 1000, { clock = Dat
   let lastUpcoming = [], upcomingUpdatedAt = 0;
   const readUpcoming = async () => {
     for (let attempt = 1; attempt <= 2; attempt++) {
-      try { return await readFeed('Next3.txt', 3, fetcher); }
+      try { return await readFeed('Next3.txt', 9, fetcher); }
       catch (error) {
         console.warn('[radio-metadata]', 'Next3.txt', `attempt=${attempt}`, error.name, error.message);
         if (attempt === 2) throw error;

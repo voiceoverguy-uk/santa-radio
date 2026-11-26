@@ -36,7 +36,10 @@ export function upcomingSchedule(metadata, now = Date.now()) {
     ? startedAt + (songDuration(metadata.current) + 5) * 1000 : null;
   // A late or interrupted feed must not leave old clock times on screen.
   if (next <= now) next = null;
-  return (metadata.upcoming || []).slice(0, 3).map(track => {
+  return (metadata.upcoming || []).slice(0, 9).map(track => {
+    // Published playout times already include the station’s transitions.
+    // A past published time is stale, not permission to invent a later time.
+    if (Number.isFinite(track.startedAt)) next = track.startedAt > now ? track.startedAt : null;
     const item = { ...websiteNowPlayingTrack(track), estimatedAt: next };
     if (next !== null) next += (songDuration(track) + 5) * 1000;
     return item;

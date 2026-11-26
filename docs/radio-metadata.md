@@ -11,7 +11,7 @@ Non-GET requests return 405 with `Allow: GET`; unknown `part` values return 400.
 - No query, or `?part=all`: combined current and upcoming fields.
 - `?part=current`: only `current` (artist/title object or null) and
   `currentStatus` (`ready` or `unavailable`). Never waits for queue reads.
-- `?part=upcoming`: only `upcoming` (up to three artist/title objects),
+- `?part=upcoming`: only `upcoming` (up to nine artist/title objects),
   `upcomingStatus` (`ready`, `stale` or `unavailable`), and `upcomingUpdatedAt`
   (last successful upstream queue read, Unix milliseconds; initially zero).
   Reads current and queue concurrently to reconcile even on a cold service.
@@ -64,7 +64,7 @@ not precise synchronization with a listener's buffered stream.
 ## Website estimated play times
 
 The homepage shows up to three upcoming songs below the play button while playing.
-The existing desktop Music-page upcoming cards share the same schedule through
+The desktop Music page shows up to four upcoming cards sharing the same schedule through
 RadioProvider. Titles appear immediately. When Radiologik supplies timing, estimates also appear
 on the first visit, using the published start rather than page-load time. Legacy
 feeds still wait for an observed current-song identity change. The provider
@@ -77,8 +77,10 @@ on each track. Start timestamps are interpreted as Europe/London station time,
 including BST. Invalid dates and ambiguous autumn clock-change times are omitted.
 Durations accept seconds, M:SS or H:MM:SS; invalid values are omitted.
 
-Each estimate adds the current recording's duration plus five seconds for a
-jingle, then repeats for the upcoming queue. Published duration and start time
+Each upcoming song uses its own published Radiologik start time directly, without
+adding a jingle. Next3.txt now supplies up to nine songs. When a timestamp is missing,
+the fallback adds the previous recording's duration plus five seconds for a jingle.
+Past published times are hidden rather than replaced with invented later times. Published duration and start time
 take precedence over catalogue durations and browser-observed starts. `src/data/radio-song-durations.json`
 contains the 154 audio-file records used for the reference spreadsheet. Missing
 title tags use filenames. Missing artists and ambiguous recording matches use

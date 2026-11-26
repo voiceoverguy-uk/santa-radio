@@ -61,7 +61,7 @@ export default function Music() {
   );
 
   const upcoming = desktop && order === 'random' && !search.trim()
-    ? scheduled
+    ? scheduled.slice(0, 4)
       .map(track => ({ track, song: matchLiveSong(track, songsData).song }))
     : [];
   const upcomingIds = new Set(upcoming.map(item => item.song?.id));

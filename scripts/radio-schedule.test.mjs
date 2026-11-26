@@ -26,3 +26,21 @@ test('times use UK daylight saving and midnight correctly', () => {
   assert.equal(formatPlayTime(Date.parse('2026-06-26T15:38:00Z')), '4:38pm');
   assert.equal(formatPlayTime(Date.parse('2026-11-27T00:02:00Z')), '12:02am');
 });
+test('nine published times override calculated times, even without current metadata', () => {
+  const upcoming = Array.from({ length: 9 }, (_, i) => ({ ...unknown, startedAt: 200000 + i * 100000 }));
+  for (const currentStatus of ['ready', 'unavailable']) {
+    const result = upcomingSchedule({ current: known, currentStatus, currentStartedAt: 100000,
+      upcomingStatus: 'ready', upcoming }, 100001);
+    assert.equal(result.length, 9);
+    assert.deepEqual(result.map(t => t.estimatedAt), upcoming.map(t => t.startedAt));
+  }
+});
+test('missing timestamps fall back from published starts; stale timestamps clear estimates', () => {
+  const metadata = { upcomingStatus: 'ready', upcoming: [
+    { ...unknown, startedAt: 200000 }, unknown,
+    { ...known, startedAt: 90000 }, unknown,
+    { ...known, startedAt: 900000 }, unknown,
+  ] };
+  assert.deepEqual(upcomingSchedule(metadata, 100000).map(t => t.estimatedAt),
+    [200000, 415000, null, null, 900000, 1148000]);
+});

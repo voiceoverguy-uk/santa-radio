@@ -37,3 +37,13 @@ test('service cleans titles, reconciles the queue, and estimates immediately fro
   assert.equal(upcomingSchedule(metadata, Date.parse('2026-11-26T20:40:00Z'))[0].estimatedAt, null);
   assert.equal(upcomingSchedule(metadata, Date.parse('2026-11-26T20:30:00Z'))[0].estimatedAt, null);
 });
+
+test('Next3 now carries all nine upcoming songs with individual published times', async () => {
+  const rows = Array.from({ length: 9 }, (_, i) => `Artist ${i} - Song ${i} - 3:30 - 2026-11-26 21:${String(i * 4).padStart(2, '0')}:00`);
+  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying.txt')
+    ? 'Current Artist - Current Song' : rows.join('\n')));
+  const result = await service('upcoming');
+  assert.equal(result.upcoming.length, 9);
+  assert.equal(result.upcoming[8].title, 'Song 8');
+  assert.equal(result.upcoming[8].startedAt, Date.parse('2026-11-26T21:32:00Z'));
+});
