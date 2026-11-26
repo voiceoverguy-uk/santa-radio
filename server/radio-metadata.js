@@ -23,7 +23,7 @@ export const parseTracks = (text, limit = 3) => parseEntries(text).filter(isRadi
 async function readFeed(filename, limit, fetcher, parser = parseTracks) {
   const url = new URL(filename, ROOT);
   url.searchParams.set('_', String(Date.now()));
-  const response = await fetcher(url, { signal: AbortSignal.timeout(filename === 'Next3.txt' ? 3000 : 6000), cache: 'no-store', redirect: 'error' });
+  const response = await fetcher(url, { signal: AbortSignal.timeout(filename === 'Next9-timed.txt' ? 3000 : 6000), cache: 'no-store', redirect: 'error' });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   if (!response.headers.get('content-type')?.includes('text/plain')) throw new Error('Unexpected content type');
   const reader = response.body.getReader();
@@ -64,9 +64,9 @@ export function createMetadataService(fetcher = fetch, ttl = 1000, { clock = Dat
   let lastUpcoming = [], upcomingUpdatedAt = 0;
   const readUpcoming = async () => {
     for (let attempt = 1; attempt <= 2; attempt++) {
-      try { return await readFeed('Next3.txt', 9, fetcher); }
+      try { return await readFeed('Next9-timed.txt', 9, fetcher); }
       catch (error) {
-        console.warn('[radio-metadata]', 'Next3.txt', `attempt=${attempt}`, error.name, error.message);
+        console.warn('[radio-metadata]', 'Next9-timed.txt', `attempt=${attempt}`, error.name, error.message);
         if (attempt === 2) throw error;
         await new Promise(resolve => setTimeout(resolve, retryDelay));
       }
@@ -77,10 +77,10 @@ export function createMetadataService(fetcher = fetch, ttl = 1000, { clock = Dat
     if (current.pending) return current.pending;
     current.pending = (async () => {
       try {
-        const tracks = await readFeed('Nowplaying.txt', 1, fetcher);
+        const tracks = await readFeed('Nowplaying-timed.txt', 1, fetcher);
         current.cached = { current: tracks[0] ?? null, currentStatus: tracks.length ? 'ready' : 'unavailable' };
       } catch (error) {
-        console.warn('[radio-metadata]', 'Nowplaying.txt', error.message);
+        console.warn('[radio-metadata]', 'Nowplaying-timed.txt', error.message);
         current.cached = { current: null, currentStatus: 'unavailable' };
       }
       current.expires = clock() + (current.cached.currentStatus === 'ready' ? ttl : Math.min(ttl, 2000));

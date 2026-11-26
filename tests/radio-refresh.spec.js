@@ -6,7 +6,7 @@ const text = value => new Response(value, { headers: { 'content-type': 'text/pla
 test('independent current reads never wait for upcoming, and combined callers share both caches', async () => {
   let release, currentCalls = 0, upcomingCalls = 0;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Next3.txt')) {
+    if (url.pathname.endsWith('Next9-timed.txt')) {
       upcomingCalls++;
       await new Promise(resolve => { release = resolve; });
       return text('Next Artist - Next Song');
@@ -31,7 +31,7 @@ test('independent current reads never wait for upcoming, and combined callers sh
 test('current failure and cache expiry do not refetch or erase the upcoming queue', async () => {
   let now = 100000, fail = false, nextCalls = 0;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Next3.txt')) {
+    if (url.pathname.endsWith('Next9-timed.txt')) {
       nextCalls++;
       return text('Next Artist - Next Song');
     }
@@ -53,7 +53,7 @@ test('current failure and cache expiry do not refetch or erase the upcoming queu
 test('upcoming failure retention expires at its original deadline without affecting current', async () => {
   let now = 100000, fail = false;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Next3.txt') && fail) throw new Error('Queue offline');
+    if (url.pathname.endsWith('Next9-timed.txt') && fail) throw new Error('Queue offline');
     return text('Artist - Song');
   }, 3000, { clock: () => now, retryDelay: 0 });
   await service('upcoming');
@@ -255,7 +255,7 @@ for (const order of ['current-first', 'queue-first']) {
     let queue = 'Leona Lewis - One More Sleep\n - Santa Radio Announcement\nBryan Adams - Christmas Time\nLeona Lewis - One More Sleep';
     let fail = false;
     const service = createMetadataService(async url => {
-      if (url.pathname.endsWith('Nowplaying.txt')) return text(now);
+      if (url.pathname.endsWith('Nowplaying-timed.txt')) return text(now);
       if (fail) throw new Error('Queue offline');
       return text(queue);
     }, undefined, { clock: () => time, retryDelay: 0 });

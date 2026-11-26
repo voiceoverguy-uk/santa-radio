@@ -10,7 +10,7 @@ test('new Stag format produces clean titles and estimates on the first visit', a
     HTMLMediaElement.prototype.load = function () {};
     HTMLMediaElement.prototype.pause = function () {};
   });
-  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying.txt')
+  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying-timed.txt')
     ? "Band Aid - Do They Know It's Christmas - 3:37 - 2026-11-26 20:35:57"
     : 'Shakin Stevens - Merry Christmas Everyone\nBackstreet Boys - Christmas In New York\nAriana Grande - Last Christmas',
   { headers: { 'content-type': 'text/plain' } }));
@@ -73,7 +73,7 @@ test('nine published times display three on Home and four on Music', async ({ pa
     HTMLMediaElement.prototype.pause = function () {};
   });
   const rows = Array.from({ length: 9 }, (_, i) => `Artist ${i} - Song ${i} - 3:30 - 2026-11-26 21:${String(2 + i * 4).padStart(2, '0')}:00`);
-  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying.txt')
+  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying-timed.txt')
     ? 'Coldplay - Christmas Lights - 4:03 - 2026-11-26 20:59:00' : rows.join('\n')));
   await page.route('**/api/**', route => route.fulfill({ status: 503, json: { error: 'Unavailable in radio test' } }));
   await page.route('**/api/radio-metadata?*', async route => route.fulfill({ json: await service(new URL(route.request().url()).searchParams.get('part')) }));

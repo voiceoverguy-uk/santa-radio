@@ -21,7 +21,7 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
   const service = createMetadataService(async url => {
     calls++;
     expect(url.searchParams.has('_')).toBe(true);
-    if (url.pathname.endsWith('Next3.txt') && fail) return new Response('<html/>', { headers: { 'content-type': 'text/html' } });
+    if (url.pathname.endsWith('Next9-timed.txt') && fail) return new Response('<html/>', { headers: { 'content-type': 'text/html' } });
     return new Response('Artist - Song', { headers: { 'content-type': 'text/plain' } });
   }, 30, { retryDelay: 0 });
   expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'unavailable' });
@@ -37,7 +37,7 @@ test('confirmed HTTPS sources preserve filename case and share concurrent reques
   const service = createMetadataService(async url => {
     urls.push(`${url.origin}${url.pathname}`);
     expect(url.searchParams.has('_')).toBe(true);
-    return new Response(url.pathname.endsWith('Nowplaying.txt')
+    return new Response(url.pathname.endsWith('Nowplaying-timed.txt')
       ? 'Current Artist - Current Song'
       : 'First Artist - First Song\nSecond Artist - Second Song\nThird Artist - Third Song',
     { headers: { 'content-type': 'text/plain' } });
@@ -46,8 +46,8 @@ test('confirmed HTTPS sources preserve filename case and share concurrent reques
   expect(second).toBe(first);
   expect(await service()).toBe(first);
   expect(urls).toEqual([
-    'https://stagcommunications.com/santaradio/Nowplaying.txt',
-    'https://stagcommunications.com/santaradio/Next3.txt',
+    'https://stagcommunications.com/santaradio/Nowplaying-timed.txt',
+    'https://stagcommunications.com/santaradio/Next9-timed.txt',
   ]);
   expect(first).toMatchObject({
     currentStatus: 'ready', upcomingStatus: 'ready',
@@ -144,7 +144,7 @@ test('live metadata endpoint returns independent feed states', async ({ request 
 test('upcoming retries once, retains briefly, expires and recovers independently', async () => {
   let time = 100000, mode = 'retry', attempts = 0;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Next3.txt')) {
+    if (url.pathname.endsWith('Next9-timed.txt')) {
       attempts++;
       if (mode === 'fail' || (mode === 'retry' && attempts === 1)) {
         return new Response('', { headers: { 'content-type': 'text/plain' } });

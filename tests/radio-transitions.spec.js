@@ -17,7 +17,7 @@ test('current-first Leona transition corrects all and upcoming without mutating 
   let time = 100000, now = previous;
   const calls = { current: 0, upcoming: 0 };
   const service = createMetadataService(async url => {
-    const part = url.pathname.endsWith('Nowplaying.txt') ? 'current' : 'upcoming';
+    const part = url.pathname.endsWith('Nowplaying-timed.txt') ? 'current' : 'upcoming';
     calls[part]++;
     return text(part === 'current' ? line(now) : queueText);
   }, undefined, { clock: () => time });
@@ -38,7 +38,7 @@ test('current-first Leona transition corrects all and upcoming without mutating 
 
 test('queue-first transition keeps broadcast order, only matches both fields and leaves unavailable current alone', async () => {
   let time = 100000, now = previous, queue = queueText;
-  const service = createMetadataService(async url => text(url.pathname.endsWith('Nowplaying.txt')
+  const service = createMetadataService(async url => text(url.pathname.endsWith('Nowplaying-timed.txt')
     ? now ? line(now) : ' - Station announcement' : queue),
   undefined, { clock: () => time });
   await service();
@@ -60,7 +60,7 @@ test('queue-first transition keeps broadcast order, only matches both fields and
 test('upcoming-only cold consumers read current, while current failures retain an unaltered queue', async () => {
   let time = 100000, fail = false;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Nowplaying.txt')) {
+    if (url.pathname.endsWith('Nowplaying-timed.txt')) {
       if (fail) throw new Error('Offline');
       return text(line(leona));
     }
@@ -76,7 +76,7 @@ test('upcoming-only cold consumers read current, while current failures retain a
 test('retained stale queue is reconciled against new current and expires at the original deadline', async () => {
   let time = 100000, now = previous, fail = false, attempts = 0;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Nowplaying.txt')) return text(line(now));
+    if (url.pathname.endsWith('Nowplaying-timed.txt')) return text(line(now));
     attempts++;
     if (fail) throw new Error('Queue offline');
     return text(queueText);
@@ -98,7 +98,7 @@ test('late queue and combined responses use the latest completed current read, n
   let time = 100000, now = previous, queueCalls = 0;
   const gate = deferred();
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Nowplaying.txt')) return text(line(now));
+    if (url.pathname.endsWith('Nowplaying-timed.txt')) return text(line(now));
     queueCalls++;
     await gate.promise;
     return text(queueText);
@@ -118,7 +118,7 @@ test('late current completion reconciles an already completed queue with dedupli
   const gate = deferred();
   let currentCalls = 0, queueCalls = 0;
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Nowplaying.txt')) {
+    if (url.pathname.endsWith('Nowplaying-timed.txt')) {
       currentCalls++;
       await gate.promise;
       return text(line(leona));
@@ -140,7 +140,7 @@ test('stale expiry during a slow current read cannot extend retention', async ()
   let time = 100000, fail = false, hold = false;
   const gate = deferred();
   const service = createMetadataService(async url => {
-    if (url.pathname.endsWith('Nowplaying.txt')) {
+    if (url.pathname.endsWith('Nowplaying-timed.txt')) {
       if (hold) await gate.promise;
       return text(line(leona));
     }

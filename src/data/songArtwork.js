@@ -4,6 +4,7 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  388: Object.freeze({ artist: 'Frankie Goes to Hollywood', title: 'The Power of Love', path: '/artist-artwork/frankie-goes-to-hollywood-the-power-of-love.webp' }),
   302: Object.freeze({
     artist: 'Kylie Minogue',
     title: 'White December',

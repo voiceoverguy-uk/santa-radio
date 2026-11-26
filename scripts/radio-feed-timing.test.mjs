@@ -24,7 +24,7 @@ test('station time uses UK timezone independently of the server timezone', () =>
 });
 
 test('service cleans titles, reconciles the queue, and estimates immediately from feed timing', async () => {
-  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying.txt')
+  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying-timed.txt')
     ? "Band Aid - Do They Know It's Christmas - 3:37 - 2026-11-26 20:35:57"
     : "Band Aid - Do They Know It's Christmas\nNew Artist - Unknown song\nColdplay - Christmas Lights", { headers: { 'content-type': 'text/plain' } }));
   const metadata = await service();
@@ -40,7 +40,7 @@ test('service cleans titles, reconciles the queue, and estimates immediately fro
 
 test('Next3 now carries all nine upcoming songs with individual published times', async () => {
   const rows = Array.from({ length: 9 }, (_, i) => `Artist ${i} - Song ${i} - 3:30 - 2026-11-26 21:${String(i * 4).padStart(2, '0')}:00`);
-  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying.txt')
+  const service = createMetadataService(async url => new Response(url.pathname.endsWith('Nowplaying-timed.txt')
     ? 'Current Artist - Current Song' : rows.join('\n')));
   const result = await service('upcoming');
   assert.equal(result.upcoming.length, 9);

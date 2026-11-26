@@ -50,8 +50,8 @@ is unavailable, the service does not guess which song to remove.
 ## Upstream feeds
 
 Feed filenames are case-sensitive:
-- Now Playing: `https://stagcommunications.com/santaradio/Nowplaying.txt`
-- Coming Up: `https://stagcommunications.com/santaradio/Next3.txt`
+- Now Playing: `https://stagcommunications.com/santaradio/Nowplaying-timed.txt`
+- Coming Up: `https://stagcommunications.com/santaradio/Next9-timed.txt`
 
 Existing upstream cache-busting is retained to keep metadata fresh.
 No FTP credentials or cross-origin browser requests are needed. These sources
@@ -78,7 +78,7 @@ including BST. Invalid dates and ambiguous autumn clock-change times are omitted
 Durations accept seconds, M:SS or H:MM:SS; invalid values are omitted.
 
 Each upcoming song uses its own published Radiologik start time directly, without
-adding a jingle. Next3.txt now supplies up to nine songs. When a timestamp is missing,
+adding a jingle. Next9-timed.txt now supplies up to nine songs. When a timestamp is missing,
 the fallback adds the previous recording's duration plus five seconds for a jingle.
 Past published times are hidden rather than replaced with invented later times. Published duration and start time
 take precedence over catalogue durations and browser-observed starts. `src/data/radio-song-durations.json`
@@ -136,3 +136,5 @@ this change.
   handling through the built Node server and the exported Vercel API handler.
   Test-only fetch preloading isolates upstream data; it is never imported by the
   application. This checks local serving, not a deployed Vercel instance.
+
+The released apps retain the legacy Nowplaying.txt and Next3.txt feeds, containing artist/title only. The independent history worker also retains the clean current feed.
