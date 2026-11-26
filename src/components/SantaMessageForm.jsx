@@ -9,8 +9,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
-import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
-import { Share } from 'lucide-react';
+import { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { Link } from 'react-router-dom';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
@@ -444,13 +443,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div>}
         {coolingDown && !nativeTracker && <SantaCooldownUpsell name={freeRecipient}
           prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
-        {messages.some(message => readyVideoKey === message.key || clickedDownloads.has(message.key)) && <aside className="free-message-invite free-message-share-invite" aria-label="Share the free Message Maker">
-          <h4>Enjoyed the magic? Tell your friends!</h4>
-          <p>Spread a little Christmas joy. Your friends can create their own free message from Santa.</p>
-          <SantaMessageShare>
-            <Share size={17} aria-hidden="true" /> Share with friends
-          </SantaMessageShare>
-        </aside>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
           ? 'check the name and create message.'

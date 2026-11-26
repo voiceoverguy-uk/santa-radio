@@ -18,7 +18,7 @@
   margin: 0 0 8px;
   color: #ead39a;
   font-family: 'Cinzel', Georgia, serif;
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
@@ -40,8 +40,8 @@
   padding: 10px 16px;
   border: 1px solid #ead39a;
   border-radius: 7px;
-  background: #ead39a;
-  color: #19392d;
+  background: #ac1025;
+  color: #fff9eb;
   font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.45;
@@ -52,7 +52,7 @@
 }
 
 .message-cooldown-upsell__link:hover {
-  background: #f6ecd8;
+  background: #c5162d;
   border-color: #f6ecd8;
 }
 
@@ -91,3 +91,9 @@
     transition: none;
   }
 }
+
+.message-cooldown-upsell__eyebrow { margin: 0 0 8px; color: #f6ecd8; font-size: .9rem; }
+.message-cooldown-upsell__price { margin: 0 0 16px; color: #ead39a; }
+.message-cooldown-upsell__price strong { display: block; font-size: 1.15rem; }
+.message-cooldown-upsell__price span { display: block; margin-top: 4px; font-size: .85rem; }
+.message-cooldown-upsell__link { width: 100%; box-sizing: border-box; }

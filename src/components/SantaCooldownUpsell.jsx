@@ -1,42 +1,24 @@
 import React from 'react';
+import { useBlackFridayOfferWindow } from './BlackFridayOffer.jsx';
+import { BESPOKE_MESSAGES_PATH, kidsOffer } from '../lib/messageMakerOffers.js';
 import './SantaCooldownUpsell.css';
 
-function SantaCooldownUpsell({
-  name = null,
-  prelaunch = true,
-  highlight = false,
-  onExplore,
-}) {
-  const named = Boolean(name);
-
-  const heading = named
-    ? `A little more magic for ${name}?`
-    : 'A little more Christmas magic?';
-
-  const copy = prelaunch
-    ? 'Make it even more magical with Santa’s Message Maker Studio for a bespoke message and bonus digital gifts.'
-    : 'Make it extra special with a bespoke message from Santa. Including personalised digital gifts.';
-
-  const buttonLabel = prelaunch
-    ? named
-      ? `Preview ${name}’s bespoke message package`
-      : 'Preview the bespoke message package'
-    : 'Click for more →';
-
+function SantaCooldownUpsell({ name = null, prelaunch = true, highlight = false, onExplore }) {
+  const blackFriday = useBlackFridayOfferWindow();
   return (
-    <section
-      className="message-cooldown-upsell"
-      aria-label="Bespoke Santa message invitation"
-    >
-      <h4 className="message-cooldown-upsell__heading">{heading}</h4>
-      <p className="message-cooldown-upsell__copy">{copy}</p>
-      <a
-        className={`message-cooldown-upsell__link${highlight ? ' message-cooldown-upsell__link--highlight' : ''}`}
-        href="/#bespoke-santa-messages"
-        onClick={onExplore}
-        onAuxClick={event => { if (event.button === 1) onExplore?.(event); }}
-      >
-        {buttonLabel}
+    <section className="message-cooldown-upsell" aria-label="Full Santa video offer">
+      <p className="message-cooldown-upsell__eyebrow">Loved their free message? There’s more!</p>
+      <h4 className="message-cooldown-upsell__heading">Make a full Santa video {name ? `for ${name}` : 'for your child'}</h4>
+      <p className="message-cooldown-upsell__copy">Santa talks about their name, age and the things they’ve done well. You choose the details!</p>
+      <p className="message-cooldown-upsell__copy">Includes a letter from Santa and a Nice List certificate to print and keep.</p>
+      {!prelaunch && <p className="message-cooldown-upsell__price">
+        <strong>{blackFriday ? '£3.25 with code HALFPRICE' : '£6.50'}</strong>
+        <span>{blackFriday ? 'Black Friday · Usually £6.50. Includes two video creations.' : 'Includes two video creations.'}</span>
+      </p>}
+      <a className={`message-cooldown-upsell__link${highlight ? ' message-cooldown-upsell__link--highlight' : ''}`}
+        href={`${BESPOKE_MESSAGES_PATH}#${kidsOffer.id}`} onClick={onExplore}
+        onAuxClick={event => { if (event.button === 1) onExplore?.(event); }}>
+        Watch an example →
       </a>
     </section>
   );
