@@ -249,7 +249,10 @@
 .music-logo-heading { margin: 0 auto 20px; }
 .music-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto; }
 
-@media (max-width: 767px) { .music-page .music-hero { padding-top: 33px; } }
+@media (max-width: 767px) {
+  .music-page .music-hero { padding-top: 33px; }
+  .music-page .music-upcoming { margin-bottom: 18px; }
+}
 
 .music-page .song-info .song-coming-up {
   color: #f0d060;
