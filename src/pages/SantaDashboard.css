@@ -55,7 +55,7 @@
   --dashboard-header-position: left 45%, right 42%;
 }
 .santa-dashboard #message-maker {
-  --dashboard-header-art: url('/images/free-santa-message-microphone.png');
+  --dashboard-header-art: url('/images/free-santa-message-share-v1.jpg');
   --dashboard-header-position: right 43%;
   --dashboard-header-size: auto 170%;
 }
@@ -65,7 +65,7 @@
   --dashboard-header-size: cover;
 }
 .santa-dashboard .big-stitcher {
-  --dashboard-header-art: url('/images/studio-santa-video-framed-v1.webp'), url('/images/santa-studio-headphones.webp');
+  --dashboard-header-art: url('/images/message-maker-kids-share.jpg'), url('/images/santa-studio-headphones.webp');
   --dashboard-header-size: 50.1% auto, 50.1% auto;
   --dashboard-header-position: left 35%, right 40%;
 }
@@ -75,17 +75,17 @@
   --dashboard-header-position: right 38%;
 }
 .santa-dashboard .dashboard-themed--gifts {
-  --dashboard-header-art: url('/images/kids-message-logo-v1.webp'), url('/images/dad-message-logo-v4.webp'), url('/images/studio-scenes/present-room.webp');
+  --dashboard-header-art: url('/images/kids-message-logo-v1-640.webp'), url('/images/dad-message-logo-v4-640.webp'), url('/images/studio-scenes/present-room.webp');
   --dashboard-header-size: auto 100%, auto 100%, cover;
   --dashboard-header-position: 17% top, 78% top, center 40%;
 }
 .santa-dashboard .demo-manager {
-  --dashboard-header-art: url('/images/studio-santa-video-framed-v1.webp'), url('/images/dad-dancer-framed-v2-thumb.webp'), url('/images/free-santa-message-microphone.png');
+  --dashboard-header-art: url('/images/message-maker-kids-share.jpg'), url('/images/dad-dancer-framed-v2-thumb.webp'), url('/images/free-santa-message-share-v1.jpg');
   --dashboard-header-size: 34% auto, 34% auto, 34% auto;
   --dashboard-header-position: left 40%, center 36%, right 36%;
 }
 .santa-dashboard .review-inbox {
-  --dashboard-header-art: url('/images/head-elf-office-panel-double-thumbs-up.webp'), url('/images/head-elf-office-panel-pleased.webp');
+  --dashboard-header-art: url('/images/head-elf-office-panel-thumbs-up.webp'), url('/images/head-elf-office-panel-pleased.webp');
   --dashboard-header-size: 50.1% auto, 50.1% auto;
   --dashboard-header-position: left 38%, right 38%;
 }
@@ -95,7 +95,7 @@
   --dashboard-header-position: left 40%, right 40%;
 }
 .santa-dashboard .name-uploads {
-  --dashboard-header-art: url('/images/santa-studio-headphones.webp'), url('/images/free-santa-message-microphone.png');
+  --dashboard-header-art: url('/images/santa-studio-headphones.webp'), url('/images/free-santa-message-share-v1.jpg');
   --dashboard-header-size: 50.1% auto, 50.1% auto;
   --dashboard-header-position: left 38%, right 38%;
 }
@@ -118,7 +118,7 @@
   --dashboard-header-position: 0% 34%, 33.33% 34%, 66.67% 34%, 100% 34%;
 }
 .santa-dashboard .app-promotions {
-  --dashboard-header-art: url('/images/dashboard-apps/586387813.png'), url('/images/dashboard-apps/1157967613.png'), url('/images/santa-radio-free-apps-share-v1.jpg');
+  --dashboard-header-art: url('/images/dashboard-apps/586387813.png'), url('/images/dashboard-apps/6830570614.png'), url('/images/santa-radio-free-apps-share-v1.jpg');
   --dashboard-header-size: auto 86%, auto 86%, cover;
   --dashboard-header-position: 15% top, 82% top, center 40%;
 }
