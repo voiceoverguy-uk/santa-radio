@@ -42,7 +42,7 @@ export default function DadRecordingSupport({ ownerToken }) {
     if (open) load();
   }, [open, ownerToken]);
 
-  return <details className="dashboard-themed" onToggle={event => setOpen(event.currentTarget.open)}>
+  return <details id="dad-recording-support" className="dashboard-themed" onToggle={event => setOpen(event.currentTarget.open)}>
     <summary>Dad’s recording support</summary>
     {open && <>
       <form onSubmit={event => { event.preventDefault(); load(reference.trim()); }}>
