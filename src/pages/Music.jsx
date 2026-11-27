@@ -99,10 +99,15 @@ export default function Music() {
       </div>
 
       <div className="music-grid-section starry-bg">
+        {upcoming.length > 0 && <section className="container music-upcoming" aria-labelledby="music-upcoming-heading">
+          <h2 id="music-upcoming-heading">Coming up on Santa Radio</h2>
+          <div className="music-grid">
+            {upcoming.map(({ track, song }, index) => <UpcomingSongCard
+              key={`upcoming-${index}-${track.artist}-${track.title}`}
+              track={track} song={song} index={index} />)}
+          </div>
+        </section>}
         <div className="container music-grid">
-          {upcoming.map(({ track, song }, index) => <UpcomingSongCard
-            key={`upcoming-${index}-${track.artist}-${track.title}`}
-            track={track} song={song} index={index} />)}
           {catalogueSongs.map((s) => (
             <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
               <ArtistAvatar song={s} />

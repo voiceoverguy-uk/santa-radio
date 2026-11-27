@@ -274,6 +274,7 @@
 
 /* Upcoming tracks use the site's soft gold edge glow, not a bright fill. */
 .music-page .song-card-upcoming {
+  background-color: #421d29;
   border-color: #d7b56c;
   box-shadow: 0 0 12px #d4af3724;
 }
@@ -287,4 +288,11 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .music-page .song-card-upcoming--soon { animation: none; box-shadow: 0 0 16px #d4af3740; }
+}
+
+.music-upcoming { margin-bottom: 44px; }
+.music-upcoming h2 {
+  margin: 0 0 22px;
+  color: var(--gold-light, #ead39a);
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
 }
