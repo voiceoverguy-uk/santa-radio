@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   getSponsorshipPackage, buildSponsorshipMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
-  SongSubmissionError, submitSong, validateSongFields,
+  SongSubmissionError, submitSong, validateSongFields, songMessageAllowance,
 } from '../lib/songSubmission.js';
 import { formatUkDate } from '../lib/ukDates.js';
 import './SubmitASong.css';
@@ -99,7 +99,7 @@ export default function SubmitASong() {
   const onChange = (name, value) => {
     if (requestRef.current) return;
     setFields(previous => ({ ...previous, [name]: value }));
-    setErrors(previous => ({ ...previous, [name]: undefined }));
+    setErrors(previous => ({ ...previous, [name]: undefined, ...(['audioLink', 'artworkLink', 'instrumental'].includes(name) ? { SONG_REQUEST: undefined } : {}) }));
     setError('');
   };
   const onSubmit = async event => {
@@ -207,7 +207,7 @@ export default function SubmitASong() {
                 <li>A short bio or description</li>
                 <li>A link to any promotion of Santa Radio</li>
               </ul>
-              <p>Keep the message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending, and no A.I. songs.</p>
+              <p>Keep the message, including uploaded file links and confirmations, within 500 characters. Please check that all links work before sending, and no A.I. songs.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
             <p>We screen lyrics for explicit content and family suitability before approving any entry. Your files are reviewed before we decide to feature the song. Suitable songs will feature on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
@@ -265,16 +265,15 @@ export default function SubmitASong() {
               </> : <>
                 {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
                 <p className="song-guidance" id="song-message-help">{isSong
-                  ? 'Keep the whole message within 500 characters and check your links work.'
+                  ? 'Your message, uploaded file links and confirmations share a 500-character limit. The allowance below updates after uploads. Check your links work.'
                   : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
-                <p className="song-character-count" id="song-message-count">{fields.SONG_REQUEST.length} / 500 characters</p>
+                <p className="song-character-count" id="song-message-count" aria-live="polite">{fields.SONG_REQUEST.length} / {isSong ? songMessageAllowance(fields) : 500} characters{isSong && (fields.SONG_REQUEST.length > songMessageAllowance(fields) ? ` — remove ${fields.SONG_REQUEST.length - songMessageAllowance(fields)} characters` : ` — ${songMessageAllowance(fields) - fields.SONG_REQUEST.length} remaining`)}</p>
               </>}
               {isSong && <>
                 <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending || uploading}
                   onChange={event => onChange('instrumental', event.target.checked)} /> This is instrumental, with no sung or spoken lyrics</label>
                 {['audioLink','artworkLink'].map(name=><SongMediaField key={name} audio={name==='audioLink'} value={fields[name]}
                   onChange={value=>onChange(name,value)} busy={pending || uploading} onBusy={setUploading} error={errors[name]}/>)}
-                {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
                 <label className="song-criteria-label" htmlFor="song-noAi"><input id="song-noAi" type="checkbox" name="noAi" checked={fields.noAi === true} disabled={pending || uploading}
                   required aria-invalid={Boolean(errors.noAi)} aria-describedby={errors.noAi ? 'song-noAi-error' : undefined}
                   onChange={event => onChange('noAi', event.target.checked)} /> No A.I. was used to create this song.</label>
@@ -302,7 +301,7 @@ export default function SubmitASong() {
               </div>
               <input type="hidden" name="locale" value="en" />
               <p className="song-privacy">{isSong
-                ? 'Your name, email, message, lyrics/instrumental declaration, media links, no-A.I. declaration and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
+                ? 'Your name, email, message, instrumental declaration, media links, no-A.I. declaration and rights confirmation are sent privately via Brevo. Uploaded files are stored privately.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent via Brevo as your enquiry.'
                   : 'Your name, email and message are sent via Brevo to handle your enquiry.'} Read our <Link to="/privacy-policy">privacy policy</Link>.</p>

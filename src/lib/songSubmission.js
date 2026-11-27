@@ -7,7 +7,7 @@ export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
   sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
-  lyricsLink: '', instrumental: false, audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
+  instrumental: false, audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -46,7 +46,7 @@ export function validateSongFields(fields, mode = 'song') {
   }
   if (mode === 'song') {
     if (fields.noAi !== true) errors.noAi = 'Please confirm that no A.I. was used to create this song.';
-    for (const name of ['audioLink', 'artworkLink', ...(fields.instrumental === true ? [] : ['lyricsLink'])]) {
+    for (const name of ['audioLink', 'artworkLink']) {
       try {
         const value = fields[name];
         const url = new URL(value);
@@ -54,7 +54,8 @@ export function validateSongFields(fields, mode = 'song') {
       } catch { errors[name] = name === 'audioLink' ? 'Please upload your MP3.' : name === 'artworkLink' ? 'Please upload your square artwork.' : 'Provide a secure https:// link, up to 400 characters, with no embedded credentials.'; }
     }
     if (fields.hostPermission !== true) errors.hostPermission = 'Please confirm permission to host and broadcast this recording and artwork.';
-    if (buildSongMessage(fields).length > 500) errors.SONG_REQUEST = 'The complete message, including lyrics, media links and permission, exceeds 500 characters. Shorten your details or use shorter secure links; nothing has been sent.';
+    const limit = songMessageAllowance(fields);
+    if ((fields.SONG_REQUEST || '').length > limit) errors.SONG_REQUEST = `Please remove ${fields.SONG_REQUEST.length - limit} characters from your message. Your uploaded file links and confirmations leave ${limit} characters for your message.`;
   }
   if (mode === 'sponsorship') {
     const campaign = getSponsorshipPackage();
@@ -112,12 +113,17 @@ export function buildSponsorshipMessage(fields) {
 export function buildSongMessage(fields) {
   return [
     fields.SONG_REQUEST?.trim() || '',
-    fields.instrumental === true ? 'Lyrics: instrumental (no vocals)' : `Full lyrics: ${fields.lyricsLink?.trim() || ''}`,
+    fields.instrumental === true ? 'Instrumental: yes' : 'Instrumental: no',
     `No A.I. used: ${fields.noAi === true ? 'confirmed' : 'NOT confirmed'}`,
     `Audio: ${fields.audioLink?.trim() || ''}`,
     `Artwork: ${fields.artworkLink?.trim() || ''}`,
     `Permission to host/broadcast recording & artwork: ${fields.hostPermission === true ? 'confirmed' : 'NOT confirmed'}`,
   ].join('\n');
+}
+
+// Reserve the confirmations required for a valid submission, even before they are ticked.
+export function songMessageAllowance(fields) {
+  return Math.max(0, 500 - buildSongMessage({ ...fields, SONG_REQUEST: '', noAi: true, hostPermission: true }).length);
 }
 
 function safeText(value, fallback) {
