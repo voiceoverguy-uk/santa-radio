@@ -75,8 +75,6 @@ export default function SantaDashboard() {
         </DashboardPanel>
         <DashboardPanel id="message-maker">
           <MessageMakerShortcuts />
-          <FriendVouchers ownerToken={token.current} />
-          <MessageDemoManager ownerToken={token.current} />
           <section id="studio-takings" className="dashboard-themed dashboard-themed--money"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">£ 💷 £</div><p>SANTA’S STUDIO TAKINGS</p><h2>Paid Message Maker · all time</h2></header>{data.paid ? <><div className="santa-dashboard__cards"><section><strong>{data.paid.purchases.toLocaleString()}</strong><span>Confirmed purchases</span></section><section><strong>{data.paid.creations.toLocaleString()}</strong><span>Paid messages created</span></section><section><strong>{data.paid.grossPence === null ? 'Unavailable' : new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(data.paid.grossPence/100)}</strong><span>Collected through Stripe</span></section></div><PaidRevenueChart daily={data.paid.daily} /><p>Live website purchases only; test payments and vouchers are excluded. Creations count successful messages recorded against those purchases. Stripe totals include discounts, before fees and refunds.</p>{data.paid.grossPence === null && <p>Stripe totals could not load. Refresh figures to try again.</p>}<a href="https://dashboard.stripe.com/payments" target="_blank" rel="noopener noreferrer">Open Stripe payments ↗</a></> : <p>Paid figures could not load. Refresh figures to try again.</p>}</section>
           <h2>Free Message Maker</h2>
           <p>Free-message totals are all time{data.since ? ` since tracking began on ${formatUkDate(data.since)}` : '; tracking has not recorded any activity yet'}. Figures use UK dates. Earlier activity is not reconstructed.</p>
@@ -86,6 +84,12 @@ export default function SantaDashboard() {
           <BigStitcher />
           <DadRecordingSupport ownerToken={token.current} />
           <div id="message-reviews"><ReviewInbox ownerToken={token.current} /></div>
+        </DashboardPanel>
+        <DashboardPanel id="vouchers">
+          <FriendVouchers ownerToken={token.current} />
+        </DashboardPanel>
+        <DashboardPanel id="demo-videos">
+          <MessageDemoManager ownerToken={token.current} />
         </DashboardPanel>
         <DashboardPanel id="names-recordings">
           <div hidden={anchor === 'recording-uploads' || anchor === 'request-ledger'}>
