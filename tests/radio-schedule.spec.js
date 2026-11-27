@@ -63,6 +63,16 @@ for (const width of [1280, 390]) {
     await expect(comingUp.locator('.song-card-upcoming').first()).toContainText(`Expected at ${time}`);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
+    if (width <= 767) {
+      const lastUpcoming = await comingUp.locator('.song-card-upcoming').last().boundingBox();
+      const catalogueCards = page.locator('.music-grid-section > .music-grid .song-card');
+      const first = await catalogueCards.nth(0).boundingBox();
+      const second = await catalogueCards.nth(1).boundingBox();
+      const rowGap = second.y - (first.y + first.height);
+      expect(rowGap).toBeGreaterThan(0);
+      expect(first.y - (lastUpcoming.y + lastUpcoming.height)).toBeCloseTo(rowGap, 0);
+    }
+
     const search = page.getByRole('textbox', { name: 'Search for a song or artist' });
     await search.fill('Coldplay');
     await expect(comingUp).toHaveCount(0);
