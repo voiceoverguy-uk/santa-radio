@@ -33,3 +33,205 @@
   color: #efcf79; font: inherit; text-align: left; text-decoration: underline;
 }
 .contender-artist-toggle:focus-visible { outline: 2px solid #efcf79; outline-offset: 2px; }
+
+/* Illustrated North Pole dashboard headers. The original App Store montage is intentionally untouched.
+   Existing Santa Radio assets keep the look consistent and avoid another large image pack. */
+.santa-dashboard .dashboard-sections__panel {
+  --dashboard-header-padding: 24px;
+  --dashboard-header-surface: #0d2d23;
+}
+.santa-dashboard .dashboard-sections__panel .stats-overview {
+  --dashboard-header-padding: clamp(14px, 2.3vw, 24px);
+  --dashboard-header-art: url('/images/north-pole-hero.webp');
+  --dashboard-header-position: center 38%;
+}
+.santa-dashboard .website-visitors {
+  --dashboard-header-art: url('/images/santa-tracker-share-v2.jpg');
+  --dashboard-header-position: center 42%;
+}
+.santa-dashboard .dashboard-themed--money {
+  --dashboard-header-art: url('/images/studio-scenes/office.webp'), url('/images/studio-scenes/present-room.webp');
+  --dashboard-header-size: 50.1% auto, 50.1% auto;
+  --dashboard-header-position: left 45%, right 42%;
+}
+.santa-dashboard #message-maker {
+  --dashboard-header-art: url('/images/free-santa-message-microphone.png');
+  --dashboard-header-position: right 43%;
+  --dashboard-header-size: auto 170%;
+}
+.santa-dashboard .dashboard-themed--messages {
+  --dashboard-header-art: url('/images/north-pole-post-room.webp');
+  --dashboard-header-position: center 42%;
+  --dashboard-header-size: cover;
+}
+.santa-dashboard .big-stitcher {
+  --dashboard-header-art: url('/images/studio-santa-video-framed-v1.webp'), url('/images/santa-studio-headphones.webp');
+  --dashboard-header-size: 50.1% auto, 50.1% auto;
+  --dashboard-header-position: left 35%, right 40%;
+}
+.santa-dashboard #dad-recording-support {
+  --dashboard-header-art: url('/images/dad-armchair-framed-v2-thumb.webp');
+  --dashboard-header-size: auto 135%;
+  --dashboard-header-position: right 38%;
+}
+.santa-dashboard .dashboard-themed--gifts {
+  --dashboard-header-art: url('/images/kids-message-logo-v1.webp'), url('/images/dad-message-logo-v4.webp'), url('/images/studio-scenes/present-room.webp');
+  --dashboard-header-size: auto 100%, auto 100%, cover;
+  --dashboard-header-position: 17% top, 78% top, center 40%;
+}
+.santa-dashboard .demo-manager {
+  --dashboard-header-art: url('/images/studio-santa-video-framed-v1.webp'), url('/images/dad-dancer-framed-v2-thumb.webp'), url('/images/free-santa-message-microphone.png');
+  --dashboard-header-size: 34% auto, 34% auto, 34% auto;
+  --dashboard-header-position: left 40%, center 36%, right 36%;
+}
+.santa-dashboard .review-inbox {
+  --dashboard-header-art: url('/images/head-elf-office-panel-double-thumbs-up.webp'), url('/images/head-elf-office-panel-pleased.webp');
+  --dashboard-header-size: 50.1% auto, 50.1% auto;
+  --dashboard-header-position: left 38%, right 38%;
+}
+.santa-dashboard #name-requests {
+  --dashboard-header-art: url('/images/studio-scenes/office.webp'), url('/images/head-elf-office-panel-curious.webp');
+  --dashboard-header-size: 58% auto, 43% auto;
+  --dashboard-header-position: left 40%, right 40%;
+}
+.santa-dashboard .name-uploads {
+  --dashboard-header-art: url('/images/santa-studio-headphones.webp'), url('/images/free-santa-message-microphone.png');
+  --dashboard-header-size: 50.1% auto, 50.1% auto;
+  --dashboard-header-position: left 38%, right 38%;
+}
+.santa-dashboard #request-ledger .staff-panel {
+  --dashboard-header-art: url('/images/christmas-study.webp');
+  --dashboard-header-position: center 38%;
+}
+.santa-dashboard .dashboard-themed--names {
+  --dashboard-header-art: url('/images/head-elf-list-engine.webp'), url('/images/head-elf-office-panel-jolly.webp');
+  --dashboard-header-size: 55% auto, 46% auto;
+  --dashboard-header-position: left 40%, right 40%;
+}
+.santa-dashboard .dashboard-themed--music {
+  --dashboard-header-art: url('/images/christmas-contenders-vote-2026.jpg');
+  --dashboard-header-position: center 39%;
+}
+.santa-dashboard .catalogue-art {
+  --dashboard-header-art: url('/artist-artwork/mariah-carey.webp'), url('/artist-artwork/michael-buble.webp'), url('/artist-artwork/wham.webp'), url('/artist-artwork/leona-lewis.webp');
+  --dashboard-header-size: 25.1% auto, 25.1% auto, 25.1% auto, 25.1% auto;
+  --dashboard-header-position: 0% 34%, 33.33% 34%, 66.67% 34%, 100% 34%;
+}
+.santa-dashboard .app-promotions {
+  --dashboard-header-art: url('/images/dashboard-apps/586387813.png'), url('/images/dashboard-apps/1157967613.png'), url('/images/santa-radio-free-apps-share-v1.jpg');
+  --dashboard-header-size: auto 86%, auto 86%, cover;
+  --dashboard-header-position: 15% top, 82% top, center 40%;
+}
+.santa-dashboard .dashboard-themed--elf {
+  --dashboard-header-art: url('/images/santa-gang-nice-list.webp');
+  --dashboard-header-position: center 40%;
+}
+.santa-dashboard #game-figures {
+  --dashboard-header-art: url('/images/santa-film-cinema.jpg');
+  --dashboard-header-position: center 40%;
+}
+.santa-dashboard .dashboard-todos {
+  --dashboard-header-art: url('/images/head-elf-office-panel-extra-shocked.webp'), url('/images/christmas-study.webp');
+  --dashboard-header-size: 43% auto, 58% auto;
+  --dashboard-header-position: right 39%, left 40%;
+}
+.santa-dashboard .dashboard-links {
+  --dashboard-header-art: url('/images/message-maker-kids-share.jpg'), url('/images/message-maker-dad-share.jpg'), url('/images/nice-list-share-v1.jpg');
+  --dashboard-header-size: 34% auto, 34% auto, 34% auto;
+  --dashboard-header-position: left 39%, center 39%, right 39%;
+}
+.santa-dashboard #website-email-totals {
+  --dashboard-header-art: url('/images/north-pole-post-room.webp'), url('/images/santa-letter-header.webp');
+  --dashboard-header-size: 65% auto, 35.1% auto;
+  --dashboard-header-position: left 40%, right 40%;
+}
+
+/* Headings and interactive elements remain real HTML, not flattened into the artwork. */
+.santa-dashboard .dashboard-sections__panel :is(
+  .dashboard-themed, .website-visitors, .big-stitcher, .stats-overview,
+  .demo-manager, .review-inbox, #name-requests, .name-uploads, .catalogue-art,
+  .app-promotions, #game-figures, .dashboard-todos, .dashboard-links, #website-email-totals
+) > :is(.dashboard-themed__header, header, .stats-overview__header, .name-uploads__heading:first-child, h2:first-child),
+.santa-dashboard #message-maker > h2,
+.santa-dashboard #request-ledger .staff-panel > #ledger-title,
+.santa-dashboard #dad-recording-support > summary {
+  box-sizing: border-box;
+  min-height: 158px;
+  padding: 100px var(--dashboard-header-padding) 20px;
+  margin: calc(-1 * var(--dashboard-header-padding)) calc(-1 * var(--dashboard-header-padding)) 20px;
+  background-color: var(--dashboard-header-surface);
+  background-image:
+    linear-gradient(0deg, #0d2d23 0%, #0d2d23ed 13%, #0d2d2388 45%, #0d2d2322 100%),
+    linear-gradient(90deg, #0d2d2366, transparent 78%),
+    var(--dashboard-header-art, none);
+  background-repeat: no-repeat;
+  background-size: cover, cover, var(--dashboard-header-size, cover);
+  background-position: center, center, var(--dashboard-header-position, center);
+  border-bottom: 1px solid #a48c4366;
+  border-radius: 13px 13px 0 0;
+  color: #efcf79;
+  text-shadow: 0 1px 5px #081c14;
+}
+.santa-dashboard .dashboard-sections__panel .dashboard-themed__header {
+  min-height: 158px;
+  padding-right: var(--dashboard-header-padding);
+  overflow: hidden;
+}
+.santa-dashboard .dashboard-sections__panel .dashboard-themed__gifts,
+.santa-dashboard .dashboard-sections__panel .dashboard-themed__elf {
+  display: none;
+}
+.santa-dashboard .dashboard-sections__panel :is(.website-visitors, .big-stitcher) > header h2,
+.santa-dashboard .dashboard-sections__panel .dashboard-themed__header h2 {
+  margin: 4px 0 0;
+}
+.santa-dashboard .dashboard-sections__panel :is(.website-visitors, .big-stitcher) > header p,
+.santa-dashboard .dashboard-sections__panel .dashboard-themed__header p {
+  margin: 0 0 4px;
+}
+/* The non-card headings and the native disclosure use an inset header instead. */
+.santa-dashboard #message-maker > h2,
+.santa-dashboard #request-ledger .staff-panel > #ledger-title,
+.santa-dashboard #dad-recording-support > summary {
+  margin: 16px 0;
+  border: 1px solid #a48c43;
+  border-radius: 12px;
+}
+.santa-dashboard #dad-recording-support > summary {
+  cursor: pointer;
+  min-height: 108px;
+  padding-top: 58px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .santa-dashboard .dashboard-sections__panel {
+    --dashboard-header-padding: 16px;
+  }
+  .santa-dashboard .dashboard-sections__panel :is(
+    .dashboard-themed, .website-visitors, .big-stitcher, .stats-overview,
+    .demo-manager, .review-inbox, #name-requests, .name-uploads, .catalogue-art,
+    .app-promotions, #game-figures, .dashboard-todos, .dashboard-links, #website-email-totals
+  ) > :is(.dashboard-themed__header, header, .stats-overview__header, .name-uploads__heading:first-child, h2:first-child),
+  .santa-dashboard #message-maker > h2,
+  .santa-dashboard #request-ledger .staff-panel > #ledger-title {
+    min-height: 125px;
+    padding-top: 70px;
+    padding-bottom: 15px;
+    margin-bottom: 16px;
+  }
+  .santa-dashboard .dashboard-themed--money,
+  .santa-dashboard .big-stitcher,
+  .santa-dashboard .demo-manager,
+  .santa-dashboard .review-inbox,
+  .santa-dashboard #name-requests,
+  .santa-dashboard .name-uploads,
+  .santa-dashboard .dashboard-themed--names,
+  .santa-dashboard .catalogue-art,
+  .santa-dashboard .dashboard-todos,
+  .santa-dashboard .dashboard-links,
+  .santa-dashboard #website-email-totals {
+    /* Portrait cards remain legible on a narrow phone without stretching the source art. */
+    --dashboard-header-size: auto 108%, auto 108%, auto 108%, auto 108%;
+  }
+}
