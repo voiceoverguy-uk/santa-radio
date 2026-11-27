@@ -16,7 +16,7 @@ async function checkResponse(response) {
 }
 
 // Authentication remains in SantaStaffBrowser; every API operation also verifies it.
-export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
+export default function SantaRequestLedger({ email, onSignOut, ownerToken, embedded = false }) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [status, setStatus] = useState('outstanding');
@@ -136,7 +136,8 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
     }
   };
 
-  return <main className="staff-page"><div className="staff-wrap">
+  const Container = embedded ? 'div' : 'main';
+  return <Container className="staff-page"><div className="staff-wrap">
     <img className="staff-brand" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
     <section className="staff-panel" aria-labelledby="ledger-title">
       <div className="staff-account"><span>Signed in as <strong>{email || 'staff account'}</strong></span>
@@ -217,5 +218,5 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
       </>}
       <p className="staff-lede">Download TXT includes every matching entry in the selected list, not just this page. Dates on screen use UK time; downloads label UTC dates.</p>
     </section>
-  </div></main>;
+  </div></Container>;
 }
