@@ -1,7 +1,8 @@
+import { songMediaSlug } from '../lib/songMediaName.js';
 import { useState } from 'react';
 import { uploadPresigned } from '@vercel/blob/client';
 
-export default function SongMediaField({audio,value,onChange,busy,onBusy,error}) {
+export default function SongMediaField({audio,value,onChange,busy,onBusy,error,artist,title}) {
   const [notice,setNotice]=useState('');
   const [uploaded,setUploaded]=useState('');
   const name=audio?'audioLink':'artworkLink';
@@ -22,7 +23,7 @@ export default function SongMediaField({audio,value,onChange,busy,onBusy,error})
         access:'private',contentType:formats[ext],multipart:false,
         onUploadProgress:({percentage})=>setNotice('Uploading '+file.name+' — '+Math.round(percentage)+'%')});
       onChange(window.location.origin+'/api/song-media?file='+key);
-      setUploaded(file.name);setNotice('Uploaded: '+file.name);
+      setUploaded(ext === 'jpeg' ? 'jpg' : ext);setNotice('');
     } catch {setNotice('Upload failed. Please try again.');}
     finally {onBusy(false);}
   }
@@ -30,7 +31,7 @@ export default function SongMediaField({audio,value,onChange,busy,onBusy,error})
     <label>{audio?'Upload MP3':'Upload artwork'} ({maximum} MB max)
       <input type="file" accept={Object.keys(formats).map(ext=>'.'+ext).join(',')} name={name} disabled={busy} onChange={choose} aria-invalid={Boolean(error)} aria-describedby={error ? `${name}-error` : undefined}/>
     </label>
-    <p role="status">{notice}</p>
+    <p role="status">{notice || (uploaded && value ? 'Uploaded: '+songMediaSlug(artist,title)+'.'+uploaded : '')}</p>
     {uploaded && value && <button type="button" disabled={busy} onClick={()=>{onChange('');setUploaded('');setNotice('');}}>Remove {audio?'MP3':'artwork'}</button>}
     {error && <p id={`${name}-error`} className="song-field-error">{error}</p>}
   </div>;

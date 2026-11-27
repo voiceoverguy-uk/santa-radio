@@ -36,3 +36,7 @@ test('empty list is distinct from denied access and malformed responses',async()
  assert.deepEqual(await run({count:1,contacts:[{id:'invalid'}]}),{error:'invalid_response'});
  assert.deepEqual(await run({contacts:[]}),{error:'invalid_response'});
 });
+test('song review includes separately stored artist, title and download details',async()=>{
+ const result=await songSubmissionStatistics({env:{BREVO_API_KEY:'test'},fetchImpl:async()=>({ok:true,json:async()=>({count:1,contacts:[{id:1,attributes:{SONG_ARTIST:'Bob Davies',SONG_TITLE:'I Love Christmas',SONG_REQUEST:'Description',SONG_DETAILS:'Audio: https://example.com/song.mp3'}}]})})});
+ assert.equal(result.contacts[0].message,'Artist: Bob Davies\nTitle: I Love Christmas\nDescription\nAudio: https://example.com/song.mp3');
+});

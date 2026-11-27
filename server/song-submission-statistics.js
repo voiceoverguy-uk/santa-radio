@@ -13,5 +13,5 @@ export async function songSubmissionStatistics({env=process.env, fetchImpl=fetch
   if (body.contacts.some(c=>!Number.isSafeInteger(c.id))) return {error:'invalid_response'};
   return {count:body.count,offset,nextOffset:offset+body.contacts.length<body.count && body.contacts.length ? offset+body.contacts.length : null,
     contacts:body.contacts.map(c=>({id:c.id,name:[text(c.attributes?.FIRSTNAME),text(c.attributes?.LASTNAME)].filter(Boolean).join(' '),
-      message:text(c.attributes?.SONG_REQUEST),createdAt:text(c.createdAt),modifiedAt:text(c.modifiedAt)}))};
+      message:[c.attributes?.SONG_ARTIST && 'Artist: '+text(c.attributes.SONG_ARTIST), c.attributes?.SONG_TITLE && 'Title: '+text(c.attributes.SONG_TITLE), text(c.attributes?.SONG_REQUEST), text(c.attributes?.SONG_DETAILS)].filter(Boolean).join('\n'),createdAt:text(c.createdAt),modifiedAt:text(c.modifiedAt)}))};
 }

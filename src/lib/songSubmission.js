@@ -1,10 +1,11 @@
+import { songMediaLink } from './songMediaName.js';
 import { formatUkDate } from './ukDates.js';
 // Separate owner-supplied public destinations; neither is the Santa access form.
 export const GENERAL_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4mJ0tp-P1-PI-OWQj9209ioBc9iOd-ae3zbwsfaG67xp9R4DlwMgef_Yrr_6g63CPf0CZwITEPVEiaplfqCoR1vb0rEY3jp6ILn1smesmu6rFzGW7ujefLd6MWuIaFyLkoCrl9qNjsEE54J0rYAvUqyNt6NIlWxNcK1b-e3RWmCwY79SD66R2zFRxj-Ff4vyhA5';
 export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAHo-_p9zX-veVdI1MT61eYw_K65GmtGftzIcBNHGcQyO9QCBsXr-YNr6tWl-SueYKR588f8AspMGUl4lTvpufjdHRN6C8kb89x3McgboZ6nmADwHcrwf89iFCD_t1VrttitnnHxzAajCyvnNyFGk5Rvhs1faF4qyNWmTXbip8CJl_Wd7BdB_vc00tfH2EMPYVbpqI3xC53vh';
 export const SONG_REQUEST_TIMEOUT_MS = 15000;
 export const emptySongFields = {
-  FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
+  FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_ARTIST: '', SONG_TITLE: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
   sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
   instrumental: false, audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
@@ -19,7 +20,7 @@ export const songCountries = countryPairs.split(' ').map(pair => {
 }).sort((a, b) => a.country === 'GB' ? -1 : b.country === 'GB' ? 1 : 0);
 // The hosted form and website both require SONG_REQUEST (placeholder MESSAGE).
 const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'SONG_REQUEST'];
-const supportedFields = requiredFields;
+const supportedFields = [...requiredFields, 'SONG_ARTIST', 'SONG_TITLE', 'SONG_DETAILS'];
 
 export function getSponsorshipPackage(now = new Date()) {
   const year = new Intl.DateTimeFormat('en-GB', { year: 'numeric', timeZone: 'Europe/London' }).format(now);
@@ -31,6 +32,7 @@ export function validateSongFields(fields, mode = 'song') {
   for (const [name, label, limit] of [
     ['FIRSTNAME', 'first name', 200], ['LASTNAME', 'surname', 200],
     ...(mode === 'sponsorship' ? [] : [['SONG_REQUEST', 'message', 500]]),
+    ...(mode === 'song' ? [['SONG_ARTIST', 'artist', 200], ['SONG_TITLE', 'song title', 200]] : []),
   ]) {
     const value = fields[name] || '';
     if (!value.trim()) errors[name] = `Please enter your ${label}.`;
@@ -54,8 +56,7 @@ export function validateSongFields(fields, mode = 'song') {
       } catch { errors[name] = name === 'audioLink' ? 'Please upload your MP3.' : name === 'artworkLink' ? 'Please upload your square artwork.' : 'Provide a secure https:// link, up to 400 characters, with no embedded credentials.'; }
     }
     if (fields.hostPermission !== true) errors.hostPermission = 'Please confirm permission to host and broadcast this recording and artwork.';
-    const limit = songMessageAllowance(fields);
-    if ((fields.SONG_REQUEST || '').length > limit) errors.SONG_REQUEST = `Please remove ${fields.SONG_REQUEST.length - limit} characters from your message. Your uploaded file links and confirmations leave ${limit} characters for your message.`;
+    if (buildSongDetails(fields).length > 500) errors.audioLink = 'The file details are too long. Please remove and upload your MP3 and artwork again.';
   }
   if (mode === 'sponsorship') {
     const campaign = getSponsorshipPackage();
@@ -110,20 +111,14 @@ export function buildSponsorshipMessage(fields) {
   ].join('\n');
 }
 
-export function buildSongMessage(fields) {
+export function buildSongDetails(fields) {
   return [
-    fields.SONG_REQUEST?.trim() || '',
     fields.instrumental === true ? 'Instrumental: yes' : 'Instrumental: no',
     `No A.I. used: ${fields.noAi === true ? 'confirmed' : 'NOT confirmed'}`,
-    `Audio: ${fields.audioLink?.trim() || ''}`,
-    `Artwork: ${fields.artworkLink?.trim() || ''}`,
+    `Audio: ${songMediaLink(fields.audioLink?.trim(), fields.SONG_ARTIST, fields.SONG_TITLE)}`,
+    `Artwork: ${songMediaLink(fields.artworkLink?.trim(), fields.SONG_ARTIST, fields.SONG_TITLE)}`,
     `Permission to host/broadcast recording & artwork: ${fields.hostPermission === true ? 'confirmed' : 'NOT confirmed'}`,
   ].join('\n');
-}
-
-// Reserve the confirmations required for a valid submission, even before they are ticked.
-export function songMessageAllowance(fields) {
-  return Math.max(0, 500 - buildSongMessage({ ...fields, SONG_REQUEST: '', noAi: true, hostPermission: true }).length);
 }
 
 function safeText(value, fallback) {
@@ -148,10 +143,10 @@ export async function submitSong(fields, signal, mode = 'song') {
     throw new SongSubmissionError('Your message could not be sent. Please try again.');
   }
   const body = new FormData();
-  for (const name of supportedFields) {
+  for (const name of mode === 'song' ? supportedFields : requiredFields) {
     body.append(name, (name === 'SONG_REQUEST' && mode === 'sponsorship'
-      ? buildSponsorshipMessage(fields) : name === 'SONG_REQUEST' && mode === 'song'
-        ? buildSongMessage(fields) : fields[name]).trim());
+      ? buildSponsorshipMessage(fields) : name === 'SONG_DETAILS'
+        ? buildSongDetails(fields) : fields[name]).trim());
   }
   body.append('email_address_check', fields.email_address_check || '');
   body.append('locale', 'en');
@@ -175,7 +170,7 @@ export async function submitSong(fields, signal, mode = 'song') {
     ? data.errors : {};
   for (const field of supportedFields) {
     if (Object.hasOwn(providerErrors, field)) {
-      const visibleField = mode === 'sponsorship' && field === 'SONG_REQUEST' ? 'sponsorCampaign' : field;
+      const visibleField = mode === 'sponsorship' && field === 'SONG_REQUEST' ? 'sponsorCampaign' : field === 'SONG_DETAILS' ? 'audioLink' : field;
       fieldErrors[visibleField] = safeText(providerErrors[field], 'Please check this field and try again.');
     }
   }

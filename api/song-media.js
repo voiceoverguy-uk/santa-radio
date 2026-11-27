@@ -1,3 +1,4 @@
+import { songDownloadFilename } from '../src/lib/songMediaName.js';
 import express from 'express';
 import { createHmac } from 'node:crypto';
 import { Readable } from 'node:stream';
@@ -22,7 +23,7 @@ app.use(async (req,res) => {
       const media = await get(prefix + file,{access:'private'});
       if (!media?.stream) return res.status(404).end();
       res.setHeader('Content-Type','application/octet-stream');
-      res.setHeader('Content-Disposition',`attachment; filename="Santa-Radio-${file}"`);
+      res.setHeader('Content-Disposition',`attachment; filename="${songDownloadFilename(file, req.query.name)}"`);
       await pipeline(Readable.fromWeb(media.stream),res);
       return;
     }
