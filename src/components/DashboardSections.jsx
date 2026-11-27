@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { BookOpen, Gamepad2, Images, LayoutDashboard, Link2, Mail, Music2, Smartphone } from 'lucide-react';
+import { BookOpen, Film, Gamepad2, Images, LayoutDashboard, Link2, Mail, Music2, Smartphone, Ticket } from 'lucide-react';
 import './DashboardSections.css';
 
 const messageTools = [
-  ['voucher-heading', 'Vouchers'], ['message-demos', 'Demo videos'], ['studio-takings', 'Studio takings'],
+  ['studio-takings', 'Studio takings'],
   ['free-message-activity', 'Free-message activity'], ['big-stitcher-title', 'The Big Stitcher'],
   ['dad-recording-support', 'Dad recording support'], ['message-reviews', 'Reviews'],
 ];
@@ -11,6 +11,8 @@ const messageTools = [
 const sections = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, anchors: ['stats-overview', 'website-visitors-title'] },
   { id: 'message-maker', label: 'Message Maker', icon: Mail, anchors: messageTools.map(([id]) => id) },
+  { id: 'vouchers', label: 'Dads & Kids Vouchers', icon: Ticket, anchors: ['voucher-heading'] },
+  { id: 'demo-videos', label: 'Message demo videos', icon: Film, anchors: ['message-demos'] },
   { id: 'names-recordings', label: 'Names & recordings', icon: BookOpen, anchors: ['name-requests', 'popular-names', 'recording-uploads', 'request-ledger'] },
   { id: 'christmas-contenders', label: 'Christmas Contenders', icon: Music2, anchors: ['contender-votes'] },
   { id: 'artwork', label: 'Artist & song artwork', icon: Images, anchors: ['catalogue-artwork', 'catalogue-art-title'] },
@@ -84,6 +86,8 @@ export function DashboardPane({ id, active, children }) {
 
 export function MessageMakerShortcuts() {
   return <nav className="dashboard-sections__shortcuts" aria-label="Message Maker tools">
+    <a href="#vouchers">Vouchers</a>
+    <a href="#demo-videos">Demo videos</a>
     {messageTools.map(([id, label]) => <a key={id} href={'#' + id}>{label}</a>)}
   </nav>;
 }

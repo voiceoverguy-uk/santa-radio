@@ -43,14 +43,6 @@ function UpcomingSongCard({ track, song, index }) {
 
 export default function Music() {
   const { upcoming: scheduled = [] } = useRadio();
-  const [desktop, setDesktop] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia('(min-width: 901px)');
-    const update = () => setDesktop(query.matches);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState('random');
   const [randomSongs, setRandomSongs] = useState(shuffleSongs);
@@ -60,7 +52,7 @@ export default function Music() {
     s.song.toLowerCase().includes(search.toLowerCase())
   );
 
-  const upcoming = desktop && order === 'random' && !search.trim()
+  const upcoming = order === 'random' && !search.trim()
     ? scheduled.slice(0, 4)
       .map(track => ({ track, song: matchLiveSong(track, songsData).song }))
     : [];
