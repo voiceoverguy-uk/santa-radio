@@ -293,7 +293,7 @@
   .music-page .song-card-upcoming--soon { animation: none; box-shadow: 0 0 16px #d4af3740; }
 }
 
-.music-upcoming { margin-bottom: 44px; }
+.music-page .music-upcoming { margin-bottom: 44px; }
 .music-upcoming h2 {
   margin: 0 0 22px;
   color: var(--gold-light, #ead39a);
