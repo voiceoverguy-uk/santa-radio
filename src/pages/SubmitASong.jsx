@@ -232,11 +232,10 @@ export default function SubmitASong() {
             {accepted ? <div className="song-form-success" role="status" tabIndex={-1} ref={successRef}>
               <h2>{isSong ? 'Thank you for your song submission' : isSponsorship ? 'Thank you for your sponsorship enquiry' : 'Thank you for your enquiry'}</h2>
               <p>{isSong
-                ? 'Brevo has accepted your submission for Santa Radio to consider. This is not a promise of airplay or a reply.'
+                ? "We've accepted your submission for Santa Radio to consider. This is not a promise of airplay or a reply."
                 : isSponsorship
                   ? 'Brevo has accepted your enquiry. This does not confirm delivery to Santa Radio’s inbox or mean a sponsorship has been booked.'
                   : "Santa can't answer every message but rest assured it will be read by Head Elf at the very least."}</p>
-              {isSong && <p>Provider acceptance does not confirm delivery to our inbox.</p>}
               {isSong ? <Link to="/christmas-music">Explore Christmas music</Link>
                 : <a href="https://www.santaradio.co.uk/">Return to Santa Radio</a>}
             </div> : <form className="song-submission-form" ref={formRef} onSubmit={onSubmit} noValidate aria-busy={pending}>
