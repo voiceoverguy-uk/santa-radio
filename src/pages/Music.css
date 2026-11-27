@@ -265,8 +265,8 @@
   cursor: default;
 }
 
-/* Festive gold wrapping and a double frame for the upcoming tracks. */
-.music-page .song-card-upcoming {
+/* Festive gold wrapping and a double frame for every artist card. */
+.music-page .song-card {
   border: 1px solid #d7b56c;
   background:
     radial-gradient(ellipse at center, #173a2bef 22%, #142b20d9 65%, #92703933),
