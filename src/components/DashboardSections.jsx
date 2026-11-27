@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { BookOpen, Film, Gamepad2, Images, LayoutDashboard, Link2, Mail, Music2, Smartphone, Ticket } from 'lucide-react';
+import { BookOpen, ClipboardList, Film, Gamepad2, Images, LayoutDashboard, Link2, Mail, Megaphone, MessageSquare, Music2, Smartphone, Tags, Ticket } from 'lucide-react';
 import './DashboardSections.css';
 
 const messageTools = [
   ['studio-takings', 'Studio takings'],
   ['free-message-activity', 'Free-message activity'], ['big-stitcher-title', 'The Big Stitcher'],
-  ['dad-recording-support', 'Dad recording support'], ['message-reviews', 'Reviews'],
+  ['dad-recording-support', 'Dad recording support'],
 ];
 
 const sections = [
@@ -13,12 +13,16 @@ const sections = [
   { id: 'message-maker', label: 'Message Maker', icon: Mail, anchors: messageTools.map(([id]) => id) },
   { id: 'vouchers', label: 'Dads & Kids Vouchers', icon: Ticket, anchors: ['voucher-heading'] },
   { id: 'demo-videos', label: 'Message demo videos', icon: Film, anchors: ['message-demos'] },
-  { id: 'names-recordings', label: 'Names & recordings', icon: BookOpen, anchors: ['name-requests', 'popular-names', 'recording-uploads', 'request-ledger'] },
+  { id: 'message-reviews', label: 'Santa message reviews', icon: MessageSquare, anchors: [] },
+  { id: 'names-recordings', label: 'Names & recordings', icon: BookOpen, anchors: ['name-requests', 'recording-uploads', 'request-ledger'] },
+  { id: 'popular-names', label: 'Popular names', icon: Tags, anchors: [] },
   { id: 'christmas-contenders', label: 'Christmas Contenders', icon: Music2, anchors: ['contender-votes'] },
   { id: 'artwork', label: 'Artist & song artwork', icon: Images, anchors: ['catalogue-artwork', 'catalogue-art-title'] },
-  { id: 'apps', label: 'Apps & downloads', icon: Smartphone, anchors: ['app-store-reports', 'app-welcome-banners', 'banner-library'] },
+  { id: 'apps', label: 'Apps & downloads', icon: Smartphone, anchors: ['app-store-reports'] },
+  { id: 'app-welcome-banners', label: 'App welcome banners', icon: Megaphone, anchors: ['banner-library'] },
   { id: 'games', label: 'Games & certificates', icon: Gamepad2, anchors: ['checker-downloads', 'game-figures'] },
-  { id: 'admin', label: 'Links & admin', icon: Link2, anchors: ['dashboard-links-title', 'website-email-totals', 'dashboard-todos'] },
+  { id: 'dashboard-todos', label: 'To-do list', icon: ClipboardList, anchors: [] },
+  { id: 'admin', label: 'Links & admin', icon: Link2, anchors: ['dashboard-links-title', 'website-email-totals'] },
 ];
 
 function subscribe(listener) {
@@ -88,6 +92,7 @@ export function MessageMakerShortcuts() {
   return <nav className="dashboard-sections__shortcuts" aria-label="Message Maker tools">
     <a href="#vouchers">Vouchers</a>
     <a href="#demo-videos">Demo videos</a>
+    <a href="#message-reviews">Reviews</a>
     {messageTools.map(([id, label]) => <a key={id} href={'#' + id}>{label}</a>)}
   </nav>;
 }

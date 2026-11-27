@@ -1,5 +1,6 @@
+import { COMPETITION } from '../lib/contenders.js';
 import { formatUkDate } from '../lib/ukDates.js';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { uploadPresigned } from '@vercel/blob/client';
 
 const formats = {mp3:'audio/mpeg',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
@@ -46,12 +47,7 @@ function Contact({entry,run,busy,replace}) {
   const [artist,setArtist]=useState(entry.artist), [title,setTitle]=useState(entry.title);
   const songChanged=artist.trim()!==entry.artist || title.trim()!==entry.title;
   const dirty=name!==entry.name || email!==entry.email;
-  return <details><summary><span style={{display:'inline-grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',alignItems:'center',width:'calc(100% - 1.5em)',verticalAlign:'middle'}}>
-      <span>{entry.artist} — {entry.title}</span>
-      <span style={{textAlign:'center',color:entry.state==='sent'?'#94ebae':undefined}} aria-label={entry.state==='sent'?'Invitation sent':entry.state==='sending'?'Invitation pending':'Not invited'} role="img">
-        {entry.state==='sent'?'✓':entry.state==='sending'?'Pending':'—'}
-      </span>
-    </span></summary>
+  return <>
     <form onSubmit={event=>{
       event.preventDefault();
       run({action:'edit-song',id:entry.id,artist:artist.trim(),title:title.trim(),previousArtist:entry.artist,previousTitle:entry.title},'Artist name and song title saved.');
@@ -71,10 +67,11 @@ function Contact({entry,run,busy,replace}) {
     </form>
     <ReplacementForm entry={entry} kind="audio" busy={busy} replace={replace}/>
     <ReplacementForm entry={entry} kind="artwork" busy={busy} replace={replace}/>
-    <ReviewLink id={entry.id}/></details>;
+    <ReviewLink id={entry.id}/>
+  </>;
 }
-export default function ContenderManager({ownerToken,onPublish}) {
-  const [tab,setTab]=useState(null);
+export default function ContenderManager({votes,ownerToken,onPublish}) {
+  const [openPanel, setOpenPanel] = useState(null);
   const [entries,setEntries]=useState(null), [busy,setBusy]=useState(false), [notice,setNotice]=useState('');
   const [files,setFiles]=useState({}), [job,setJob]=useState(null);
   const [published,setPublished]=useState(null);
@@ -146,17 +143,48 @@ export default function ContenderManager({ownerToken,onPublish}) {
     }catch(error){setNotice(error.message);}
     finally{setBusy(false);}
   }
+  const entriesById = new Map(entries?.map(entry => [entry.id, entry]));
+  function togglePanel(panel) {
+    setNotice('');
+    if (openPanel === panel) { setOpenPanel(null); return; }
+    setOpenPanel(panel);
+    if (panel !== 'add' && !entries) run(null, '');
+  }
   return <div className="contender-manager">
-    <div role="group" aria-label="Christmas Contenders management" style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-      {['songs','artists'].map(key=><button key={key} type="button"
-        id={'contender-tab-'+key} aria-controls={'contender-panel-'+key} aria-expanded={tab===key}
-        disabled={busy}
-        style={{borderBottom:tab===key?'3px solid #f5d58e':undefined}}
-        onClick={()=>{if(tab===key){setTab(null);return;}setTab(key);if(key==='artists' && !entries)run(null,'');else if(key!==tab)setNotice('');}}>
-        <span aria-hidden="true">{tab===key?'▾':'▸'}</span> {key==='songs'?'Add new songs':'Artists and Invites'}
-      </button>)}
-    </div>
-    <div role="region" id="contender-panel-songs" aria-labelledby="contender-tab-songs" hidden={tab!=='songs'}><form onSubmit={publish}><fieldset disabled={busy}>
+    <div className="santa-dashboard__table"><table aria-label="Christmas Contenders standings">
+      <thead><tr>{['Artist', 'Invited', 'Song', 'Confirmed votes'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+      <tbody>{votes.map(row => {
+        const editable = row.competition === COMPETITION && Boolean(row.id);
+        const panel = 'contender-edit-' + row.id;
+        const expanded = editable && openPanel === panel;
+        const entry = editable ? entriesById.get(row.id) : null;
+        const state = entry?.state ?? row.invitation_state;
+        return <Fragment key={JSON.stringify([row.competition, row.id, row.id ? null : [row.artist, row.title]])}>
+          <tr>
+            <td>{editable ? <button type="button" className="contender-artist-toggle" aria-expanded={expanded}
+              aria-controls={panel} aria-label={`Edit ${row.artist} — ${row.title}`} disabled={busy} onClick={() => togglePanel(panel)}>
+              <span aria-hidden="true">{expanded ? '▾' : '▸'}</span> {row.artist}
+            </button> : row.artist}</td>
+            <td>{state === 'sent' ? <span role="img" aria-label="Invited" style={{color:'#94ebae'}}>✓</span> : state === 'sending' ? 'Pending' : '—'}</td>
+            <td>{row.title}</td><td>{row.votes}</td>
+          </tr>
+          {editable && <tr id={panel} hidden={!expanded}><td colSpan={4}>
+            {expanded && <p role="status">{notice || (!entries && busy ? 'Loading artist details…' : '')}</p>}
+            {expanded && !entry && !busy && <>
+              {!notice && <p>Artist details are unavailable.</p>}
+              <button type="button" onClick={() => run(null, '')}>Try again</button>
+            </>}
+            {entry && <Contact key={JSON.stringify([entry.name, entry.email, entry.artist, entry.title])} entry={entry} run={run} busy={busy} replace={replace}/>}
+          </td></tr>}
+        </Fragment>;
+      })}
+      {!votes.length && <tr><td colSpan={4}>No activity recorded yet.</td></tr>}</tbody>
+    </table></div>
+    <button type="button" id="contender-tab-songs" aria-controls="contender-panel-songs" aria-expanded={openPanel === 'add'}
+      disabled={busy} onClick={() => togglePanel('add')}>
+      <span aria-hidden="true">{openPanel === 'add' ? '▾' : '▸'}</span> Add new songs
+    </button>
+    <div role="region" id="contender-panel-songs" aria-labelledby="contender-tab-songs" hidden={openPanel !== 'add'}><form onSubmit={publish}><fieldset disabled={busy}>
       {[['artist','Artist',120],['title','Song title',160],['name','Private contact name',120],['email','Private contact email',254]].map(([key,label,max])=><label key={key}>{label}
         <input name={key} type={key==='email'?'email':'text'} maxLength={max} required={key==='artist'||key==='title'}/></label>)}
       {['audio','artwork'].map(key=><label key={key} className="contender-drop" onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();if(!busy){setFiles({...files,[key]:e.dataTransfer.files[0]});setJob(null);}}}>
@@ -164,10 +192,5 @@ export default function ContenderManager({ownerToken,onPublish}) {
         <input type="file" accept={key==='audio'?'.mp3':'.jpeg,.jpg,.png,.webp'} onChange={e=>{setFiles({...files,[key]:e.target.files[0]});setJob(null);}}/>
         {files[key]?.name}</label>)}
       <button>{busy ? 'Please wait…' : 'Publish song'}</button><p role="status" aria-live="polite">{notice}</p>{published && <div role="status"><strong>✓ “{published.title}” is published.</strong><p>No email has been sent. Check the artwork and recording, then choose Send invitation when you’re ready.</p><ReviewLink id={published.id}/></div>}</fieldset></form></div>
-    <div role="region" id="contender-panel-artists" aria-labelledby="contender-tab-artists" hidden={tab!=='artists'}>
-      <p role="status">{notice || (busy && !entries ? 'Loading artists…' : entries?.length===0 ? 'No artists yet.' : '')}</p>
-      {!entries && !busy && notice && <button type="button" onClick={()=>run(null,'')}>Try again</button>}
-      {entries?.length>0 && <div style={{display:'grid',gridTemplateColumns:'minmax(0, 1fr) 5rem',paddingLeft:'1.5em',fontWeight:700}}><span>Artist and song</span><span style={{textAlign:'center'}}>Invited</span></div>}
-      {entries?.map(entry=><Contact key={[entry.id,entry.name,entry.email].join('|')} entry={entry} run={run} busy={busy} replace={replace}/>)}</div>
   </div>;
 }

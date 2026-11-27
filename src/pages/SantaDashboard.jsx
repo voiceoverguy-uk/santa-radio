@@ -83,7 +83,6 @@ export default function SantaDashboard() {
           <section id="free-message-activity" className="dashboard-themed dashboard-themed--messages"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">✉️ 📅 ✉️</div><p>MAGIC SENT FROM THE NORTH POLE</p><h2>Daily free-message usage · last 30 days</h2></header>{table(['UK date','Created','Listened','Download clicks','MP4 downloads','Shared'],freeDays.slice(0,freeDaysVisible).map(r=>[formatUkDate(r.day),r.creations,r.listens||0,r.downloads,r.mp4Downloads||0,r.shares||0]),['Total · last 30 days',...freeTotals])}{freeDaysVisible<freeDays.length&&<button type="button" onClick={()=>setFreeDaysVisible(count=>count+4)}>Load more</button>}</section>
           <BigStitcher />
           <DadRecordingSupport ownerToken={token.current} />
-          <div id="message-reviews"><ReviewInbox ownerToken={token.current} /></div>
         </DashboardPanel>
         <DashboardPanel id="vouchers">
           <FriendVouchers ownerToken={token.current} />
@@ -91,10 +90,12 @@ export default function SantaDashboard() {
         <DashboardPanel id="demo-videos">
           <MessageDemoManager ownerToken={token.current} />
         </DashboardPanel>
+        <DashboardPanel id="message-reviews">
+          <ReviewInbox ownerToken={token.current} />
+        </DashboardPanel>
         <DashboardPanel id="names-recordings">
           <div hidden={anchor === 'recording-uploads' || anchor === 'request-ledger'}>
             <section id="name-requests"><h2>Names awaiting your review</h2>{rejectionNotice&&<p role="status">{rejectionNotice}</p>}{dismissed&&<p role="status">Dismissed {dismissed}. <button disabled={busy} onClick={()=>mark(dismissed,'restore')}>Undo</button></p>}{data.nameNotifications?.map(row=><p key={row.state}>Name update emails — {row.state}: {row.count}</p>)}<p>Upload the recording, then refresh to see Yes under On Server?. Requests stay here until you press Send email. That queues emails for linked requesters and moves the request to Completed history in the full ledger. Uploading and refreshing never send availability emails. The server check uses exact names in the live index, or confirms the audio file directly if the index is unavailable. Refresh after uploading. Requests never add audio automatically. Emails are processed within five minutes. Only first names and double-barrelled first names (with a space or hyphen) can be requested. Use Reject name when a surname is included; this queues an explanation for linked requesters. Dismiss does not email anyone.</p>{data.requests===null?<p>Name requests could not load. <button onClick={()=>window.location.hash='request-ledger'}>Open the full request ledger</button>.</p>:table(['Name','Requests','Requested · UK time','On Server?','Action'],(data.requests||[]).map(r=>[<div><CopyRequestedName name={r.name} />{r.pronunciationNotes?.map(note=><p key={note}><strong>Pronunciation:</strong> {note}</p>)}</div>,r.count,<RequestedTime value={r.firstRequestedAt} />,<span>{r.recordingStatus==='available'?'Yes':r.recordingStatus==='not_found'?'No':'Could not check'}</span>,<div><button disabled={busy} onClick={()=>mark(r.name)}>Send email</button> <button disabled={busy} onClick={()=>mark(r.name,'reject')}>Reject name</button> <button disabled={busy} onClick={()=>mark(r.name,'dismiss')}>Dismiss</button></div>]))}<div className="santa-dashboard__actions"><button onClick={()=>window.location.hash='request-ledger'}>Full request ledger and exports</button><button onClick={()=>window.location.hash='recording-uploads'}>Upload recordings</button></div></section>
-            <section id="popular-names" className="dashboard-themed dashboard-themed--names"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">🏷️ ✨ 🏷️</div><p>THE NAMES EVERYONE IS ASKING FOR</p><h2>Popular recorded names · last 30 days</h2></header>{table(['First name','Created'],data.names.slice(nameStart,nameStart+namePageSize).map(r=>[r.name,r.creations]))}<div className="santa-dashboard__pagination"><label>Names per page <select value={namePageSize} onChange={e=>{setNamePageSize(Number(e.target.value));setNamePage(1);}}>{[10,50,100].map(size=><option key={size} value={size}>{size}</option>)}</select></label><span role="status">{data.names.length ? `${nameStart+1}–${Math.min(nameStart+namePageSize,data.names.length)} of ${data.names.length}` : '0 names'}</span><button disabled={currentNamePage<=1} onClick={()=>setNamePage(currentNamePage-1)}>Previous</button><span>Page {currentNamePage} of {namePages}</span><button disabled={currentNamePage>=namePages} onClick={()=>setNamePage(currentNamePage+1)}>Next</button></div></section>
           </div>
           <DashboardPane id="recording-uploads" active={anchor === 'recording-uploads'}>
             <DashboardBackButton onClick={() => { window.location.hash = 'name-requests'; }} />
@@ -104,21 +105,20 @@ export default function SantaDashboard() {
             <SantaRequestLedger embedded ownerToken={token.current} email="Studio owner" onSignOut={() => { window.location.hash = 'name-requests'; load(); }} />
           </DashboardPane>
         </DashboardPanel>
+        <DashboardPanel id="popular-names">
+          <section className="dashboard-themed dashboard-themed--names"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">🏷️ ✨ 🏷️</div><p>THE NAMES EVERYONE IS ASKING FOR</p><h2>Popular recorded names · last 30 days</h2></header>{table(['First name','Created'],data.names.slice(nameStart,nameStart+namePageSize).map(r=>[r.name,r.creations]))}<div className="santa-dashboard__pagination"><label>Names per page <select value={namePageSize} onChange={e=>{setNamePageSize(Number(e.target.value));setNamePage(1);}}>{[10,50,100].map(size=><option key={size} value={size}>{size}</option>)}</select></label><span role="status">{data.names.length ? `${nameStart+1}–${Math.min(nameStart+namePageSize,data.names.length)} of ${data.names.length}` : '0 names'}</span><button disabled={currentNamePage<=1} onClick={()=>setNamePage(currentNamePage-1)}>Previous</button><span>Page {currentNamePage} of {namePages}</span><button disabled={currentNamePage>=namePages} onClick={()=>setNamePage(currentNamePage+1)}>Next</button></div></section>
+        </DashboardPanel>
         <DashboardPanel id="christmas-contenders">
-          <section id="contender-votes" className="dashboard-themed dashboard-themed--music"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">♫ 🏆 ♫</div><p>THE CHRISTMAS CHART RACE</p><h2>Christmas Contenders votes</h2></header><p><strong>{data.votes.reduce((n,r)=>n+r.votes,0).toLocaleString('en-GB')}</strong> confirmed votes</p>{table(['Artist','Invited','Song','Confirmed votes'],data.votes.map(r=>[r.artist,r.invitation_state==='sent'?<span role="img" aria-label="Invited" style={{color:'#94ebae'}}>✓</span>:r.invitation_state==='sending'?'Pending':'—',r.title,r.votes]))}<ContenderManager ownerToken={token.current} onPublish={()=>load()}/></section>
+          <section id="contender-votes" className="dashboard-themed dashboard-themed--music"><header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">♫ 🏆 ♫</div><p>THE CHRISTMAS CHART RACE</p><h2>Christmas Contenders votes</h2></header><p><strong>{data.votes.reduce((n,r)=>n+r.votes,0).toLocaleString('en-GB')}</strong> confirmed votes</p><ContenderManager votes={data.votes} ownerToken={token.current} onPublish={()=>load()}/></section>
         </DashboardPanel>
         <DashboardPanel id="artwork">
           <CatalogueArtworkManager ownerToken={token.current} />
         </DashboardPanel>
         <DashboardPanel id="apps">
-          <div hidden={anchor === 'banner-library'}>
-            <section id="app-welcome-banners"><h2>App welcome banners</h2><p>Save designs, preview your next promotion and publish it to both radio apps.</p><button onClick={()=>window.location.hash='banner-library'}>Open banner library</button></section>
-            <AppStoreReports appleReport={data.appleDownloads} androidSource={android} />
-          </div>
-          <DashboardPane id="banner-library" active={anchor === 'banner-library'}>
-            <DashboardBackButton onClick={() => { window.location.hash = 'app-welcome-banners'; }} />
-            <AppPromotionManager ownerToken={token.current} />
-          </DashboardPane>
+          <AppStoreReports appleReport={data.appleDownloads} androidSource={android} />
+        </DashboardPanel>
+        <DashboardPanel id="app-welcome-banners">
+          <div id="banner-library"><AppPromotionManager ownerToken={token.current} /></div>
         </DashboardPanel>
         <DashboardPanel id="games">
           <section id="checker-downloads" className="dashboard-themed dashboard-themed--elf"><header className="dashboard-themed__header"><img className="dashboard-themed__elf" src="/images/dashboard-elf-peek.png" alt="" aria-hidden="true"/><p>HEAD ELF’S CERTIFICATE DESK</p><h2>Naughty or Nice PDF downloads</h2></header><div className="santa-dashboard__cards">{[['today','Today'],['last30Days','Last 30 days'],['allTime','Since tracking began']].map(([key,label])=><section key={key}><strong>{data.checkerDownloads?.[key]?.toLocaleString() ?? 'Unavailable'}</strong><span>{label}</span></section>)}</div><p>PDFs generated and handed to the browser for download, not confirmed saved files or unique people. Repeat downloads count; failed generation does not. No names, answers or verdicts are recorded. UK dates. Tracking starts with this update; earlier downloads are unavailable.</p></section>
@@ -130,9 +130,11 @@ export default function SantaDashboard() {
           {table(['Film','Wins'],data.christmasGame.titles.map(r=>[r.title,r.wins]))}
           </> : <p>Game figures are temporarily unavailable.</p>}</section>
         </DashboardPanel>
+        <DashboardPanel id="dashboard-todos">
+          <DashboardTodos ownerToken={token.current} />
+        </DashboardPanel>
         <DashboardPanel id="admin">
           <DashboardUsefulLinks />
-          <div id="dashboard-todos"><DashboardTodos ownerToken={token.current} /></div>
           <section id="website-email-totals"><h2>Website emails · last 30 days</h2><div className="santa-dashboard__cards">{[['total','Recorded sends'],['studioAccess','Studio access emails'],['nameUpdates','Name availability updates']].map(([key,label])=><section key={key}><strong>{data.websiteEmails?.[key]?.toLocaleString() ?? 'Unavailable'}</strong><span>{label}</span></section>)}</div><p>Successful sends recorded by the website. This does not confirm inbox delivery. Voting codes, account sign-in emails and marketing campaigns are not included. Missing figures are unavailable, not zero.</p></section>
         </DashboardPanel>
       </DashboardSections>
