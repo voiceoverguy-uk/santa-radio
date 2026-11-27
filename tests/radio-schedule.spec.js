@@ -54,12 +54,24 @@ for (const width of [1280, 390]) {
     const time = (await list.locator('time').first().textContent()).replace(' approx.', '');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `/private/tmp/santa-upcoming-${width}.png`, fullPage: false });
-    if (width > 900) {
-      await page.locator('nav a[href="/christmas-music"]').first().click();
-      await expect(page.locator('.song-card-upcoming')).toHaveCount(3);
-      await expect(page.locator('.song-card-upcoming').first()).toContainText(`Expected at ${time}`);
-      await page.screenshot({ path: '/private/tmp/santa-upcoming-music.png', fullPage: false });
-    }
+    const menu = page.getByRole('button', { name: 'Open menu' });
+    if (await menu.isVisible()) await menu.click();
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Music', exact: true }).click();
+    const comingUp = page.getByRole('region', { name: 'Coming up on Santa Radio' });
+    await expect(comingUp).toBeVisible();
+    await expect(comingUp.locator('.song-card-upcoming')).toHaveCount(3);
+    await expect(comingUp.locator('.song-card-upcoming').first()).toContainText(`Expected at ${time}`);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+    const search = page.getByRole('textbox', { name: 'Search for a song or artist' });
+    await search.fill('Coldplay');
+    await expect(comingUp).toHaveCount(0);
+    await search.fill('');
+    await expect(comingUp).toBeVisible();
+    await page.getByRole('button', { name: 'Artist A–Z' }).click();
+    await expect(comingUp).toHaveCount(0);
+    await page.getByRole('button', { name: 'Random', exact: true }).click();
+    await expect(comingUp).toBeVisible();
   });
 }
 
