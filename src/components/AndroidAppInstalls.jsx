@@ -1,3 +1,4 @@
+import { createElement as h } from 'react';
 import { formatUkDate, formatUkDateTime } from '../lib/ukDates.js';
 const number=value=>value==null?'Unavailable':value.toLocaleString('en-GB');
 const issueMessages = {
@@ -23,16 +24,38 @@ const issueLabel = {
   authentication_failed: 'Authentication failed',
 };
 
+function describeApp(app) {
+  const issue=issueLabel[app.issue];
+  if(app.reportState==='available') {
+    return app.availableDays+'/30 daily reports'+(issue?' · '+issue:'');
+  }
+  return issue || (app.reportState==='no-report'?'No install report yet':'Report unavailable');
+}
+
 export default function AndroidAppInstalls({source}) {
-  const { report, error, refresh } = source;
+  const {report,error,refresh}=source;
   const apps=report?.apps??[];
-  return <div className="apple-app-downloads__content">
-    <h3>Android app installs</h3>
-    <p>Device installs from Google Play over the last 30 reported days.</p>
-    {report?.issue && <p role="status"><strong>Google Play:</strong> {issueMessages[report.issue] || 'Report unavailable. Try refreshing.'}</p>
-    {apps.length?<div className="santa-dashboard__table"><table><caption>{report.hasReportDates===false ? 'No report dates available' : `${formatUkDate(apps[0].startDate)} to ${formatUkDate(apps[0].endDate)} · Google’s report dates`}</caption><thead><tr><th scope="col">App</th><th scope="col">Latest day</th><th scope="col">7 days</th><th scope="col">30 days</th><th scope="col">Uninstalls · 30 days</th></tr></thead><tbody>{apps.map(app=><tr key={app.id}><th scope="row">{app.name}<small style={{display:'block'}}>{app.reportState==='available'?`${app.availableDays}/30 daily reports${app.issue && issueLabel[app.issue] ? ` · ${issueLabel[app.issue]}` : ''}`:(issueLabel[app.issue] || (app.reportState==='no-report'?'No install report yet':'Report unavailable'))}</small></th>{[app.latest?.installs,app.last7Days,app.last30Days,app.uninstalls30Days].map((n,i)=><td key={i}>{number(n)}</td>)}</tr>)}</tbody></table></div>:<p role="status">{error?'Google Play reports are temporarily unavailable.':'Loading Google Play install reports…'}</p>}
-    <button type="button" onClick={refresh}>Refresh Android figures</button>
-    {error && report && <p role="status">Refresh failed. Showing the last fetched figures.</p>}
-    <p className="apple-app-downloads__note">Google’s exports can lag 3–7 days. Missing dates show Unavailable, not zero. {report?.fetchedAt&&`Last refreshed: ${formatUkDateTime(report.fetchedAt)}.`}</p>
-  </div>;
+  const caption=report?.hasReportDates===false?'No report dates available':apps.length
+    ? formatUkDate(apps[0].startDate)+' to '+formatUkDate(apps[0].endDate)+' · Google’s report dates':'';
+  const headers=['App','Latest day','7 days','30 days','Uninstalls · 30 days'];
+  const rows=apps.map(app=>h('tr',{key:app.id},
+    h('th',{scope:'row'},app.name,h('small',{style:{display:'block'}},describeApp(app))),
+    ...[app.latest?.installs,app.last7Days,app.last30Days,app.uninstalls30Days]
+      .map((value,index)=>h('td',{key:index},number(value)))
+  ));
+  const table=h('div',{className:'santa-dashboard__table'},h('table',null,
+    h('caption',null,caption),
+    h('thead',null,h('tr',null,...headers.map(label=>h('th',{scope:'col',key:label},label)))),
+    h('tbody',null,...rows)
+  ));
+  return h('div',{className:'apple-app-downloads__content'},
+    h('h3',null,'Android app installs'),
+    h('p',null,'Device installs from Google Play over the last 30 reported days.'),
+    report?.issue?h('p',{role:'status'},h('strong',null,'Google Play: '),issueMessages[report.issue]||'Report unavailable. Try refreshing.'):null,
+    apps.length?table:h('p',{role:'status'},error?'Google Play reports are temporarily unavailable.':'Loading Google Play install reports…'),
+    h('button',{type:'button',onClick:refresh},'Refresh Android figures'),
+    error&&report?h('p',{role:'status'},'Refresh failed. Showing the last fetched figures.'):null,
+    h('p',{className:'apple-app-downloads__note'},'Google’s exports can lag 3–7 days. Missing dates show Unavailable, not zero.',
+      report?.fetchedAt?' Last refreshed: '+formatUkDateTime(report.fetchedAt)+'.':'')
+  );
 }
