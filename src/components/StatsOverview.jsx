@@ -43,10 +43,10 @@ function StatRow({ label, value, note, anchor, loading }) {
   </div>;
 }
 
-function StoreRow({ label, report, loading, period }) {
+function StoreRow({ label, report, loading, period, unavailableNote }) {
   const metric = storeMetric(report, period);
   const coverage = metric && metric.count !== metric.total ? ` · ${metric.count} of ${metric.total} apps reporting` : '';
-  const note = metric ? `${period} days to ${formatUkDate(metric.end)}${coverage}` : `${period}-day report`;
+  const note = metric ? `${period} days to ${formatUkDate(metric.end)}${coverage}` : unavailableNote || `${period}-day report`;
   return <StatRow label={label} value={metric?.value} note={note} loading={loading} />;
 }
 
@@ -75,7 +75,7 @@ export default function StatsOverview({ data, visitors, android, showLinks = fal
     <div className="stats-overview__groups">
       <article><h3><Label anchor={link('app-store-reports')}>App downloads &amp; installs</Label></h3>
         <StoreRow label="Apple new downloads" report={data.appleDownloads} period={period} />
-        <StoreRow label="Android device installs" report={android.error ? null : android.report} loading={!android.report && !android.error} period={period} />
+        <StoreRow label="Android device installs" report={android.report} loading={!android.report && !android.error} period={period} unavailableNote={android.report?.issue || android.error ? "See Android tab for details" : undefined} />
       </article>
       <article><h3>Across the station</h3>
         <StatRow label="Contender votes" note="Confirmed · approved entries" value={sumField(data.votes, 'votes')} anchor={link('contender-votes')} />
