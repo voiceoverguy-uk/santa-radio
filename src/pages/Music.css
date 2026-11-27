@@ -265,8 +265,15 @@
   cursor: default;
 }
 
-/* Festive gold wrapping and a double frame for every artist card. */
+/* Catalogue cards: simple gold frame and festive paper, without a glow. */
 .music-page .song-card {
+  border: 1px solid #b99b58;
+  background: #153628 url('./music-wrap-tile.svg') center / 184px 184px repeat;
+  box-shadow: none;
+}
+
+/* The upcoming tracks retain their brighter gold treatment. */
+.music-page .song-card-upcoming {
   border: 1px solid #d7b56c;
   background:
     radial-gradient(ellipse at center, #173a2bef 22%, #142b20d9 65%, #92703933),
