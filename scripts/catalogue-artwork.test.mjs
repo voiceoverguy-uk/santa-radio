@@ -43,6 +43,17 @@ test('artist defaults and recording replacements preserve the other recordings a
   assert.equal(mergeArtworkFeed(base,{artists:{},recordings:{}}),base);
 });
 
+test('Beverley spelling correction preserves previously assigned recording artwork', async () => {
+  const song = songs.find(row => row.id === 493);
+  assert.equal(song.artist, 'Beverley Knight');
+  const row = { scope: 'song', target_key: '493', artist: 'Beverly Knight', title: song.song, hash: 'c'.repeat(64) };
+  const overrides = await readArtworkOverrides({ query: async () => ({ rows: [row] }) });
+  assert.equal(overrides.recordings[493].artist, 'Beverley Knight');
+  assert.equal(songArtworkCandidates(song, undefined, overrides)[0], '/artist-artwork/upload-' + row.hash + '.webp');
+  const wrongTitle = await readArtworkOverrides({ query: async () => ({ rows: [{ ...row, title: 'Different song' }] }) });
+  assert.equal(wrongTitle.recordings[493], undefined);
+});
+
 test('uploads require the dashboard owner, a matching origin and a real catalogue target', async t => {
   let writes = 0;
   const app = createCatalogueArtwork({owner:req=>req.headers.authorization==='Bearer test',encode:async()=>Buffer.from('test'),

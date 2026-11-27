@@ -57,8 +57,11 @@ export async function readArtworkOverrides(pool) {
         for (const key of credits.get(row.target_key) ?? [row.target_key]) artists[key] = path;
       } else {
         const target = artworkTarget(Number(row.target_key), 'song');
-        if (target?.artist === row.artist && target.title === row.title) {
-          recordings[row.target_key] = { artist: row.artist, title: row.title, path };
+        // Preserve artwork saved before this catalogue spelling correction.
+        const legacyBeverley = Number(row.target_key) === 493 &&
+          target?.artist === 'Beverley Knight' && row.artist === 'Beverly Knight';
+        if (target && (target.artist === row.artist || legacyBeverley) && target.title === row.title) {
+          recordings[row.target_key] = { artist: target.artist, title: target.title, path };
         }
       }
     }
