@@ -85,14 +85,14 @@
   --dashboard-header-position: left 40%, center 36%, right 36%;
 }
 .santa-dashboard .review-inbox {
-  --dashboard-header-art: url('/images/head-elf-office-panel-thumbs-up.webp'), url('/images/head-elf-office-panel-pleased.webp');
-  --dashboard-header-size: 50.1% auto, 50.1% auto;
-  --dashboard-header-position: left 38%, right 38%;
+  --dashboard-header-art: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22270%22%20height%3D%2254%22%20viewBox%3D%220%200%20270%2054%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22gold%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220.2%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff8cc%22%2F%3E%3Cstop%20offset%3D%22.48%22%20stop-color%3D%22%23f9d875%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23bd8b32%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20transform%3D%22translate(0%200)%22%20d%3D%22M26%202%2033.25%2017.8%2050.5%2020%2037.65%2032%2041%2049%2026%2040.5%2011%2049%2014.35%2032%201.5%2020%2018.75%2017.8Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%23ffdd88%22%20stroke-width%3D%221.15%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20transform%3D%22translate(54%200)%22%20d%3D%22M26%202%2033.25%2017.8%2050.5%2020%2037.65%2032%2041%2049%2026%2040.5%2011%2049%2014.35%2032%201.5%2020%2018.75%2017.8Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%23ffdd88%22%20stroke-width%3D%221.15%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20transform%3D%22translate(108%200)%22%20d%3D%22M26%202%2033.25%2017.8%2050.5%2020%2037.65%2032%2041%2049%2026%2040.5%2011%2049%2014.35%2032%201.5%2020%2018.75%2017.8Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%23ffdd88%22%20stroke-width%3D%221.15%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20transform%3D%22translate(162%200)%22%20d%3D%22M26%202%2033.25%2017.8%2050.5%2020%2037.65%2032%2041%2049%2026%2040.5%2011%2049%2014.35%2032%201.5%2020%2018.75%2017.8Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%23ffdd88%22%20stroke-width%3D%221.15%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20transform%3D%22translate(216%200)%22%20d%3D%22M26%202%2033.25%2017.8%2050.5%2020%2037.65%2032%2041%2049%2026%2040.5%2011%2049%2014.35%2032%201.5%2020%2018.75%2017.8Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%23ffdd88%22%20stroke-width%3D%221.15%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E'), url('/images/christmas-study.webp');
+  --dashboard-header-size: clamp(115px, 26%, 270px) auto, cover;
+  --dashboard-header-position: right 24px top 16px, center 24%;
 }
 .santa-dashboard #name-requests {
-  --dashboard-header-art: url('/images/studio-scenes/office.webp'), url('/images/head-elf-office-panel-curious.webp');
-  --dashboard-header-size: 58% auto, 43% auto;
-  --dashboard-header-position: left 40%, right 8px;
+  --dashboard-header-art: url('/images/studio-scenes/office.webp');
+  --dashboard-header-size: cover;
+  --dashboard-header-position: center 24%;
 }
 .santa-dashboard .name-uploads {
   --dashboard-header-art: url('/images/santa-studio-headphones.webp'), url('/images/free-santa-message-share-v1.jpg');
@@ -223,8 +223,6 @@
   .santa-dashboard .dashboard-themed--money,
   .santa-dashboard .big-stitcher,
   .santa-dashboard .demo-manager,
-  .santa-dashboard .review-inbox,
-  .santa-dashboard #name-requests,
   .santa-dashboard .name-uploads,
   .santa-dashboard .dashboard-themed--names,
   .santa-dashboard .catalogue-art,
