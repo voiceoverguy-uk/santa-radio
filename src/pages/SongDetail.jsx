@@ -76,7 +76,6 @@ export default function SongDetail() {
       <div className="song-detail-page starry-bg">
         <div className="container song-detail-content">
 
-          <SongNavigation previous={previous} next={next} />
 
           <div className="song-detail-layout">
             <div className="song-detail-main">
