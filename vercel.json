@@ -22,6 +22,7 @@
     }
   ],
   "functions": {
+    "api/santa-videos.js": { "installCommand": "", "includeFiles": "server/santa-videos/**" },
     "api/catalogue-artwork.js": {
       "installCommand": "",
       "maxDuration": 30,
@@ -135,6 +136,7 @@
     }
   },
   "routes": [
+    { "src": "/santa-videos/?", "status": 307, "headers": { "Location": "/santa-dashboard#video-stitcher" } },
     {
       "src": "/(?:api/)?message-test/?",
       "status": 410,

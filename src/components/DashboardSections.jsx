@@ -12,6 +12,7 @@ const sections = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, anchors: ['stats-overview', 'website-visitors-title'] },
   { id: 'message-maker', label: 'Message Maker', icon: Mail, anchors: messageTools.map(([id]) => id) },
   { id: 'vouchers', label: 'Dads & Kids Vouchers', icon: Ticket, anchors: ['voucher-heading'] },
+  { id: 'video-stitcher', label: 'Video stitcher', icon: Film, anchors: [] },
   { id: 'demo-videos', label: 'Message demo videos', icon: Film, anchors: ['message-demos'] },
   { id: 'message-reviews', label: 'Santa message reviews', icon: MessageSquare, anchors: [] },
   { id: 'names-recordings', label: 'Names & recordings', icon: BookOpen, anchors: ['name-requests', 'recording-uploads', 'request-ledger'] },
@@ -93,6 +94,7 @@ export function MessageMakerShortcuts() {
   return <nav className="dashboard-sections__shortcuts" aria-label="Message Maker tools">
     <a href="#vouchers">Vouchers</a>
     <a href="#demo-videos">Demo videos</a>
+    <a href="#video-stitcher">Video stitcher</a>
     <a href="#message-reviews">Reviews</a>
     {messageTools.map(([id, label]) => <a key={id} href={'#' + id}>{label}</a>)}
   </nav>;

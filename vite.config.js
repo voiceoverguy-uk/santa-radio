@@ -1,3 +1,4 @@
+import { santaVideosMiddleware } from './server/santa-videos.js';
 import artistBackgrounds from './server/artist-backgrounds.js';
 import appPromotions from './api/app-promotions.js';
 import nameChart from './server/name-chart.js';
@@ -59,6 +60,7 @@ const trackerMetadataPlugin = {
 const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
+    server.middlewares.use(santaVideosMiddleware({ development: true }));
     server.middlewares.use(browserSecurity);
     // Show current public testimonials in local previews without connecting
     // local review submissions or dashboard actions to production.
@@ -111,6 +113,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },
   configurePreviewServer(server) {
+    server.middlewares.use(santaVideosMiddleware());
     server.middlewares.use(browserSecurity);
     server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware());
@@ -171,7 +174,10 @@ export default defineConfig(async ({ isSsrBuild }) => ({
       await readFile(new URL('./server/names-demo/asset-manifest.json', import.meta.url), 'utf8')
     ).filename}`),
   },
-  build: isSsrBuild ? {} : { rollupOptions: { input: ['index.html', 'dashboard-tools.html'] } },
+  build: isSsrBuild ? {} : { rollupOptions: {
+    input: { index: 'index.html', 'dashboard-tools': 'dashboard-tools.html', santaVideos: 'src/santa-videos/client.js' },
+    output: { entryFileNames: chunk => chunk.name === 'santaVideos' ? 'assets/santa-videos.js' : 'assets/[name]-[hash].js' },
+  } },
   publicDir: isSsrBuild ? false : 'public',
   ssr: {
     // Keep the runtime Tracker renderer self-contained. Vercel's package

@@ -1,3 +1,4 @@
+import santaVideos from './server/santa-videos.js';
 import artistBackgrounds from './server/artist-backgrounds.js';
 import appPromotions from './api/app-promotions.js';
 import trackerPreviewAccess, { isPreviewPath, previewAuthorized, previewGate, previewHeaders } from './server/tracker-preview-access.js';
@@ -91,6 +92,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/assets/radio-catalogue.js' || pathname === '/artist-artwork/catalogue.json' || /^\/artist-artwork\/upload-[a-f0-9]{64}\.webp$/.test(pathname)) {
       return catalogueArtworkRoute(req, res);
     }
+    if (pathname === '/santa-videos' || pathname === '/santa-videos/' || pathname === '/api/santa-videos') return santaVideos(req, res);
     artworkHeaders(req, res, () => {});
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());

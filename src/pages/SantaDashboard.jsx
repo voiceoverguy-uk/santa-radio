@@ -1,3 +1,4 @@
+import DashboardVideoStitcher from '../components/DashboardVideoStitcher.jsx';
 import ArtistBackgroundEditor from '../components/ArtistBackgroundEditor.jsx';
 import AppPromotionManager from '../components/AppPromotionManager.jsx';
 import CatalogueArtworkManager from '../components/CatalogueArtworkManager.jsx';
@@ -88,6 +89,7 @@ export default function SantaDashboard() {
         <DashboardPanel id="vouchers">
           <FriendVouchers ownerToken={token.current} />
         </DashboardPanel>
+        <DashboardPanel id="video-stitcher"><DashboardVideoStitcher ownerToken={token.current} /></DashboardPanel>
         <DashboardPanel id="demo-videos">
           <MessageDemoManager ownerToken={token.current} />
         </DashboardPanel>
