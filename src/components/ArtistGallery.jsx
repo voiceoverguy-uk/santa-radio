@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './radio-context.js';
-import { galleryPlayTime } from '../lib/artistGallerySchedule.js';
+import { galleryPlayTime, galleryMatchesTrack } from '../lib/artistGallerySchedule.js';
 import { formatPlayTime } from '../lib/radio-schedule.js';
 import './ArtistGallery.css';
 
@@ -8,7 +8,7 @@ import './ArtistGallery.css';
 // Keep generic artist pictures title-free rather than guessing a recording.
 
 export default function ArtistGallery({ images = [] }) {
-  const { upcoming = [] } = useRadio();
+  const { upcoming = [], metadata } = useRadio();
   const [index, setIndex] = useState(null);
   const [now, setNow] = useState(Date.now);
   const dialog = useRef(null);
@@ -51,6 +51,7 @@ export default function ArtistGallery({ images = [] }) {
     }
   }, [index, open, images]);
   if (!images.length) return null;
+  const isNowPlaying = metadata?.currentStatus === 'ready' && galleryMatchesTrack(image, metadata.current);
   const playingAt = galleryPlayTime(image, upcoming, now);
   return <>
     <button ref={trigger} type="button" aria-label="Artist image gallery" title="Artist image gallery"
@@ -83,7 +84,7 @@ export default function ArtistGallery({ images = [] }) {
           <figcaption className="artist-gallery__footer">
             <div className="artist-gallery__caption" aria-live="polite">
               <strong>{image.artist}</strong>{image.title && <span>{image.title}</span>}
-              {playingAt !== null && <span className="artist-gallery__time">Playing at {formatPlayTime(playingAt)}</span>}
+              {isNowPlaying ? <span className="artist-gallery__time">Now playing</span> : playingAt !== null && <span className="artist-gallery__time">Playing at {formatPlayTime(playingAt)}</span>}
             </div>
           </figcaption>
         </figure>}
