@@ -379,3 +379,24 @@
   line-height: 1.4;
 }
 .song-detail-main .song-lyrics-section[open] summary { margin-bottom: 12px; }
+
+/* Balanced artist biography/artwork columns and a true widescreen player. */
+.song-detail-page .song-detail-main { min-width: 0; }
+.song-detail-page .song-youtube-embed { width: 100%; max-width: 640px; }
+.song-detail-page .song-youtube-embed iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+@media (min-width: 901px) {
+  .song-detail-page .song-detail-artwork { width: clamp(280px, 30vw, 360px); }
+}
+@media (max-width: 600px) {
+  .song-detail-page .song-detail-main { width: 100%; }
+  .song-detail-page .song-detail-artwork { max-width: 320px; align-self: center; }
+}
+
+.song-detail-page .song-navigation-bottom { margin-top: 32px; }
+
+.song-detail-page .song-detail-content { max-width: 1160px; }

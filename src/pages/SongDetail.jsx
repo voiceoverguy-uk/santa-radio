@@ -11,6 +11,39 @@ import SongArtwork from '../components/SongArtwork.jsx';
 import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 import { songMetadata } from '../seo/catalogue.js';
 
+function SongNavigation({ previous, next, bottom = false }) {
+  return (
+          <nav className={`song-navigation${bottom ? " song-navigation-bottom" : ""}`} aria-label="Browse Christmas songs">
+            {previous ? (
+              <Link className="song-navigation-link song-navigation-previous"
+                to={`/christmas-artist/${previous.id}-${previous.link}`}
+                aria-label={`Previous song: ${previous.song} by ${previous.artist}`}>
+                <span className="song-navigation-direction">← Previous</span>
+                <span className="song-navigation-title">{previous.song} — {previous.artist}</span>
+              </Link>
+            ) : (
+              <span className="song-navigation-link song-navigation-previous is-unavailable" aria-disabled="true">
+                <span className="song-navigation-direction">← Previous</span>
+                <span className="song-navigation-title">First song in the catalogue</span>
+              </span>
+            )}
+            {next ? (
+              <Link className="song-navigation-link song-navigation-next"
+                to={`/christmas-artist/${next.id}-${next.link}`}
+                aria-label={`Next song: ${next.song} by ${next.artist}`}>
+                <span className="song-navigation-direction">Next →</span>
+                <span className="song-navigation-title">{next.song} — {next.artist}</span>
+              </Link>
+            ) : (
+              <span className="song-navigation-link song-navigation-next is-unavailable" aria-disabled="true">
+                <span className="song-navigation-direction">Next →</span>
+                <span className="song-navigation-title">Last song in the catalogue</span>
+              </span>
+            )}
+          </nav>
+  );
+}
+
 export default function SongDetail() {
   const { slug } = useParams();
   const song = findSong(slug);
@@ -43,34 +76,7 @@ export default function SongDetail() {
       <div className="song-detail-page starry-bg">
         <div className="container song-detail-content">
 
-          <nav className="song-navigation" aria-label="Browse Christmas songs">
-            {previous ? (
-              <Link className="song-navigation-link song-navigation-previous"
-                to={`/christmas-artist/${previous.id}-${previous.link}`}
-                aria-label={`Previous song: ${previous.song} by ${previous.artist}`}>
-                <span className="song-navigation-direction">← Previous</span>
-                <span className="song-navigation-title">{previous.song} — {previous.artist}</span>
-              </Link>
-            ) : (
-              <span className="song-navigation-link song-navigation-previous is-unavailable" aria-disabled="true">
-                <span className="song-navigation-direction">← Previous</span>
-                <span className="song-navigation-title">First song in the catalogue</span>
-              </span>
-            )}
-            {next ? (
-              <Link className="song-navigation-link song-navigation-next"
-                to={`/christmas-artist/${next.id}-${next.link}`}
-                aria-label={`Next song: ${next.song} by ${next.artist}`}>
-                <span className="song-navigation-direction">Next →</span>
-                <span className="song-navigation-title">{next.song} — {next.artist}</span>
-              </Link>
-            ) : (
-              <span className="song-navigation-link song-navigation-next is-unavailable" aria-disabled="true">
-                <span className="song-navigation-direction">Next →</span>
-                <span className="song-navigation-title">Last song in the catalogue</span>
-              </span>
-            )}
-          </nav>
+          <SongNavigation previous={previous} next={next} />
 
           <div className="song-detail-layout">
             <div className="song-detail-main">
@@ -113,6 +119,7 @@ export default function SongDetail() {
               </Link>
             </li>)}</ul>
           </section>}
+          <SongNavigation previous={previous} next={next} bottom />
           <Link to="/christmas-music" className="back-link">← Back to Christmas Music</Link>
         </div>
       </div>
