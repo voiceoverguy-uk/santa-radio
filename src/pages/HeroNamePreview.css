@@ -1232,3 +1232,9 @@
   .hero-unified:has(.now-playing-artwork) .home-upcoming__toggle { font-size: .75rem; gap: 4px; padding-inline: 8px; white-space: nowrap; }
   .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-actions .btn-red { padding-inline: 8px; font-size: .75rem; }
 }
+
+/* Match the mobile player pill to the full width of the Coming up column. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-unified .hero-name-preview__actions { width: 100%; }
+  .hero-name-preview .hero-unified .hero-actions .btn-red { width: 100%; justify-content: center; }
+}
