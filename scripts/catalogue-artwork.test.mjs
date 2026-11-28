@@ -92,7 +92,11 @@ test('gallery-only saves require owner access and do not encode or replace artwo
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), {gallery: {enabled, scope:'song'}});
   }
-  assert.deepEqual(saved.map(entry => [entry.target.songId, entry.enabled]), [[37,true],[37,false]]);
+  assert.equal((await post({id:-1, scope:'song', includeInGallery:false})).status,200);
+  assert.equal((await post({id:-999, scope:'song', includeInGallery:false})).status,400);
+  assert.equal((await post({id:-1, scope:'artist', includeInGallery:false})).status,400);
+  assert.equal((await post({id:-1, scope:'song', jpeg:'invalid'})).status,400);
+  assert.deepEqual(saved.map(entry => [entry.target.songId, entry.enabled]), [[37,true],[37,false],[-1,false]]);
 });
 
 test('artwork replacement saves gallery selection atomically and reads it back', async () => {

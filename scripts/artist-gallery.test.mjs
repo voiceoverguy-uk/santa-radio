@@ -45,3 +45,26 @@ test('dashboard selections add, remove and replace exact-song gallery images', a
   assert.equal(added.filter(image => image.songId === newSong.id).length, 1);
   assert.equal(managedArtistGallery({ gallery: { 999999: { enabled: true, scope: 'song' } } }).length, 102);
 });
+
+test('gallery-only pictures can be deselected and restored without changing their image', async () => {
+  const { managedArtistGallery, gallerySelection } = await import('../src/data/managedArtistGallery.js');
+  for (const original of artistGalleryImages.filter(image => image.galleryId)) {
+    assert.equal(gallerySelection(original.galleryId, {}), true);
+    assert.equal(managedArtistGallery({gallery:{[original.galleryId]:{enabled:false,scope:'song'}}}).some(image=>image.galleryId===original.galleryId),false);
+    assert.equal(managedArtistGallery({gallery:{[original.galleryId]:{enabled:true,scope:'song'}}}).find(image=>image.galleryId===original.galleryId)?.src,original.src);
+  }
+  const original=artistGalleryImages.find(image=>image.songId);
+  assert.equal(managedArtistGallery({gallery:{[original.songId]:{enabled:true,scope:'song'}}}).find(image=>image.songId===original.songId).src,original.src);
+});
+
+test('existing saved selections preserve the previous public gallery choices for alternate images', async () => {
+  const { managedArtistGallery, gallerySelection } = await import('../src/data/managedArtistGallery.js');
+  const alternate=artistGalleryImages.find(image=>image.galleryId && image.songId);
+  for (const enabled of [true,false]) {
+    const data={gallery:{[alternate.songId]:{enabled,scope:'song'}}};
+    assert.equal(gallerySelection(alternate.galleryId,data),false);
+    assert.equal(managedArtistGallery(data).filter(image=>image.songId===alternate.songId).length,enabled?1:0);
+    data.gallery[alternate.galleryId]={enabled:true,scope:'song'};
+    assert.equal(managedArtistGallery(data).some(image=>image.galleryId===alternate.galleryId),true);
+  }
+});

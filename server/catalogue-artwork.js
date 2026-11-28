@@ -8,7 +8,7 @@ import ffmpeg from 'ffmpeg-static';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { mobileArtworkCatalogue } from './mobile-artwork-catalogue.js';
-import { artworkTarget, mergeArtworkFeed, readArtworkImage, readArtworkOverrides, saveArtwork, saveGallerySelection } from './catalogue-artwork-store.js';
+import { galleryTarget, artworkTarget, mergeArtworkFeed, readArtworkImage, readArtworkOverrides, saveArtwork, saveGallerySelection } from './catalogue-artwork-store.js';
 
 const run = promisify(execFile);
 const badImage = () => Object.assign(new Error('Choose a readable JPG, PNG or WebP image.'), { status: 400 });
@@ -56,7 +56,7 @@ export function createCatalogueArtwork({ owner = validOwnerToken, list = readArt
   app.use(async (req, res) => {
     if (req.method === 'POST') {
       if (req.query.feed || req.query.image || req.query.mobile) return res.status(405).end();
-      const target = artworkTarget(req.body?.id, req.body?.scope);
+      const target = (req.body?.jpeg === undefined ? galleryTarget : artworkTarget)(req.body?.id, req.body?.scope);
       if (!target) return res.status(400).json({ error: 'Choose a catalogue recording and artwork scope.' });
       const include = req.body.includeInGallery;
       if (include !== undefined && typeof include !== 'boolean') return res.status(400).json({ error: 'Choose whether to include this song in the gallery.' });

@@ -1,3 +1,4 @@
+import { artistGalleryImages } from '../src/data/artistGalleryImages.js';
 import { createHash } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { normalizeArtistName } from '../src/data/artistArtwork.js';
@@ -20,6 +21,13 @@ const creditGroups = [
 ].map(group => group.map(normalizeArtistName));
 const credits = new Map(creditGroups.flatMap(group => group.map(key => [key, group])));
 const imagePath = hash => '/artist-artwork/upload-' + hash + '.webp';
+
+export function galleryTarget(id, scope) {
+  const song = artworkTarget(id, scope);
+  if (song) return song;
+  const image = artistGalleryImages.find(image => image.galleryId === id);
+  return image && scope === 'song' ? { songId: id, scope } : null;
+}
 
 export function artworkTarget(id, scope) {
   const song = recordings.get(id);
@@ -49,7 +57,7 @@ export async function saveArtwork(target, bytes, pool = databasePool(), includeI
   return imagePath(hash);
 }
 
-const recordingsById = id => recordings.has(Number(id));
+const recordingsById = id => recordings.has(Number(id)) || artistGalleryImages.some(image => image.galleryId === Number(id));
 
 export async function saveGallerySelection(target, enabled, pool = databasePool()) {
   await pool.query(`INSERT INTO santa_catalogue_gallery(song_id,enabled,scope) VALUES ($1,$2,$3)

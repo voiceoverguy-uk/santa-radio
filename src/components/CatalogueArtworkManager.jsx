@@ -6,6 +6,7 @@ import { fetchCatalogueArtwork } from '../hooks/useCatalogueArtwork.js';
 import { gallerySelection } from '../data/managedArtistGallery.js';
 import { prepareCatalogueArtwork } from '../lib/prepareCatalogueArtwork.js';
 import './CatalogueArtworkManager.css';
+import GalleryPicker from './GalleryPicker.jsx';
 
 const searchText = text => normalizeArtistName(text).replace(/[’‘']/g, '');
 const catalogue = songs.map(({id, artist, song}) => ({ id, artist, song, search: searchText(artist + ' ' + song) }))
@@ -134,12 +135,18 @@ function ArtworkEditor({ song, ownerToken, busy, setBusy }) {
 }
 
 export default function CatalogueArtworkManager({ ownerToken }) {
+  const [mode, setMode] = useState('artwork');
   const [query, setQuery] = useState(''), [selected, setSelected] = useState(null);
   const [limit, setLimit] = useState(8), [busy, setBusy] = useState(false);
   const terms = searchText(query).split(/\s+/).filter(Boolean);
   const matches = terms.length && !selected ? catalogue.filter(row => terms.every(term => row.search.includes(term))) : [];
   return <section id="catalogue-artwork" className="catalogue-art" aria-labelledby="catalogue-art-title">
     <h2 id="catalogue-art-title">Artist &amp; song artwork</h2>
+    <div className="catalogue-art__modes" role="group" aria-label="Artwork tools">
+      <button type="button" disabled={busy} aria-pressed={mode === 'artwork'} onClick={() => setMode('artwork')}>Change artwork</button>
+      <button type="button" disabled={busy} aria-pressed={mode === 'gallery'} onClick={() => setMode('gallery')}>Gallery picker</button>
+    </div>
+    {mode === 'gallery' ? <GalleryPicker ownerToken={ownerToken} /> : <>
     <label htmlFor="catalogue-art-search">Search by artist or song</label>
     <input id="catalogue-art-search" type="search" placeholder="e.g. Michael Bublé or Last Christmas" autoComplete="off"
       value={query} disabled={busy} onChange={e => { setQuery(e.target.value); setSelected(null); setLimit(8); }} />
@@ -153,6 +160,7 @@ export default function CatalogueArtworkManager({ ownerToken }) {
     {selected && <>
       <button className="catalogue-art__back" type="button" disabled={busy} onClick={() => setSelected(null)}>Back to results</button>
       <ArtworkEditor key={selected.id} song={selected} ownerToken={ownerToken} busy={busy} setBusy={setBusy} />
+    </>}
     </>}
   </section>;
 }

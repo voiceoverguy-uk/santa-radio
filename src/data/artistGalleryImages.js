@@ -246,7 +246,7 @@ export const artistGalleryImages = [
     "sourceFile": "elvis-presley-blue-christmas.png"
   },
   {
-    "src": "/artist-gallery/cliff-richard-copy.webp",
+    "galleryId": -1, "src": "/artist-gallery/cliff-richard-copy.webp",
     "artist": "Cliff Richard",
     "title": null,
     "sourceFile": "cliff-richard copy.png"
@@ -413,14 +413,14 @@ export const artistGalleryImages = [
     "sourceFile": "ed-sheerand-and-elton-john-merry-christmas.png"
   },
   {
-    "src": "/artist-gallery/elton-john-s-glam-christmas-stomp-1.webp",
+    "galleryId": -6, "src": "/artist-gallery/elton-john-s-glam-christmas-stomp-1.webp",
     "artist": "Elton John",
     "title": "Step Into Christmas",
     "songId": 47,
     "sourceFile": "Elton John’s Glam Christmas Stomp-1.png"
   },
   {
-    "src": "/artist-gallery/toni-braxton-once-upon-a-christmas.webp",
+    "galleryId": -2, "src": "/artist-gallery/toni-braxton-once-upon-a-christmas.webp",
     "artist": "Toni Braxton",
     "title": "Once Upon a Christmas Time",
     "sourceFile": "toni-braxton-once-upon-a-christmas.png"
@@ -440,7 +440,7 @@ export const artistGalleryImages = [
     "sourceFile": "kelly-clarkson-underneath-the-tree.png"
   },
   {
-    "src": "/artist-gallery/mariah-carey-all-i-want-for-christmas-is-you.webp",
+    "galleryId": -5, "src": "/artist-gallery/mariah-carey-all-i-want-for-christmas-is-you.webp",
     "artist": "Mariah Carey",
     "title": "All I Want For Christmas Is You",
     "songId": 24,
@@ -454,7 +454,7 @@ export const artistGalleryImages = [
     "sourceFile": "leona-lewis-one-more-sleep.png"
   },
   {
-    "src": "/artist-gallery/michael-buble-the-christmas-sweater.webp",
+    "galleryId": -4, "src": "/artist-gallery/michael-buble-the-christmas-sweater.webp",
     "artist": "Michael Buble",
     "title": "The Christmas Sweater",
     "songId": 508,
@@ -580,7 +580,7 @@ export const artistGalleryImages = [
     "sourceFile": "michael-buble-blue-christmas.png"
   },
   {
-    "src": "/artist-gallery/bing-crosby-little-drummer-boy.webp",
+    "galleryId": -3, "src": "/artist-gallery/bing-crosby-little-drummer-boy.webp",
     "artist": "Bing Crosby",
     "title": "Little Drummer Boy",
     "sourceFile": "bing-crosby-little-drummer-boy.png"
