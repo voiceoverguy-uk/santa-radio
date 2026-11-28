@@ -87,6 +87,13 @@ export default function SongDetail() {
                 <p>{song.info || 'Artist information for this song is not yet available.'}</p>
               </div>
 
+              <SongVideo song={song} className="song-youtube-embed" />
+
+
+            </div>
+
+            <div className="song-detail-artwork">
+              <SongArtworkViewer key={songSlug} song={song} />
               {!song.lyrics && <p>Lyrics for this song are not yet available.</p>}
               {song.lyrics && (
                 <details className="song-lyrics-section" key={songSlug}>
@@ -97,16 +104,10 @@ export default function SongDetail() {
                     <LyricsMessageLink />
                 </details>
               )}
-
-              <SongVideo song={song} className="song-youtube-embed" />
-
-
-            </div>
-
-            <div className="song-detail-artwork">
-              <SongArtworkViewer key={songSlug} song={song} />
             </div>
           </div>
+
+          <SongNavigation previous={previous} next={next} bottom />
 
           {moreSongs.length > 0 && <section className="more-artist-songs" aria-labelledby="more-artist-heading">
             <h2 id="more-artist-heading">More Christmas songs from {song.artist}</h2>
@@ -118,7 +119,6 @@ export default function SongDetail() {
               </Link>
             </li>)}</ul>
           </section>}
-          <SongNavigation previous={previous} next={next} bottom />
           <Link to="/christmas-music" className="back-link">← Back to Christmas Music</Link>
         </div>
       </div>

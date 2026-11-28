@@ -367,7 +367,7 @@
 @media (max-width: 360px) { .more-artist-songs ul { grid-template-columns: 1fr; } }
 
 /* Compact lyrics disclosure beneath the artist background. */
-.song-detail-main .song-lyrics-section summary {
+.song-detail-page .song-lyrics-section summary {
   box-sizing: border-box;
   width: fit-content;
   max-width: 100%;
@@ -378,7 +378,7 @@
   font-size: .85rem;
   line-height: 1.4;
 }
-.song-detail-main .song-lyrics-section[open] summary { margin-bottom: 12px; }
+.song-detail-page .song-lyrics-section[open] summary { margin-bottom: 12px; }
 
 /* Balanced artist biography/artwork columns and a true widescreen player. */
 .song-detail-page .song-detail-main { min-width: 0; }
@@ -400,3 +400,20 @@
 .song-detail-page .song-navigation-bottom { margin-top: 32px; }
 
 .song-detail-page .song-detail-content { max-width: 1160px; }
+
+.song-detail-artwork .song-lyrics-section { margin-top: 20px; }
+.song-detail-artwork .song-lyrics-content { padding: 16px; }
+.song-detail-page .song-navigation-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 24px;
+}
+.song-navigation-bottom .song-navigation-link {
+  box-sizing: border-box;
+  width: min(45%, 220px);
+  min-height: 44px;
+  padding: 10px 16px;
+  font-size: .9rem;
+}
+.song-navigation-bottom .song-navigation-title { display: none; }
