@@ -1210,8 +1210,8 @@
   .hero-unified:has(.home-upcoming) .hero-name-preview__artwork-slot { align-self: stretch; }
 }
 
-/* Keep mobile now-playing artwork compact; details appear in the image viewer. */
+/* Keep the mobile artist caption compact; the title appears in the image viewer. */
 @media (max-width: 767px) {
-  .hero-unified .now-playing-artwork__caption { display: none; }
+  .hero-unified .now-playing-artwork__title { display: none; }
   .hero-unified:has(.home-upcoming) .hero-name-preview__artwork-slot { align-self: start; }
 }
