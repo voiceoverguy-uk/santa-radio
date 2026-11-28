@@ -65,7 +65,7 @@ export default function HeroNameChecker({ blackFriday = false, onContinue, onSel
     setActive(-1);
   };
   const status = search.blocked ? BLOCKED_NAME_NOTE
-    : selected ? `Yes! Santa can record for ${santaNameDisplay(selected.name)}.`
+    : selected ? `Yes! Santa can record for ${santaNameDisplay(selected.name)} right now.`
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
         : name.trim().length === 1 ? 'Enter at least two letters to search Santa’s recorded names.'
