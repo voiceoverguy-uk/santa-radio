@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SongArtwork from '../components/SongArtwork.jsx';
+import ArtistGallery from '../components/ArtistGallery.jsx';
+import { artistGalleryImages } from '../data/artistGalleryImages.js';
 import './Music.css';
 import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -78,13 +80,14 @@ export default function Music() {
             onChange={e => setSearch(e.target.value)}
           />
           </div>
-          <div className="music-order-controls" role="group" aria-label="Song order">
+          <div className="music-order-controls" role="group" aria-label="Music browsing">
             <button type="button" aria-label="Random" aria-pressed={order === 'random'} onClick={() => { setRandomSongs(shuffleSongs()); setOrder('random'); }} title="Random order — shuffle again">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 5-5m2-2c2-3 3-5 5-5h3m-4-4 4 4-4 4" /></svg>
             </button>
             <button type="button" aria-label="Artist A–Z" aria-pressed={order === 'az'} onClick={() => setOrder('az')} title="Artist A–Z">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
             </button>
+            <ArtistGallery images={artistGalleryImages} />
           </div>
           </div>
         </div>
