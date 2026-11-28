@@ -1308,3 +1308,13 @@
     grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto;
   }
 }
+
+.hero-name-preview__radio-tagline {
+  margin: 8px 0 0;
+  color: var(--hero-preview-muted);
+  font-size: clamp(.75rem, 1.1vw, .9rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: .015em;
+  text-wrap: balance;
+}

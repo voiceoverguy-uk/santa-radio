@@ -486,7 +486,7 @@ export default function ChristmasContenders() {
               const selectable = !alreadyUsed && !pending && !unresolved && !(demo && data?.realVotingEnabled);
               return <article className={`contender-card${demo ? '' : ' contender-card--live'}`} id={entry.anchor || entry.id} key={entry.id}>
                 <div className="contender-card__art-wrap">
-                  {entry.artwork ? <img className="contender-card__art" src={contenderDisplay.artwork[entry.artwork] || entry.artwork} loading="lazy" decoding="async" width="320" height="320" alt={`${entry.artist} artwork`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
+                  {entry.artwork ? <img className="contender-card__art" src={contenderDisplay.artwork[entry.artwork] || entry.artwork} loading="lazy" decoding="async" width="320" height="320" alt={`Artwork for “${entry.title}” by ${entry.artist}`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
                 </div>
                 <div className="contender-card__body">
                   <div className="contender-card__identity">

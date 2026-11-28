@@ -1,4 +1,6 @@
 import HomepageSectionHeading from './HomepageSectionHeading.jsx';
+import { Link } from 'react-router-dom';
+import { BESPOKE_MESSAGES_PATH } from '../lib/messageMakerOffers.js';
 import BespokeMessageOffers from './BespokeMessageOffers.jsx';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
@@ -23,6 +25,8 @@ export default function HomepageSantaStudio({ directEntry = false, dedicatedPage
           titleTag={directEntry || dedicatedPage ? 'h1' : 'h2'}
           className="homepage-santa-studio__heading"
         />
+        {dedicatedPage ? <p className="homepage-santa-studio__seo-intro">Personalised Christmas video messages from Santa for children and dads. Watch the examples below, compare what’s included and choose a message to download and share.</p>
+          : !directEntry && <p className="homepage-santa-studio__seo-intro"><Link to={BESPOKE_MESSAGES_PATH}>Explore personalised Santa messages for kids and dads →</Link></p>}
         {accessFeedback}
         <BespokeMessageOffers previewName={previewName} />
         {children}

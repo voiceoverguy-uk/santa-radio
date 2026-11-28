@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Portrait from './Portrait.jsx';
+import { mugImageAlt } from '../seo/catalogue.js';
 import './MugshotsPreview.css';
 import mugshotsData from '../data/mugshots.ts';
 import useMugshotRotation from './useMugshotRotation.js';
@@ -33,7 +34,7 @@ export default function MugshotsPreview() {
                 <span className="mugshots-photo-frame">
                 <Portrait
                   src={celeb.image}
-                  alt={`${celeb.artist} holding a Santa Radio mug`}
+                  alt={mugImageAlt(celeb)}
                   className="mug-photo"
                   sizes="(max-width: 760px) 44vw, (max-width: 1140px) 23vw, 260px"
                 />

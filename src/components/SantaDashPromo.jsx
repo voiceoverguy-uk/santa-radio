@@ -234,7 +234,7 @@ export default function SantaDashPromo() {
                 src={santaDashArtwork}
                 width="1600"
                 height="555"
-                alt="Santa Dash — Back to the Grotto: Santa leaps across snowy rooftops to collect mince pies. Enjoy Santa Radio while you play. Play on iPhone and iPad."
+                alt="Santa Dash — Back to the Grotto: Santa leaps across snowy rooftops to collect mince pies"
                 loading="lazy"
               />
             </span>

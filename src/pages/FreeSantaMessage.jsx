@@ -67,7 +67,7 @@ export default function FreeSantaMessage() {
         <div className="fsm-hero-content">
           <p className="fsm-kicker">Special delivery from the North Pole</p>
           <h1 className="fsm-sub">Free Personalised Santa Message</h1>
-          <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name from over 10,000. Ask Santa to record it, then preview and download a personalised message with their name and Santa’s voice.</p>
+          <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name from over 10,000, preview your personalised Christmas video with Santa’s real voice, then download it as an MP4 video or audio-only MP3.</p>
         </div>
       </div>
       <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName}

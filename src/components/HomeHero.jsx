@@ -109,6 +109,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
             Santa Radio{' '}
             <span className="hero-name-preview__strapline">MORE MAGIC FROM THE NORTH POLE</span>
           </h1>
+          <p className="hero-name-preview__radio-tagline">100% Christmas Radio Online, Free 24/7</p>
           <HalloweenGreeting />
         </div>
         <div className="hero-name-preview__broadcast">
