@@ -1191,3 +1191,21 @@
     grid-template-rows: min-content min-content minmax(44px, 1fr) auto auto auto;
   }
 }
+
+/* Keep the compact disclosure flush with the bottom of the mobile artist card. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming) {
+    grid-template-rows: min-content min-content minmax(34px, 1fr) auto auto;
+    row-gap: 6px;
+  }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming__list--expanded) {
+    grid-template-rows: min-content min-content minmax(34px, 1fr) auto auto auto;
+  }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__toggle {
+    align-self: end;
+    min-height: 34px;
+    padding: 3px 10px;
+    line-height: 1.2;
+  }
+  .hero-unified:has(.home-upcoming) .hero-name-preview__artwork-slot { align-self: stretch; }
+}
