@@ -1176,3 +1176,18 @@
     grid-template-rows: min-content minmax(44px, 1fr) auto auto;
   }
 }
+
+/* Place the mobile disclosure under Play; its expanded list uses the full width. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'upcoming artwork' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content min-content minmax(44px, 1fr) auto auto;
+  }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming { display: contents; }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__toggle { grid-area: upcoming; align-self: start; }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__list { grid-area: queue; }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming__list--expanded) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'upcoming artwork' 'queue queue' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content min-content minmax(44px, 1fr) auto auto auto;
+  }
+}
