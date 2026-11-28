@@ -5,3 +5,20 @@
 .home-upcoming__track { min-width: 0; overflow-wrap: anywhere; }
 .home-upcoming strong { font-weight: 600; }
 .home-upcoming time { display: block; flex-basis: 100%; color: var(--gold-light); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.home-upcoming__toggle { display: none; }
+@media (max-width: 767px) {
+  .home-upcoming__heading { display: none; }
+  .home-upcoming .home-upcoming__toggle {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; min-height: 44px; padding: 7px 12px;
+    border: 1px solid #c4a15c66; border-radius: 7px;
+    background: #15362888; color: var(--gold-light); font: inherit;
+    font-size: .85rem; font-weight: 600; cursor: pointer;
+  }
+  .home-upcoming__toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform 150ms ease; }
+  .home-upcoming__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .home-upcoming__toggle:focus-visible { outline: 2px solid #f0d060; outline-offset: 3px; }
+  .home-upcoming .home-upcoming__list { display: none; }
+  .home-upcoming .home-upcoming__list--expanded { display: block; padding-top: 6px; }
+}

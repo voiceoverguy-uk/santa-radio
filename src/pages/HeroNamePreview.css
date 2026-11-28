@@ -1156,3 +1156,23 @@
   }
   .hero-name-preview .hero-unified .now-playing-artwork__caption { max-height: none; overflow: visible; }
 }
+
+/* The player shares the artwork's row span, rather than sitting below it. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'upcoming upcoming' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content minmax(44px, 1fr) auto auto auto;
+    row-gap: 10px;
+  }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__left-stack,
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__listening { display: contents; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__player-row { grid-area: player; align-self: start; }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming { grid-area: upcoming; margin-top: 0; }
+  .hero-unified:has(.now-playing-artwork) .hero-countdown { grid-area: countdown; margin-top: 0; }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-title { margin-bottom: 0; }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-actions .btn-red { padding-inline: 14px; }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):not(:has(.home-upcoming)) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content minmax(44px, 1fr) auto auto;
+  }
+}
