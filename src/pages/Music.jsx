@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SongArtwork from '../components/SongArtwork.jsx';
 import ArtistGallery from '../components/ArtistGallery.jsx';
-import { artistGalleryImages } from '../data/artistGalleryImages.js';
+import { managedArtistGallery } from '../data/managedArtistGallery.js';
+import { useCatalogueArtwork } from '../hooks/useCatalogueArtwork.js';
 import './Music.css';
 import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -44,6 +45,8 @@ function UpcomingSongCard({ track, song, index }) {
 }
 
 export default function Music() {
+  const artwork = useCatalogueArtwork();
+  const galleryImages = useMemo(() => managedArtistGallery(artwork), [artwork]);
   const { upcoming: scheduled = [] } = useRadio();
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState('random');
@@ -87,7 +90,7 @@ export default function Music() {
             <button type="button" aria-label="Artist A–Z" aria-pressed={order === 'az'} onClick={() => setOrder('az')} title="Artist A–Z">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
             </button>
-            <ArtistGallery images={artistGalleryImages} />
+            <ArtistGallery images={galleryImages} />
           </div>
           </div>
         </div>

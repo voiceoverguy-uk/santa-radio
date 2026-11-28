@@ -8,7 +8,7 @@ import ffmpeg from 'ffmpeg-static';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { mobileArtworkCatalogue } from './mobile-artwork-catalogue.js';
-import { artworkTarget, mergeArtworkFeed, readArtworkImage, readArtworkOverrides, saveArtwork } from './catalogue-artwork-store.js';
+import { artworkTarget, mergeArtworkFeed, readArtworkImage, readArtworkOverrides, saveArtwork, saveGallerySelection } from './catalogue-artwork-store.js';
 
 const run = promisify(execFile);
 const badImage = () => Object.assign(new Error('Choose a readable JPG, PNG or WebP image.'), { status: 400 });
@@ -36,7 +36,7 @@ export async function encodeArtwork(jpeg) {
 
 const readBase = async () => JSON.parse(await readFile(join(process.cwd(), 'dist/artist-artwork/catalogue.json'), 'utf8'));
 export function createCatalogueArtwork({ owner = validOwnerToken, list = readArtworkOverrides,
-  image = readArtworkImage, save = saveArtwork, encode = encodeArtwork, base = readBase } = {}) {
+  image = readArtworkImage, save = saveArtwork, saveGallery = saveGallerySelection, encode = encodeArtwork, base = readBase } = {}) {
   const app = express();
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store').set('X-Content-Type-Options', 'nosniff');
@@ -58,8 +58,15 @@ export function createCatalogueArtwork({ owner = validOwnerToken, list = readArt
       if (req.query.feed || req.query.image || req.query.mobile) return res.status(405).end();
       const target = artworkTarget(req.body?.id, req.body?.scope);
       if (!target) return res.status(400).json({ error: 'Choose a catalogue recording and artwork scope.' });
-      const path = await save(target, await encode(req.body.jpeg));
-      return res.json({ path });
+      const include = req.body.includeInGallery;
+      if (include !== undefined && typeof include !== 'boolean') return res.status(400).json({ error: 'Choose whether to include this song in the gallery.' });
+      if (req.body.jpeg === undefined) {
+        if (typeof include !== 'boolean') return res.status(400).json({ error: 'Choose artwork or a gallery setting to save.' });
+        await saveGallery(target, include);
+        return res.json({ gallery: { enabled: include, scope: target.scope } });
+      }
+      const path = await save(target, await encode(req.body.jpeg), undefined, include);
+      return res.json({ path, ...(include === undefined ? {} : { gallery: { enabled: include, scope: target.scope } }) });
     }
     res.set('Access-Control-Allow-Origin','*');
     if (req.query.image !== undefined) {

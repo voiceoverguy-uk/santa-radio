@@ -37,3 +37,6 @@
 .santa-dashboard .catalogue-art__close { display: block; margin: 0 0 .5rem auto; background: #143c2d; }
 .catalogue-art__thumbnail:focus-visible,
 .catalogue-art__zoom-image:focus-visible { outline: 3px solid #efcf79; outline-offset: -3px; }
+
+.santa-dashboard .catalogue-art__gallery { display: flex; align-items: center; gap: .65rem; margin: 1rem 0 .25rem; cursor: pointer; }
+.santa-dashboard .catalogue-art__gallery input { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: #d1af57; }

@@ -17,6 +17,9 @@ export default function ArtistGallery({ images = [] }) {
   const lastSwipe = useRef(0);
   const open = index !== null;
   const image = images[index];
+  useEffect(() => {
+    if (index !== null && index >= images.length) setIndex(null);
+  }, [index, images.length]);
   const move = step => setIndex(current => (current + step + images.length) % images.length);
   useEffect(() => {
     if (!open) return;
@@ -33,7 +36,7 @@ export default function ArtistGallery({ images = [] }) {
     };
   }, [open]);
   useEffect(() => {
-    if (!open || images.length < 2) return;
+    if (!open || index >= images.length || images.length < 2) return;
     // Warm the browser image cache in both directions without downloading
     // the full gallery. Decode as well so the next click can paint promptly.
     const neighbours = new Set([

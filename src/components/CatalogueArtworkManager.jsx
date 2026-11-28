@@ -3,6 +3,7 @@ import songs from '../data/songs.json';
 import { fallbackArtwork, normalizeArtistName } from '../data/artistArtwork.js';
 import { artistArtworkCandidates, songArtworkCandidates } from '../data/songArtwork.js';
 import { fetchCatalogueArtwork } from '../hooks/useCatalogueArtwork.js';
+import { gallerySelection } from '../data/managedArtistGallery.js';
 import { prepareCatalogueArtwork } from '../lib/prepareCatalogueArtwork.js';
 import './CatalogueArtworkManager.css';
 
@@ -42,9 +43,11 @@ function ArtworkPreview({ src, alt, caption, onError }) {
   </figure>;
 }
 
-function ArtworkUpload({ song, scope, ownerToken, candidates, caption, onSaved, busy, setBusy }) {
+function ArtworkUpload({ song, scope, ownerToken, candidates, caption, initialIncluded, initialGalleryScope, onSaved, busy, setBusy }) {
   const input = useRef(null);
   const [preview, setPreview] = useState('');
+  const [included, setIncluded] = useState(initialIncluded);
+  const [savedIncluded, setSavedIncluded] = useState(initialIncluded);
   const [failedImages, setFailedImages] = useState([]);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -64,13 +67,14 @@ function ArtworkUpload({ song, scope, ownerToken, candidates, caption, onSaved, 
     try {
       const response = await fetch('/api/catalogue-artwork', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer studio-owner.' + ownerToken},
-        body:JSON.stringify({ id:song.id, scope, jpeg:preview.split(',')[1] }), signal:AbortSignal.timeout(45000),
+        body:JSON.stringify({ id:song.id, scope, includeInGallery:included, ...(preview ? { jpeg:preview.split(',')[1] } : {}) }), signal:AbortSignal.timeout(45000),
       });
       const result = await response.json();
-      if (!response.ok || !result.path) throw new Error(result.error || 'The upload did not finish.');
-      onSaved(result.path);
+      if (!response.ok || (!result.path && !result.gallery)) throw new Error(result.error || 'The changes were not saved.');
+      onSaved(result);
+      setSavedIncluded(included);
       setFailedImages([]); setPreview(''); input.current.value = '';
-      setNotice(scope === 'song' ? 'Saved artwork for “' + target + '”.' : 'Saved the artist default for ' + target + '.');
+      setNotice((result.path ? 'Artwork saved. ' : '') + (included ? 'This song’s picture is included in the gallery.' : 'This song’s picture is not included in the gallery.'));
     } catch (err) { setError(err.name === 'TimeoutError' ? 'The upload timed out. Select the song again to check its artwork.' : err.message); }
     finally { setBusy(false); }
   }
@@ -83,7 +87,10 @@ function ArtworkUpload({ song, scope, ownerToken, candidates, caption, onSaved, 
     <label>Choose new artwork <small>JPG, PNG or WebP · up to 20 MB · square centre crop</small>
       <input type="file" ref={input} disabled={busy} accept="image/jpeg,image/png,image/webp" onChange={event => choose(event.target.files[0])} />
     </label>
-    <button type="button" disabled={busy || !preview} onClick={publish}>{busy ? 'Working…' : scope === 'song' ? 'Save song artwork' : 'Save artist default'}</button>
+    <label className="catalogue-art__gallery"><input type="checkbox" checked={included} disabled={busy}
+      onChange={event => setIncluded(event.target.checked)} />Include in gallery</label>
+    <small>The gallery will show this picture with {song.artist} — {song.song}.</small>
+    <button type="button" disabled={busy || (!preview && included === savedIncluded && (!included || scope === initialGalleryScope))} onClick={publish}>{busy ? 'Working…' : !preview ? 'Save gallery setting' : scope === 'song' ? 'Save song artwork' : 'Save artist default'}</button>
     {error && <p role="alert">{error}</p>}
     {notice && <p role="status">{notice}</p>}
   </>;
@@ -107,9 +114,12 @@ function ArtworkEditor({ song, ownerToken, busy, setBusy }) {
   const candidates = scope === 'artist' ? artistImages : songArtworkCandidates(song, undefined, data);
   const caption = candidates[0] === fallbackArtwork ? 'Current artwork · Santa Radio default'
     : candidates[0] === artistImages[0] ? 'Current artwork · artist default' : 'Current artwork · song-specific';
-  function saved(path) {
-    if (scope === 'song') setData({ ...data, recordings: { ...data.recordings, [song.id]: { artist:song.artist, title:song.song, path } } });
-    else setData({ ...data, artists: { ...data.artists, [key]:path } });
+  function saved(result) {
+    setData(previous => ({ ...previous,
+      ...(result.path && scope === 'song' ? { recordings: { ...previous.recordings, [song.id]: { artist:song.artist, title:song.song, path:result.path } } } : {}),
+      ...(result.path && scope === 'artist' ? { artists: { ...previous.artists, [key]:result.path } } : {}),
+      ...(result.gallery ? { gallery: { ...previous.gallery, [song.id]: result.gallery } } : {}),
+    }));
   }
   return <>
     <h3>{song.artist} — {title(song)}</h3>
@@ -119,7 +129,7 @@ function ArtworkEditor({ song, ownerToken, busy, setBusy }) {
         checked={scope === value} onChange={() => setScope(value)} />{value === 'song' ? 'This song only' : 'Artist default'}</label>)}
     </fieldset>
     {scope === 'artist' && <p>Songs by {song.artist} with their own artwork keep it.</p>}
-    <ArtworkUpload key={scope} {...{song, scope, ownerToken, candidates, caption, busy, setBusy}} onSaved={saved} />
+    <ArtworkUpload key={scope} {...{song, scope, ownerToken, candidates, caption, busy, setBusy}} initialIncluded={gallerySelection(song.id, data)} initialGalleryScope={data.gallery?.[song.id]?.scope || 'song'} onSaved={saved} />
   </>;
 }
 

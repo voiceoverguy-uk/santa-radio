@@ -11,3 +11,10 @@ CREATE TABLE IF NOT EXISTS santa_catalogue_artwork_assignments (
   hash text NOT NULL REFERENCES santa_catalogue_artwork_images(hash),
   PRIMARY KEY (scope, target_key)
 );
+
+-- Explicit selections override the original curated gallery, including removals.
+CREATE TABLE IF NOT EXISTS santa_catalogue_gallery (
+  song_id integer PRIMARY KEY,
+  enabled boolean NOT NULL,
+  scope text NOT NULL CHECK (scope IN ('artist','song'))
+);

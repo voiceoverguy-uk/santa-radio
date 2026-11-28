@@ -26,27 +26,38 @@ export function artworkTarget(id, scope) {
   if (!song || !['artist', 'song'].includes(scope)) return null;
   const artistKey = normalizeArtistName(song.artist);
   const key = scope === 'artist' ? credits.get(artistKey)?.[0] ?? artistKey : String(id);
-  return { scope, key, artist: song.artist, title: scope === 'song' ? song.song : '' };
+  return { songId: id, scope, key, artist: song.artist, title: scope === 'song' ? song.song : '' };
 }
 
-export async function saveArtwork(target, bytes, pool = databasePool()) {
+export async function saveArtwork(target, bytes, pool = databasePool(), includeInGallery) {
   const hash = digest(bytes);
   // One statement commits the immutable image and the chosen assignment together.
   await pool.query(`
     WITH stored AS (
       INSERT INTO santa_catalogue_artwork_images(hash, webp) VALUES ($1,$2)
       ON CONFLICT (hash) DO NOTHING
+    ), gallery AS (
+      INSERT INTO santa_catalogue_gallery(song_id,enabled,scope)
+      SELECT $8::integer,$7::boolean,$3 WHERE $7::boolean IS NOT NULL
+      ON CONFLICT (song_id) DO UPDATE SET enabled=EXCLUDED.enabled,scope=EXCLUDED.scope
     )
     INSERT INTO santa_catalogue_artwork_assignments(scope,target_key,artist,title,hash)
     VALUES ($3,$4,$5,$6,$1)
     ON CONFLICT (scope,target_key) DO UPDATE SET
       artist=EXCLUDED.artist, title=EXCLUDED.title, hash=EXCLUDED.hash
-  `, [hash, bytes, target.scope, target.key, target.artist, target.title]);
+  `, [hash, bytes, target.scope, target.key, target.artist, target.title, includeInGallery ?? null, target.songId]);
   return imagePath(hash);
 }
 
+const recordingsById = id => recordings.has(Number(id));
+
+export async function saveGallerySelection(target, enabled, pool = databasePool()) {
+  await pool.query(`INSERT INTO santa_catalogue_gallery(song_id,enabled,scope) VALUES ($1,$2,$3)
+    ON CONFLICT (song_id) DO UPDATE SET enabled=EXCLUDED.enabled,scope=EXCLUDED.scope`, [target.songId, enabled, target.scope]);
+}
+
 export async function readArtworkOverrides(pool) {
-  const artists = {}, recordings = {};
+  const artists = {}, recordings = {}, gallery = {};
   if (pool || process.env.DATABASE_URL) {
     const { rows } = await (pool || databasePool()).query(
       'SELECT scope,target_key,artist,title,hash FROM santa_catalogue_artwork_assignments ORDER BY scope,target_key'
@@ -66,7 +77,15 @@ export async function readArtworkOverrides(pool) {
       }
     }
   }
-  return { artists, recordings };
+  if (pool || process.env.DATABASE_URL) {
+    const { rows } = await (pool || databasePool()).query('SELECT song_id,enabled,scope FROM santa_catalogue_gallery ORDER BY song_id');
+    for (const row of rows) {
+      if (recordingsById(row.song_id) && typeof row.enabled === 'boolean' && ['song','artist'].includes(row.scope)) {
+        gallery[row.song_id] = { enabled: row.enabled, scope: row.scope };
+      }
+    }
+  }
+  return { artists, recordings, gallery };
 }
 
 export async function readArtworkImage(hash, pool = databasePool()) {

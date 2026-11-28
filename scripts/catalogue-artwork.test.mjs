@@ -72,3 +72,41 @@ test('uploads require the dashboard owner, a matching origin and a real catalogu
   assert.equal((await post(owner,body)).status,200);
   assert.equal(writes,1);
 });
+
+test('gallery-only saves require owner access and do not encode or replace artwork', async t => {
+  const saved = [];
+  const app = createCatalogueArtwork({ owner: req => req.headers.authorization === 'Bearer test',
+    encode: async () => { throw Error('Must not encode for gallery-only save'); },
+    saveGallery: async (target, enabled) => saved.push({target, enabled}) });
+  const server = createServer(app);
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const url = 'http://127.0.0.1:' + server.address().port;
+  const post = (body, authenticated = true) => fetch(url, { method: 'POST', headers: {
+    'Content-Type': 'application/json', origin: url, ...(authenticated ? {authorization: 'Bearer test'} : {})
+  }, body: JSON.stringify(body) });
+  assert.equal((await post({id:37, scope:'song', includeInGallery:true}, false)).status, 401);
+  assert.equal((await post({id:37, scope:'song', includeInGallery:'true'})).status, 400);
+  for (const enabled of [true, false]) {
+    const response = await post({id:37, scope:'song', includeInGallery:enabled});
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {gallery: {enabled, scope:'song'}});
+  }
+  assert.deepEqual(saved.map(entry => [entry.target.songId, entry.enabled]), [[37,true],[37,false]]);
+});
+
+test('artwork replacement saves gallery selection atomically and reads it back', async () => {
+  const {saveArtwork, saveGallerySelection} = await import('../server/catalogue-artwork-store.js');
+  const calls = [];
+  const pool = { query: async (sql, values) => { calls.push({sql,values}); return {rows: sql.includes('FROM santa_catalogue_gallery') ? [{song_id:37,enabled:false,scope:'song'}] : []}; } };
+  const target = artworkTarget(37,'song');
+  await saveArtwork(target,Buffer.from('image'),pool,true);
+  assert.equal(calls.length,1);
+  assert.match(calls[0].sql,/INSERT INTO santa_catalogue_gallery/);
+  assert.equal(calls[0].values[6],true);
+  assert.equal(calls[0].values[7],37);
+  await saveGallerySelection(target,false,pool);
+  assert.deepEqual(calls[1].values,[37,false,'song']);
+  const data = await readArtworkOverrides(pool);
+  assert.deepEqual(data.gallery[37],{enabled:false,scope:'song'});
+});
