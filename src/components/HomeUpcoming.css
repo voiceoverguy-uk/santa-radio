@@ -7,7 +7,7 @@
 .home-upcoming time { display: block; flex-basis: 100%; color: var(--gold-light); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 .home-upcoming__toggle { display: none; }
-@media (max-width: 767px) {
+@media (min-width: 0px) {
   .home-upcoming__heading { display: none; }
   .home-upcoming .home-upcoming__toggle {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;

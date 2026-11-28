@@ -1249,3 +1249,62 @@
   }
   .hero-unified:has(.now-playing-artwork) .hero-name-preview__player-row { align-self: center; }
 }
+
+/* Give desktop the same compact player, artwork and disclosure arrangement. */
+@media (min-width: 768px) {
+  .hero-unified .hero-name-preview__checker,
+  .hero-unified .hero-name-preview__checker.black-friday-paper { justify-content: flex-start; gap: 18px; }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'intro artwork' 'player artwork' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content minmax(44px, 1fr) auto auto;
+    gap: 12px 24px;
+    align-items: start;
+  }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__broadcast,
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__left-stack,
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__listening,
+  .hero-unified:has(.now-playing-artwork) .home-upcoming { display: contents; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__player-row { grid-area: player; align-self: center; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__actions,
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-actions .btn-red { width: 100%; justify-content: center; }
+  .hero-unified:has(.now-playing-artwork) .hero-countdown { grid-area: countdown; margin: 0; padding-top: 0; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__artwork-slot {
+    grid-area: artwork; width: 100%; margin: 0; align-self: stretch; justify-self: stretch;
+  }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'upcoming artwork' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto;
+  }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__toggle { grid-area: upcoming; align-self: end; }
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__list { grid-area: queue; }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming__list--expanded) {
+    grid-template-areas: 'intro artwork' 'player artwork' 'upcoming artwork' 'queue queue' 'countdown countdown' 'checker checker';
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto auto;
+  }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-title { font-size: clamp(2rem, 3vw, 2.6rem); margin-bottom: 0; }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-title .hero-name-preview__strapline { font-size: clamp(1.2rem, 2vw, 1.65rem); line-height: 1.35; }
+  .hero-unified .now-playing-artwork__title { display: none; }
+  .hero-name-preview .hero-unified .now-playing-artwork__caption { max-height: none; overflow: visible; }
+  .hero-name-preview .hero-layout .hero-name-preview__artwork-slot .now-playing-artwork { align-self: stretch; align-content: stretch; grid-template-rows: minmax(0, 1fr) auto; }
+  .hero-name-preview .hero-unified .now-playing-artwork__image { aspect-ratio: auto; min-height: 0; }
+  .hero-name-preview .hero-unified .now-playing-artwork__image img { object-fit: cover; }
+}
+@media (min-width: 768px) and (max-width: 1090px) {
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__checker { border-left: 0; border-top: 1px solid #c4a15c55; padding: 20px 0 0; }
+}
+@media (min-width: 1091px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(140px, .8fr) minmax(0, 1.55fr);
+    grid-template-areas: 'intro artwork checker' 'player artwork checker' 'countdown countdown checker';
+    grid-template-rows: min-content minmax(44px, 1fr) auto;
+  }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming) {
+    grid-template-areas: 'intro artwork checker' 'player artwork checker' 'upcoming artwork checker' 'countdown countdown checker';
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto;
+  }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming__list--expanded) {
+    grid-template-areas: 'intro artwork checker' 'player artwork checker' 'upcoming artwork checker' 'queue queue checker' 'countdown countdown checker';
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto;
+  }
+}
