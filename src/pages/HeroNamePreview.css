@@ -1123,3 +1123,36 @@
 }
 
 .hero-unified .hero-name-preview__player-row { min-height: 44px; }
+
+/* Keep the live artist beside the heading on phones, above the queue. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork) {
+    grid-template-columns: minmax(0, 1fr) clamp(96px, 29vw, 128px);
+    grid-template-areas: 'intro artwork' 'broadcast broadcast' 'checker checker';
+    column-gap: 12px;
+    row-gap: 12px;
+    align-items: start;
+  }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__broadcast { display: contents; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__left-stack { grid-area: broadcast; }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__artwork-slot {
+    grid-area: artwork;
+    width: 100%;
+    margin: 0;
+    align-self: start;
+    justify-self: end;
+    padding: 6px;
+  }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    overflow-wrap: normal;
+  }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-title .hero-name-preview__strapline {
+    font-size: clamp(.95rem, 3.9vw, 1.25rem);
+    line-height: 1.35;
+  }
+  .hero-name-preview .hero-unified .now-playing-artwork__info {
+    width: 32px; height: 32px; right: 4px; bottom: 4px;
+  }
+  .hero-name-preview .hero-unified .now-playing-artwork__caption { max-height: none; overflow: visible; }
+}
