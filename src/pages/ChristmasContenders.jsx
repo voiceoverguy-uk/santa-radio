@@ -1,3 +1,4 @@
+import contenderDisplay from '../lib/contender-display.json';
 import { formatUkDate, ukDateFields } from '../lib/ukDates.js';
 import ContenderPictureDownload from '../components/ContenderPictureDownload.jsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -485,7 +486,7 @@ export default function ChristmasContenders() {
               const selectable = !alreadyUsed && !pending && !unresolved && !(demo && data?.realVotingEnabled);
               return <article className={`contender-card${demo ? '' : ' contender-card--live'}`} id={entry.anchor || entry.id} key={entry.id}>
                 <div className="contender-card__art-wrap">
-                  {entry.artwork ? <img className="contender-card__art" src={entry.artwork} alt={`${entry.artist} artwork`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
+                  {entry.artwork ? <img className="contender-card__art" src={contenderDisplay.artwork[entry.artwork] || entry.artwork} loading="lazy" decoding="async" width="320" height="320" alt={`${entry.artist} artwork`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
                 </div>
                 <div className="contender-card__body">
                   <div className="contender-card__identity">
@@ -497,7 +498,7 @@ export default function ChristmasContenders() {
                 {entry.audio ? <div className="contender-card__audio">
                   <ContenderWaveformPlayer
                     src={entry.audio}
-                    waveform={entry.waveform}
+                    waveform={contenderDisplay.waveforms[entry.audio] || entry.waveform}
                     title={entry.title}
                     artist={entry.artist}
                     audioRef={audioRefFor(entry.id)}

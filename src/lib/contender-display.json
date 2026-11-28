@@ -1,0 +1,156 @@
+{
+  "artwork": {
+    "/contenders/bob-the-elf.png": "/contenders/display/f64c7ae805682f5590857ccc.webp",
+    "/contenders/ken-sealey-its-christmas-shake-your-bum.jpeg": "/contenders/display/19c0880c3b3b7ceb39b05adf.webp",
+    "/contenders/louhi-no-time-to-say-goodbye.jpg": "/contenders/display/de36f19b2d9c7a02805ced69.webp",
+    "/contenders/paul-byers-the-thought-that-counts.jpeg": "/contenders/display/7fb5b8496a6b7cd12e3eac90.webp",
+    "/api/christmas-contenders?media=song-11110516-ee63-401e-9874-68b10ec9b847.png": "/contenders/display/f59f15e28c463b64946e9517.webp",
+    "/contenders/rich-stolp-i-cant-wait-for-christmas.jpg": "/contenders/display/90912d2327a855dc2da35652.webp",
+    "/contenders/rob-dalton-snow-is-falling.jpeg": "/contenders/display/0033f40d53096869e2aeeb8b.webp",
+    "/contenders/sam-ringer-lonely-little-christmas-tree.jpeg": "/contenders/display/e1e268c9d9f5e64eab4c6f6a.webp",
+    "/contenders/sichi-xmas-in-milan.jpeg": "/contenders/display/ec2e3bbbfb57af51420e700c.webp",
+    "/api/christmas-contenders?media=song-03ebc486-3c66-436e-8315-e3affeaf7820.jpg": "/contenders/display/9a83b10274235ecc42a93e06.webp",
+    "/api/christmas-contenders?media=song-1642e608-87f1-402b-9495-1d7c1c191759.jpg": "/contenders/display/87c16d3163b908f6cde56cd3.webp",
+    "/api/christmas-contenders?media=song-199e874f-9068-4b7a-ae04-f13bec02290a.jpg": "/contenders/display/d02f671681158a4b0d09bba3.webp",
+    "/api/christmas-contenders?media=song-1a407fb2-0043-458e-9dc4-defaeb641fb7.jpg": "/contenders/display/9c1b12eecbe568d037641dfd.webp",
+    "/api/christmas-contenders?media=song-1cf50e17-5114-4c3a-84a9-a2378413cea5.jpg": "/contenders/display/155b36f3a10d18c3b9461f21.webp",
+    "/api/christmas-contenders?media=song-3d5f2ed6-8106-4ae1-a2ac-605b01f4714a.jpg": "/contenders/display/5e9cbcb4af6cee8019f75032.webp",
+    "/api/christmas-contenders?media=song-3e08742c-59f5-4d83-a9cc-f7f20b9e58dc.jpg": "/contenders/display/95afeacae93b4c595eba6f95.webp",
+    "/api/christmas-contenders?media=song-495323f2-2d9c-4dc9-89c7-e2986d684a8b.jpg": "/contenders/display/063a4ca8101995772c9fafd4.webp",
+    "/api/christmas-contenders?media=song-57797ecf-e465-4173-a5c0-aa8c218f3ce0.png": "/contenders/display/29a1078af8e57dcfd9c6a482.webp",
+    "/api/christmas-contenders?media=song-69202bba-272f-4d0d-b803-575267b6c92e.jpg": "/contenders/display/a106630eb8b83b9aaad5b740.webp",
+    "/api/christmas-contenders?media=song-76c470ea-53e1-4881-81b1-6520ca9a0ce7.png": "/contenders/display/54c68c4de17dd610ccdf23b4.webp",
+    "/api/christmas-contenders?media=song-83e859b1-6246-48b7-b1cd-c4c433802142.jpg": "/contenders/display/e6f3f71bbf91cc1fe115c89e.webp",
+    "/api/christmas-contenders?media=song-8c436e95-b9b3-43c2-8a68-9cc7c3bf5e98.jpg": "/contenders/display/c49aa82f72d036a7185b3da1.webp",
+    "/api/christmas-contenders?media=song-a4dc209c-8033-4cf1-9cb9-48e0cd91557e.png": "/contenders/display/105f3d4561c992137c2862d0.webp",
+    "/api/christmas-contenders?media=song-ab7e7c8d-9426-4aa2-a356-429b700c2a21.jpg": "/contenders/display/801af868a4ec0e18b4f61efe.webp",
+    "/api/christmas-contenders?media=song-b3ed8d68-b344-4191-ad93-ad18e83e3bbc.jpg": "/contenders/display/41e249dde3bde70e6f317bb5.webp",
+    "/api/christmas-contenders?media=song-cefa18ca-3ac0-430d-8fd9-8ab377531e8f.jpg": "/contenders/display/0a7f8d617a1812965ab53a98.webp",
+    "/api/christmas-contenders?media=song-da0117dc-5511-41a2-a64e-d4755531a9e0.jpg": "/contenders/display/7be948d8549f813abeff59db.webp",
+    "/api/christmas-contenders?media=song-dcc8d57a-3f55-445c-a2e5-5a0499e38646.jpg": "/contenders/display/1844ac006d2414557e222e31.webp",
+    "/api/christmas-contenders?media=song-efc10708-75fb-4149-b47c-2aa1a9ca0cfd.png": "/contenders/display/b5393d7a64cb8e034e435f2c.webp",
+    "/api/christmas-contenders?media=song-fb98ab76-d1d2-4c9a-9421-b523fa933834.jpg": "/contenders/display/60f7e8f27847418172b244a9.webp"
+  },
+  "waveforms": {
+    "/contenders/test-song.mp3": {
+      "url": "/contenders/display/a5efa096892fcbaf4c698086.json",
+      "duration": 3.007875
+    },
+    "/contenders/ken-sealey-its-christmas-shake-your-bum.mp3": {
+      "url": "/contenders/display/71ed1f09b5ed1708a784af38.json",
+      "duration": 156.12
+    },
+    "/contenders/louhi-no-time-to-say-goodbye.mp3": {
+      "url": "/contenders/display/732b2f4da7260cbac1047508.json",
+      "duration": 223.36
+    },
+    "/contenders/paul-byers-the-thought-that-counts.mp3": {
+      "url": "/contenders/display/7fb31e8531faeb50d90299d2.json",
+      "duration": 267.96
+    },
+    "/contenders/phillip-streets-a-little-bit-of-christmas-radio-mix.mp3": {
+      "url": "/contenders/display/49e02482b225a036b4ba0a20.json",
+      "duration": 199.384625
+    },
+    "/contenders/rich-stolp-i-cant-wait-for-christmas.mp3": {
+      "url": "/contenders/display/5fcbe8ac923ba40a0b0851b9.json",
+      "duration": 173.904
+    },
+    "/contenders/rob-dalton-snow-is-falling-on-this-christmas-day.mp3": {
+      "url": "/contenders/display/e0b9cc0c70bb8bb4e5052b3f.json",
+      "duration": 197.56025
+    },
+    "/contenders/sam-ringer-lonely-little-christmas-tree.mp3": {
+      "url": "/contenders/display/cc90cdf9750453f9bf669c7a.json",
+      "duration": 144.96
+    },
+    "/contenders/sichi-xmas-in-milan.mp3": {
+      "url": "/contenders/display/2fbf41127def8cfa2a148243.json",
+      "duration": 274.84
+    },
+    "/api/christmas-contenders?media=song-03ebc486-3c66-436e-8315-e3affeaf7820.mp3": {
+      "url": "/contenders/display/e7115229956ece95c4f83590.json",
+      "duration": 161.43675
+    },
+    "/api/christmas-contenders?media=song-1642e608-87f1-402b-9495-1d7c1c191759.mp3": {
+      "url": "/contenders/display/ed4492cff15ad6a5dfedb1f5.json",
+      "duration": 205.219125
+    },
+    "/api/christmas-contenders?media=song-199e874f-9068-4b7a-ae04-f13bec02290a.mp3": {
+      "url": "/contenders/display/ba86fe35ed38bdf8e9458e24.json",
+      "duration": 359.472125
+    },
+    "/api/christmas-contenders?media=song-1a407fb2-0043-458e-9dc4-defaeb641fb7.mp3": {
+      "url": "/contenders/display/12eaba172a4bc9cb80d3ce31.json",
+      "duration": 229.434625
+    },
+    "/api/christmas-contenders?media=song-1cf50e17-5114-4c3a-84a9-a2378413cea5.mp3": {
+      "url": "/contenders/display/5d56933652fbc9205190e355.json",
+      "duration": 229.878625
+    },
+    "/api/christmas-contenders?media=song-3d5f2ed6-8106-4ae1-a2ac-605b01f4714a.mp3": {
+      "url": "/contenders/display/68bcacfbc1f1dbd381b7f07e.json",
+      "duration": 83.593
+    },
+    "/api/christmas-contenders?media=song-3e08742c-59f5-4d83-a9cc-f7f20b9e58dc.mp3": {
+      "url": "/contenders/display/5c539390f542aea991d3a4ac.json",
+      "duration": 241.52925
+    },
+    "/api/christmas-contenders?media=song-495323f2-2d9c-4dc9-89c7-e2986d684a8b.mp3": {
+      "url": "/contenders/display/65f2d67313c174f3ecca5609.json",
+      "duration": 178.469625
+    },
+    "/api/christmas-contenders?media=song-57797ecf-e465-4173-a5c0-aa8c218f3ce0.mp3": {
+      "url": "/contenders/display/e3bc3f98ce6d586404231aa8.json",
+      "duration": 269.617
+    },
+    "/api/christmas-contenders?media=song-6d4013e4-020c-44db-bf87-18835990d11f.mp3": {
+      "url": "/contenders/display/43d06510770d96810c9c8bfc.json",
+      "duration": 250.306375
+    },
+    "/api/christmas-contenders?media=song-76c470ea-53e1-4881-81b1-6520ca9a0ce7.mp3": {
+      "url": "/contenders/display/0dbf0763225c1720248a5912.json",
+      "duration": 180.42775
+    },
+    "/api/christmas-contenders?media=song-83e859b1-6246-48b7-b1cd-c4c433802142.mp3": {
+      "url": "/contenders/display/e20f7d99d7edc22059c05999.json",
+      "duration": 238.86475
+    },
+    "/api/christmas-contenders?media=song-8c436e95-b9b3-43c2-8a68-9cc7c3bf5e98.mp3": {
+      "url": "/contenders/display/61fb36ca6f1ceb314a546c29.json",
+      "duration": 212.690125
+    },
+    "/api/christmas-contenders?media=song-a4dc209c-8033-4cf1-9cb9-48e0cd91557e.mp3": {
+      "url": "/contenders/display/0011b9b7e68b5f6095e75126.json",
+      "duration": 229.537
+    },
+    "/api/christmas-contenders?media=song-ab7e7c8d-9426-4aa2-a356-429b700c2a21.mp3": {
+      "url": "/contenders/display/bcec28da71c81a7a90a25a76.json",
+      "duration": 232.969
+    },
+    "/api/christmas-contenders?media=song-17bc6052-5e72-4998-862a-c5a09d8f1f7b.mp3": {
+      "url": "/contenders/display/b03170aa6e69ff4bdc051ff5.json",
+      "duration": 200.017
+    },
+    "/api/christmas-contenders?media=song-0b2e19c4-b98a-4eae-beab-301e5b4efde0.mp3": {
+      "url": "/contenders/display/4c626d46381e088ca94f4634.json",
+      "duration": 181.05575
+    },
+    "/api/christmas-contenders?media=song-da0117dc-5511-41a2-a64e-d4755531a9e0.mp3": {
+      "url": "/contenders/display/52ebe39a92eeda5101ef4b39.json",
+      "duration": 158.250875
+    },
+    "/api/christmas-contenders?media=song-1ca70001-4901-4a0b-b110-b65479437947.mp3": {
+      "url": "/contenders/display/72c7a81dd29ae61a0dd0fe61.json",
+      "duration": 198.169
+    },
+    "/api/christmas-contenders?media=song-efc10708-75fb-4149-b47c-2aa1a9ca0cfd.mp3": {
+      "url": "/contenders/display/20805241f0f24bdc18b9ee96.json",
+      "duration": 266.397875
+    },
+    "/api/christmas-contenders?media=song-fb98ab76-d1d2-4c9a-9421-b523fa933834.mp3": {
+      "url": "/contenders/display/a955da1ea6ee3a6ae594abc4.json",
+      "duration": 294.66125
+    }
+  }
+}

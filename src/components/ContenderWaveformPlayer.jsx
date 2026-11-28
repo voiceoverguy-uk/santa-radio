@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import './ContenderWaveformPlayer.css';
 
 const waveformCache = new Map();
@@ -27,38 +27,13 @@ function getWaveform(url) {
   return waveformCache.get(url);
 }
 
-async function recordingWaveform(src) {
-  if (!src) throw new Error('Missing recording');
-  if (!waveformCache.has(src)) {
-    const request = (async () => {
-      const response = await fetch(src);
-      if (!response.ok) throw new Error('Recording unavailable');
-      const decoder = new OfflineAudioContext(1, 1, 8000);
-      const audio = await decoder.decodeAudioData(await response.arrayBuffer());
-      const peaks = Array(360).fill(0);
-      for (let channel = 0; channel < audio.numberOfChannels; channel++) {
-        const samples = audio.getChannelData(channel);
-        for (let i = 0; i < samples.length; i++) {
-          const bin = Math.floor(i * peaks.length / samples.length);
-          peaks[bin] = Math.max(peaks[bin], Math.abs(samples[i]));
-        }
-      }
-      const maximum = Math.max(...peaks) || 1;
-      return { duration: audio.duration, peaks: peaks.map(peak => peak / maximum) };
-    })();
-    waveformCache.set(src, request);
-    request.catch(() => waveformCache.delete(src));
-  }
-  return waveformCache.get(src);
-}
-
 function formatTime(value) {
   if (!Number.isFinite(value) || value < 0) return '0:00';
   const seconds = Math.floor(value);
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
-export default function ContenderWaveformPlayer({
+function ContenderWaveformPlayer({
   audioRef,
   onClaim,
   onRelease,
@@ -68,6 +43,7 @@ export default function ContenderWaveformPlayer({
   artist,
 }) {
   const elementRef = useRef(null);
+  const containerRef = useRef(null);
   const playIntent = useRef(false);
   const playAttempt = useRef(0);
   const pendingSeek = useRef(null);
@@ -87,7 +63,7 @@ export default function ContenderWaveformPlayer({
     let mounted = true;
     setPeaks(null);
     setWaveformFailed(false);
-    getWaveform(waveform?.url).catch(() => recordingWaveform(src)).then(result => {
+    const load = () => getWaveform(waveform?.url).then(result => {
       if (mounted) {
         setPeaks(result.peaks);
         setMediaDuration(result.duration);
@@ -95,7 +71,12 @@ export default function ContenderWaveformPlayer({
     }).catch(() => {
       if (mounted) setWaveformFailed(true);
     });
-    return () => { mounted = false; };
+    const observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { observer.disconnect(); load(); }
+    }, {rootMargin: '300px'}) : null;
+    if (observer && containerRef.current) observer.observe(containerRef.current);
+    else load();
+    return () => { mounted = false; observer?.disconnect(); };
   }, [waveform?.url, src]);
 
   useEffect(() => {
@@ -104,7 +85,7 @@ export default function ContenderWaveformPlayer({
     setMediaDuration(0);
     setPlaying(false);
     setPlaybackError('');
-    if (audio && src) audio.src = src;
+    // No media source is attached until the visitor explicitly presses Play.
     return () => {
       playAttempt.current += 1;
       playIntent.current = false;
@@ -143,6 +124,7 @@ export default function ContenderWaveformPlayer({
     playIntent.current = true;
     const attempt = ++playAttempt.current;
     claim(audio);
+    if (!audio.getAttribute('src')) audio.src = src;
     const playPromise = audio.play();
     if (playPromise && typeof playPromise.catch === 'function') {
       playPromise.catch(error => {
@@ -166,7 +148,7 @@ export default function ContenderWaveformPlayer({
       pendingSeek.current = null;
     } else {
       pendingSeek.current = nextTime;
-      if (audio.paused && audio.networkState !== 2) {
+      if (audio.getAttribute('src') && audio.paused && audio.networkState !== 2) {
         audio.preload = 'metadata';
         audio.load();
       }
@@ -189,10 +171,9 @@ export default function ContenderWaveformPlayer({
   };
 
   return (
-    <div className="contender-wave-player">
+    <div className="contender-wave-player" ref={containerRef}>
       <audio
         ref={setAudioElement}
-        src={src || undefined}
         preload="none"
         aria-hidden="true"
         onLoadedMetadata={onMetadata}
@@ -283,3 +264,5 @@ export default function ContenderWaveformPlayer({
     </div>
   );
 }
+
+export default memo(ContenderWaveformPlayer);
