@@ -1,3 +1,4 @@
+import ArtistBackgroundEditor from '../components/ArtistBackgroundEditor.jsx';
 import AppPromotionManager from '../components/AppPromotionManager.jsx';
 import CatalogueArtworkManager from '../components/CatalogueArtworkManager.jsx';
 import MessageDemoManager from '../components/MessageDemoManager.jsx';
@@ -113,6 +114,9 @@ export default function SantaDashboard() {
         </DashboardPanel>
         <DashboardPanel id="artwork">
           <CatalogueArtworkManager ownerToken={token.current} />
+        </DashboardPanel>
+        <DashboardPanel id="artist-backgrounds">
+          <ArtistBackgroundEditor ownerToken={token.current} />
         </DashboardPanel>
         <DashboardPanel id="apps">
           <AppStoreReports appleReport={data.appleDownloads} androidSource={android} />

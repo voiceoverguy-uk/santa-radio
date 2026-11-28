@@ -1,0 +1,16 @@
+.artist-background-editor { max-width: 900px; }
+.artist-background-editor label { display: block; font-weight: 700; margin: 14px 0 8px; }
+.artist-background-editor input, .artist-background-editor textarea {
+  box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid #b99b58;
+  border-radius: 8px; background: #071f17; color: #fff8e7; font: inherit;
+}
+.artist-background-editor textarea { resize: vertical; line-height: 1.7; min-height: 240px; }
+.artist-background-editor__results ul { list-style: none; padding: 0; max-height: 260px; overflow: auto; }
+.artist-background-editor__results li button { width: 100%; text-align: left; margin: 3px 0; }
+.artist-background-editor__navigation, .artist-background-editor__actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 20px; }
+.artist-background-editor__navigation { justify-content: space-between; }
+.artist-background-editor__hint { font-size: .85rem; opacity: .8; }
+.artist-background-editor [role="alert"] { color: #ffcbc2; }
+.artist-background-editor button:disabled { opacity: .5; cursor: default; }
+.santa-dashboard .artist-background-editor form { max-width: none; width: 100%; padding: 0; border: 0; background: transparent; }
+.artist-background-editor h3 { margin: 20px 0 12px; }

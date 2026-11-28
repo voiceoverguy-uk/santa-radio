@@ -25,6 +25,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query(await readFile(new URL('../database/dad-vouchers.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/friend-voucher-issues.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/catalogue-artwork.sql', import.meta.url), 'utf8'));
+    await client.query(await readFile(new URL('../database/artist-backgrounds.sql', import.meta.url), 'utf8'));
     await seedFriendVouchers(client);
     await client.query(await readFile(new URL('../database/app-promotions.sql', import.meta.url), 'utf8'));
     await seedPromotionLibrary(client, await readFile(new URL('../public/images/app-promotions/black-friday.jpg', import.meta.url)));

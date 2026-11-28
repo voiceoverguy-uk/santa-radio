@@ -1,3 +1,4 @@
+import artistBackgrounds from './server/artist-backgrounds.js';
 import appPromotions from './api/app-promotions.js';
 import nameChart from './server/name-chart.js';
 import messageDemos from './server/message-demos.js';
@@ -92,6 +93,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
+    server.middlewares.use('/api/artist-backgrounds', artistBackgrounds);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/name-chart', nameChart);
     server.middlewares.use('/api/santa-mobile', santaMobile);
@@ -139,6 +141,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
+    server.middlewares.use('/api/artist-backgrounds', artistBackgrounds);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/name-chart', nameChart);
     server.middlewares.use('/api/santa-mobile', santaMobile);

@@ -1,3 +1,4 @@
+import artistBackgrounds from './server/artist-backgrounds.js';
 import appPromotions from './api/app-promotions.js';
 import trackerPreviewAccess, { isPreviewPath, previewAuthorized, previewGate, previewHeaders } from './server/tracker-preview-access.js';
 import messageTest from './server/message-test.js';
@@ -85,6 +86,7 @@ const server = createServer(async (req, res) => {
     if (pathname === auditionPath || pathname.startsWith(`${auditionPath}/`)) {
       return unavailableAudition(req, res, () => res.writeHead(404).end('Audition unavailable.'));
     }
+    if (pathname === '/api/artist-backgrounds') return artistBackgrounds(req, res);
     if (pathname === '/api/catalogue-artwork') return catalogueArtwork(req, res);
     if (pathname === '/assets/radio-catalogue.js' || pathname === '/artist-artwork/catalogue.json' || /^\/artist-artwork\/upload-[a-f0-9]{64}\.webp$/.test(pathname)) {
       return catalogueArtworkRoute(req, res);

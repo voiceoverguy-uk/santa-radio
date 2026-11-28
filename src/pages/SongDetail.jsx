@@ -1,3 +1,4 @@
+import { useArtistBackground } from '../hooks/useArtistBackground.js';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
@@ -47,6 +48,7 @@ function SongNavigation({ previous, next, bottom = false }) {
 export default function SongDetail() {
   const { slug } = useParams();
   const song = findSong(slug);
+  const background = useArtistBackground(song);
   const moreSongs = relatedSongs(song);
 
   if (!song) {
@@ -84,7 +86,7 @@ export default function SongDetail() {
 
               <div className="song-detail-info">
                 <h2>Artist background</h2>
-                <p>{song.info || 'Artist information for this song is not yet available.'}</p>
+                <p>{background || 'Artist information for this song is not yet available.'}</p>
               </div>
 
               <SongVideo song={song} className="song-youtube-embed" />

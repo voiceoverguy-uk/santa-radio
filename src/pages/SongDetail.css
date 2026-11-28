@@ -417,3 +417,5 @@
   font-size: .9rem;
 }
 .song-navigation-bottom .song-navigation-title { display: none; }
+
+.song-detail-info > p { white-space: pre-line; }

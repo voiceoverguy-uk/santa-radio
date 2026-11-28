@@ -18,6 +18,7 @@ const sections = [
   { id: 'popular-names', label: 'Popular names', icon: Tags, anchors: [] },
   { id: 'christmas-contenders', label: 'Christmas Contenders', icon: Music2, anchors: ['contender-votes'] },
   { id: 'artwork', label: 'Artist & song artwork', icon: Images, anchors: ['catalogue-artwork', 'catalogue-art-title'] },
+  { id: 'artist-backgrounds', label: 'Artist backgrounds', icon: BookOpen, anchors: ['artist-background-title'] },
   { id: 'apps', label: 'Apps & downloads', icon: Smartphone, anchors: ['app-store-reports'] },
   { id: 'app-welcome-banners', label: 'App welcome banners', icon: Megaphone, anchors: ['banner-library'] },
   { id: 'games', label: 'Games & certificates', icon: Gamepad2, anchors: ['checker-downloads', 'game-figures'] },
