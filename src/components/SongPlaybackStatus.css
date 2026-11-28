@@ -1,0 +1,8 @@
+.song-playback-status {
+  display: block;
+  margin: 8px 0;
+  color: #f9db81;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}

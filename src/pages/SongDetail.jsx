@@ -8,6 +8,7 @@ import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import SongVideo from '../components/SongVideo.jsx';
 import SongArtworkViewer from '../components/SongArtworkViewer.jsx';
+import SongPlaybackStatus from '../components/SongPlaybackStatus.jsx';
 import SongArtwork from '../components/SongArtwork.jsx';
 import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 import { songMetadata } from '../seo/catalogue.js';
@@ -83,6 +84,7 @@ export default function SongDetail() {
             <div className="song-detail-main">
               <p className="song-detail-artist">{song.artist}</p>
               <h1 className="song-detail-title">{song.song}</h1>
+              <SongPlaybackStatus song={song} />
 
               <div className="song-detail-info">
                 <h2>Artist background</h2>
