@@ -1238,3 +1238,14 @@
   .hero-name-preview .hero-unified .hero-name-preview__actions { width: 100%; }
   .hero-name-preview .hero-unified .hero-actions .btn-red { width: 100%; justify-content: center; }
 }
+
+/* Share spare height equally above and below the mobile play pill. */
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming) {
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto;
+  }
+  .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork):has(.home-upcoming__list--expanded) {
+    grid-template-rows: min-content minmax(44px, 1fr) min-content auto auto auto;
+  }
+  .hero-unified:has(.now-playing-artwork) .hero-name-preview__player-row { align-self: center; }
+}
