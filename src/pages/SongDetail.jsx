@@ -93,10 +93,10 @@ export default function SongDetail() {
             </div>
 
             <div className="song-detail-artwork">
-              <SongArtworkViewer key={songSlug} song={song} />
+              <SongArtworkViewer key={`artwork-${songSlug}`} song={song} />
               {!song.lyrics && <p>Lyrics for this song are not yet available.</p>}
               {song.lyrics && (
-                <details className="song-lyrics-section" key={songSlug}>
+                <details className="song-lyrics-section" key={`lyrics-${songSlug}`}>
                   <summary>Show Lyrics — {song.song}</summary>
                     <div id="song-lyrics" className="song-lyrics-content">
                       <pre>{song.lyrics}</pre>
