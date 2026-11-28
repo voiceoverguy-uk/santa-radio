@@ -12,7 +12,7 @@ import { randomSongOrder } from '../data/randomSongOrder.js';
 import { useRadio } from '../components/radio-context.js';
 import { matchLiveSong } from '../data/matchLiveSong.js';
 import { formatPlayTime } from '../lib/radio-schedule.js';
-import { isTrackAboutToPlay } from '../lib/upcomingTrackGlow.js';
+import { upcomingCountdownSeconds } from '../lib/upcomingTrackGlow.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
 
@@ -30,7 +30,9 @@ function UpcomingSongCard({ track, song, index }) {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [track.estimatedAt]);
-  const aboutToPlay = isTrackAboutToPlay(track.estimatedAt, now);
+  const seconds = index === 0 ? upcomingCountdownSeconds(track.estimatedAt, now) : null;
+  const aboutToPlay = seconds !== null;
+  const countdown = aboutToPlay ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` : null;
   const Card = song ? Link : 'div';
   return <Card {...(song ? { to: `/christmas-artist/${song.id}-${song.link}` } : {})}
     className={`song-card song-card-upcoming${aboutToPlay ? ' song-card-upcoming--soon' : ''}`}>
@@ -39,6 +41,7 @@ function UpcomingSongCard({ track, song, index }) {
       <strong>{song?.artist || track.artist}</strong>
       <span>{song?.song || track.title}</span>
       <span className="song-coming-up">{['Playing next', 'Warming up in the wings', 'Next stop: Christmas!', 'Worth the wait…'][index] || 'Coming up'}</span>
+      {countdown && <span className="song-coming-up song-coming-up-countdown" role="timer" aria-label={`Next song in ${seconds} seconds`}>Playing in {countdown}</span>}
       {Number.isFinite(track.estimatedAt) && <span className="song-coming-up">{index === 1 ? 'Around' : 'Expected at'} {formatPlayTime(track.estimatedAt)}</span>}
     </div>
   </Card>;
