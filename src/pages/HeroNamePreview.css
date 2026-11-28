@@ -1127,7 +1127,7 @@
 /* Keep the live artist beside the heading on phones, above the queue. */
 @media (max-width: 767px) {
   .hero-name-preview .hero-layout.hero-unified:has(.now-playing-artwork) {
-    grid-template-columns: minmax(0, 1fr) clamp(96px, 29vw, 128px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas: 'intro artwork' 'broadcast broadcast' 'checker checker';
     column-gap: 12px;
     row-gap: 12px;
@@ -1226,4 +1226,9 @@
     min-height: 0;
   }
   .hero-name-preview .hero-unified .now-playing-artwork__image img { object-fit: cover; }
+}
+
+@media (max-width: 360px) {
+  .hero-unified:has(.now-playing-artwork) .home-upcoming__toggle { font-size: .75rem; gap: 4px; padding-inline: 8px; white-space: nowrap; }
+  .hero-name-preview .hero-unified:has(.now-playing-artwork) .hero-actions .btn-red { padding-inline: 8px; font-size: .75rem; }
 }
