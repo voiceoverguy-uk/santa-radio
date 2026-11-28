@@ -301,13 +301,6 @@ export const artistGalleryImages = [
     "sourceFile": "sia-santas-coming-for-us.png"
   },
   {
-    "src": "/artist-gallery/michael-buble-christmas-sweater.webp",
-    "artist": "Michael Buble",
-    "title": "The Christmas Sweater",
-    "songId": 508,
-    "sourceFile": "michael-buble-christmas-sweater.png"
-  },
-  {
     "src": "/artist-gallery/lauren-spencer-smith-single-on-the-25th.webp",
     "artist": "Lauren Spencer Smith",
     "title": "Single On The 25th",
@@ -334,13 +327,6 @@ export const artistGalleryImages = [
     "title": "I Believe In Father Christmas",
     "songId": 42,
     "sourceFile": "greg-lake-i-believe-in-father-christmas.png"
-  },
-  {
-    "src": "/artist-gallery/all-i-want-for-christmas-is-you.webp",
-    "artist": "Mariah Carey",
-    "title": "All I Want For Christmas Is You",
-    "songId": 24,
-    "sourceFile": "all-i-want-for-christmas-is-you.png"
   },
   {
     "src": "/artist-gallery/chris-de-burgh-spaceman-came-travelling.webp",
