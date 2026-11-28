@@ -173,3 +173,8 @@
 #root:has(#dad-return-home-dialog) .navbar-logo-image {
   filter: drop-shadow(0 0 7px #ffd574cc);
 }
+
+/* Match the main player's pill shape on compact navigation. */
+@media (max-width: 767px), (max-width: 1024px) and (max-height: 500px) and (orientation: landscape) {
+  html body .navbar .nav-radio-icon { border-radius: 999px; }
+}
