@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { emptySongFields, validateSongFields, buildSongDetails, submitSong } from '../src/lib/songSubmission.js';
-const fields = { ...emptySongFields, FIRSTNAME: 'Test', LASTNAME: 'Only', EMAIL: 'test@example.com', SONG_REQUEST: 'Test song', SONG_ARTIST: 'Test artist', SONG_TITLE: 'Test title', criteriaMet: true, instrumental: true, audioLink: 'https://example.com/song.mp3', artworkLink: 'https://example.com/art.png', hostPermission: true };
+const fields = { ...emptySongFields, FIRSTNAME: 'Test', LASTNAME: 'Only', EMAIL: 'test@example.com', SONG_REQUEST: 'Test song', SONG_ARTIST: 'Test artist', SONG_TITLE: 'Test title', criteriaMet: true, audioLink: 'https://example.com/song.mp3', artworkLink: 'https://example.com/art.png', hostPermission: true };
 
 test('song submission requires explicit no-A.I. confirmation before contacting Brevo', async () => {
   let requests = 0;
@@ -22,6 +22,7 @@ test('confirmation reaches its own Brevo details field without reducing the mess
   globalThis.fetch = async (_url, { body }) => {
     assert.equal(body.get('SONG_DETAILS'), buildSongDetails(confirmed));
     assert.match(body.get('SONG_DETAILS'), /No A.I. used: confirmed/);
+    assert.doesNotMatch(body.get('SONG_DETAILS'), /Instrumental:/);
     assert.equal(body.has('noAi'), false);
     return { ok: true, type: 'cors', json: async () => ({ success: true }) };
   };

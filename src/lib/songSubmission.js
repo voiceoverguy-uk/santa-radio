@@ -8,7 +8,7 @@ export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_ARTIST: '', SONG_TITLE: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
   sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
-  instrumental: false, audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
+  audioLink: '', artworkLink: '', hostPermission: false, noAi: false,
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -113,7 +113,6 @@ export function buildSponsorshipMessage(fields) {
 
 export function buildSongDetails(fields) {
   return [
-    fields.instrumental === true ? 'Instrumental: yes' : 'Instrumental: no',
     `No A.I. used: ${fields.noAi === true ? 'confirmed' : 'NOT confirmed'}`,
     `Audio: ${songMediaLink(fields.audioLink?.trim(), fields.SONG_ARTIST, fields.SONG_TITLE)}`,
     `Artwork: ${songMediaLink(fields.artworkLink?.trim(), fields.SONG_ARTIST, fields.SONG_TITLE)}`,

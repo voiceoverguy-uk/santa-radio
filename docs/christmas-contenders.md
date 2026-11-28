@@ -47,4 +47,4 @@ A notification `sending` claim commits before any send. Concurrent calls/retries
 - Confirm storage/schema/signing in the eventual hosting environment before launch, through the approved deployment process, not request-time migration.
 - At the owner's launch instruction, reset isolated test votes and turn off repeat-demo testing; retain the one-voter rule for real ballots. Do not clear votes before that instruction.
 
-SONG submissions serialize the original message plus full-lyrics/instrumental, audio, artwork and rights details into the existing `SONG_REQUEST` field. The entire payload must fit 500 characters. General and sponsorship destinations and contracts are unchanged. Files are secure links, not unsupported provider attachments.
+SONG submissions send the message in `SONG_REQUEST` (up to 500 characters), artist and title in `SONG_ARTIST` and `SONG_TITLE`, and audio/artwork links plus no-A.I. and rights confirmations in `SONG_DETAILS` (up to 500 characters). There is no instrumental declaration. General and sponsorship destinations and contracts are unchanged. Files are secure links, not unsupported provider attachments.
