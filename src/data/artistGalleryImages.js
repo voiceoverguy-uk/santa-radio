@@ -419,7 +419,7 @@ export const artistGalleryImages = [
     "sourceFile": "kelly-clarkson-underneath-the-tree.png"
   },
   {
-    "galleryId": -5, "src": "/artist-gallery/mariah-carey-all-i-want-for-christmas-is-you.webp",
+    "src": "/artist-gallery/mariah-carey-all-i-want-for-christmas-is-you.webp",
     "artist": "Mariah Carey",
     "title": "All I Want For Christmas Is You",
     "songId": 24,
@@ -433,7 +433,7 @@ export const artistGalleryImages = [
     "sourceFile": "leona-lewis-one-more-sleep.png"
   },
   {
-    "galleryId": -4, "src": "/artist-gallery/michael-buble-the-christmas-sweater.webp",
+    "src": "/artist-gallery/michael-buble-the-christmas-sweater.webp",
     "artist": "Michael Buble",
     "title": "The Christmas Sweater",
     "songId": 508,
