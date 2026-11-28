@@ -413,13 +413,6 @@ export const artistGalleryImages = [
     "sourceFile": "ed-sheerand-and-elton-john-merry-christmas.png"
   },
   {
-    "galleryId": -6, "src": "/artist-gallery/elton-john-s-glam-christmas-stomp-1.webp",
-    "artist": "Elton John",
-    "title": "Step Into Christmas",
-    "songId": 47,
-    "sourceFile": "Elton John’s Glam Christmas Stomp-1.png"
-  },
-  {
     "galleryId": -2, "src": "/artist-gallery/toni-braxton-once-upon-a-christmas.webp",
     "artist": "Toni Braxton",
     "title": "Once Upon a Christmas Time",

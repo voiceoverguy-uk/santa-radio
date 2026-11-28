@@ -6,7 +6,7 @@ import { galleryPlayTime } from '../src/lib/artistGallerySchedule.js';
 import songs from '../src/data/songs.json' with { type: 'json' };
 
 test('selected gallery assets exist and catalogue assignments agree with both artist and title', () => {
-  assert.equal(artistGalleryImages.length, 102);
+  assert.equal(artistGalleryImages.length, 101);
   for (const image of artistGalleryImages) {
     assert.ok(existsSync(new URL(`../public${image.src}`, import.meta.url)), image.src);
     if (image.songId != null) {
@@ -43,7 +43,7 @@ test('dashboard selections add, remove and replace exact-song gallery images', a
   const newSong = songs.find(song => !artistGalleryImages.some(image => image.songId === song.id));
   const added = managedArtistGallery({ gallery: { [newSong.id]: { enabled: true, scope: 'song' } } });
   assert.equal(added.filter(image => image.songId === newSong.id).length, 1);
-  assert.equal(managedArtistGallery({ gallery: { 999999: { enabled: true, scope: 'song' } } }).length, 102);
+  assert.equal(managedArtistGallery({ gallery: { 999999: { enabled: true, scope: 'song' } } }).length, 101);
 });
 
 test('gallery-only pictures can be deselected and restored without changing their image', async () => {
