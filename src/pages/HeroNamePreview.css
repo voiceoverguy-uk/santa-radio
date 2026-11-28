@@ -1214,3 +1214,16 @@
 @media (max-width: 767px) {
   .hero-unified .now-playing-artwork__title { display: none; }
 }
+
+@media (max-width: 767px) {
+  .hero-name-preview .hero-layout .hero-name-preview__artwork-slot .now-playing-artwork {
+    align-self: stretch;
+    align-content: stretch;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .hero-name-preview .hero-unified .now-playing-artwork__image {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+  .hero-name-preview .hero-unified .now-playing-artwork__image img { object-fit: cover; }
+}
