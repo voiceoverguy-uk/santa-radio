@@ -59,3 +59,24 @@
 .artist-gallery .artist-gallery__side svg { width: 25px; height: 48px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 3px #000); }
 .artist-gallery .artist-gallery__side:hover { background: #0000000d; color: #f9db81; }
 .artist-gallery .artist-gallery__side:focus-visible { outline: 2px solid #f9db81; outline-offset: -4px; }
+
+/* Keep gallery navigation legible over bright and detailed artwork. */
+.artist-gallery .artist-gallery__side svg {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 56px;
+  padding: 8px 10px;
+  border: 1px solid #e6ce86;
+  border-radius: 999px;
+  background: #0b251ef2;
+  color: #fff;
+  stroke-width: 4;
+  filter: none;
+  box-shadow: 0 2px 10px #0009;
+}
+.artist-gallery .artist-gallery__side:hover svg,
+.artist-gallery .artist-gallery__side:focus-visible svg {
+  background: #1b4937;
+  border-color: #fff1bb;
+}
