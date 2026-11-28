@@ -1213,5 +1213,4 @@
 /* Keep the mobile artist caption compact; the title appears in the image viewer. */
 @media (max-width: 767px) {
   .hero-unified .now-playing-artwork__title { display: none; }
-  .hero-unified:has(.home-upcoming) .hero-name-preview__artwork-slot { align-self: start; }
 }
