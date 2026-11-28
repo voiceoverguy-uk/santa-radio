@@ -55,7 +55,14 @@ export default function GalleryPicker({ ownerToken }) {
       });
       const result = await response.json();
       if (!response.ok || !result.gallery) throw new Error(result.error || 'Selection could not be saved.');
-      setData(previous => ({ ...previous, gallery: { ...previous.gallery, [row.id]: result.gallery } }));
+      setData(previous => {
+        const gallery = { ...previous.gallery };
+        for (const alternate of artistGalleryImages.filter(image => image.galleryId && image.songId === row.id)) {
+          gallery[alternate.galleryId] ??= { enabled: gallerySelection(alternate.galleryId, previous), scope: 'song' };
+        }
+        gallery[row.id] = result.gallery;
+        return { ...previous, gallery };
+      });
       setNotice(`${row.artist} — ${row.title}: ${enabled ? 'added to' : 'removed from'} gallery.`);
     } catch (err) { setError(`${row.artist}: ${err.name === 'TimeoutError' ? 'Save timed out. Reopen the picker to check before retrying.' : err.message}`); }
     finally { locks.current.delete(row.id); setPending(new Set(locks.current)); }

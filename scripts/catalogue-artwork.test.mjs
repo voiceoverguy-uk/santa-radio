@@ -114,3 +114,13 @@ test('artwork replacement saves gallery selection atomically and reads it back',
   const data = await readArtworkOverrides(pool);
   assert.deepEqual(data.gallery[37],{enabled:false,scope:'song'});
 });
+
+test('saving a main gallery picture preserves alternate choices in the same database statement', async () => {
+  const { saveGallerySelection } = await import('../server/catalogue-artwork-store.js');
+  const calls=[];
+  await saveGallerySelection(artworkTarget(508,'song'),false,{query:async(sql,values)=>{calls.push({sql,values});return {rows:[]};}});
+  assert.equal(calls.length,1);
+  assert.deepEqual(calls[0].values,[508,false,'song',[-4]]);
+  assert.match(calls[0].sql,/NOT EXISTS/);
+  assert.match(calls[0].sql,/ON CONFLICT \(song_id\) DO NOTHING/);
+});

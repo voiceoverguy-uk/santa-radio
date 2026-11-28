@@ -60,6 +60,19 @@ export async function saveArtwork(target, bytes, pool = databasePool(), includeI
 const recordingsById = id => recordings.has(Number(id)) || artistGalleryImages.some(image => image.galleryId === Number(id));
 
 export async function saveGallerySelection(target, enabled, pool = databasePool()) {
+  const alternates = artistGalleryImages.filter(image => image.galleryId && image.songId === target.songId).map(image => image.galleryId);
+  if (alternates.length) {
+    // Freeze each alternate's previous effective choice before changing its song.
+    await pool.query(`WITH preserved AS (
+      INSERT INTO santa_catalogue_gallery(song_id,enabled,scope)
+      SELECT alternate_id, NOT EXISTS(SELECT 1 FROM santa_catalogue_gallery WHERE song_id=$1), 'song'
+      FROM unnest($4::integer[]) AS alternate_id
+      ON CONFLICT (song_id) DO NOTHING
+    ) INSERT INTO santa_catalogue_gallery(song_id,enabled,scope) VALUES ($1,$2,$3)
+      ON CONFLICT (song_id) DO UPDATE SET enabled=EXCLUDED.enabled,scope=EXCLUDED.scope`,
+      [target.songId, enabled, target.scope, alternates]);
+    return;
+  }
   await pool.query(`INSERT INTO santa_catalogue_gallery(song_id,enabled,scope) VALUES ($1,$2,$3)
     ON CONFLICT (song_id) DO UPDATE SET enabled=EXCLUDED.enabled,scope=EXCLUDED.scope`, [target.songId, enabled, target.scope]);
 }
