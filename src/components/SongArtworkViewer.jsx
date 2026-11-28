@@ -52,12 +52,15 @@ export default function SongArtworkViewer({ song, compact = false }) {
       }}
     >
       <div className="song-artwork-view">
-        <button type="button" autoFocus className="song-artwork-close"
-          onClick={() => dialog.current.close()} aria-label="Close enlarged artwork">
-          Close <span aria-hidden="true">×</span>
-        </button>
         {open && <figure className="song-artwork-framed">
-          <SongArtwork song={song} className="song-artwork-enlarged" />
+          <button type="button" autoFocus className="song-artwork-close"
+            onClick={() => dialog.current.close()} aria-label="Close enlarged artwork">
+            <span aria-hidden="true">×</span>
+          </button>
+          <button type="button" className="song-artwork-dismiss" aria-label="Close artwork by tapping image"
+            onClick={() => dialog.current.close()}>
+            <SongArtwork song={song} className="song-artwork-enlarged" />
+          </button>
           <figcaption className="song-artwork-caption">
             <strong>{song?.artist || 'Santa Radio'}</strong>
             {song?.song && <span>{song.song}</span>}

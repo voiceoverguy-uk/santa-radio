@@ -419,3 +419,19 @@
 .song-navigation-bottom .song-navigation-title { display: none; }
 
 .song-detail-info > p { white-space: pre-line; }
+
+/* The enlarged picture itself dismisses the viewer; the red X stays on its frame. */
+.song-artwork-framed { position: relative; }
+.song-artwork-dialog .song-artwork-close {
+  position: absolute; top: 16px; right: 16px; z-index: 2;
+  display: grid; place-items: center; width: 44px; height: 44px;
+  margin: 0; padding: 0; border: 1px solid #ffb3a7; border-radius: 50%;
+  background: #a81722; color: #fff; font-size: 2rem; line-height: 1;
+  box-shadow: 0 2px 10px #0007;
+}
+.song-artwork-dialog .song-artwork-close:hover { background: #cf2431; }
+.song-artwork-dialog .song-artwork-dismiss {
+  display: block; max-width: 100%; margin: 0; padding: 0;
+  border: 0; border-radius: 3px; background: transparent; cursor: zoom-out;
+}
+.song-artwork-dismiss:focus-visible { outline: 3px solid #fff1bb; outline-offset: -3px; }
